@@ -1,0 +1,1 @@
+c:\DeviceServers\ds_serial com1 -v4

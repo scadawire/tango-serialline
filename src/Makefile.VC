@@ -1,0 +1,40 @@
+#
+device_server= Serial
+#
+#  Des includes particuliers
+#  Mettre /Ic:\monchemininclude /:\monautrechemininclude
+INCUSER= 
+#
+#  et vos Librairies
+# style
+# 
+# LIBUSER = "x:\moncheminlibrairie\malibrairie.lib"
+LIBUSER= 
+
+#
+# ------------------Fin des modifications pour le end user -------------------------------------
+#
+make_dir=$(TANGO_WIN32_ROOT)\env\
+
+
+#  Les définitions communes à tous les DeviceServeurs
+!include $(make_dir)\tango.opt
+
+exe_device_server= $(EXEDIR)\ds_$(device_server).exe
+pdb_name= $(TEMPLIBDIR)\$(device_server).pdb
+
+# --------------------------------------
+#   Partie spécifique Device Server
+# --------------------------------------
+
+LISTEOBJ = \
+   $(OBJDIR)\$(device_server).OBJ\
+   $(OBJDIR)\ClassFactory.OBJ\
+   $(OBJDIR)\main.OBJ\
+   $(OBJDIR)\$(device_server)Class.OBJ
+
+
+
+# --------------------------------------
+!include $(make_dir)\common_target.opt
+
