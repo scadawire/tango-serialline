@@ -298,7 +298,6 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 
                 // should not be done, yet done previously
          this->serialdevice.timeout = timeout;
-
          INFO_STREAM << "Serial::SerSetParameter(): timeout=" << timeout
                << "(mS) " << float (termin.c_cc[VTIME]) << "(1/10s)"
                << endl;
@@ -637,6 +636,257 @@ Tango::ConstDevString Serial::dev_status()
 	return argout;
 }
 
+//+------------------------------------------------------------------
+/**
+*      method: Serial::retry_read_string
+*
+*      description:    
+*	     read a string from the serialline device in mode raw,
+*			 if first reading attempt successfull, retry to read "nretry" 
+*      times; if no more data found exit on timeout without error.
+*	     Useful in case of long strings with no fixed lenght ( > 64 bytes) 
+*			 Very unlucky case!!!
+*      The maximum number of characters that can be read is
+*      SL_MAXSTRING.
+*
+*	@param	argin: number N of retries
+* @return String read
+
+*/
+//+------------------------------------------------------------------
+char *Serial::retry_read_string(long nretry)
+{
+ char 		*argout;
+ fd_set		watchset;	// file descriptor set
+ fd_set		inset;		// file descriptor set updated by select()
+ int		maxfd;		// maximum file descriptor used
+ int retrycnt;		// retry reading counter
+ struct timeval	timeend;	// current time + timeout
+ struct timeval	timeout;	// timeout value
+ float		timeout_s;	// timeout value in seconds
+ struct timezone tz;		// not used
+ int		readyfd;	// number of file descriptors ready to be read
+ int		ncharin; 	// number of characters in the receiving buffer
+ char   tab[]="Serial::retry_read_string: ";
+ int nchar;
+
+ INFO_STREAM << tab << "entering... !" << endl;
+
+ //
+ //first "empty" buffer by NULL terminating it
+ //
+ this->serialdevice.buffer[0] = 0;
+ this->serialdevice.ncharread = 0;
+
+ //
+ // Initialize the set, no file descriptors contained
+ //
+ FD_ZERO(&watchset);
+
+ //
+ // Add to the set the file descriptor to watch at
+ //
+ FD_SET(this->serialdevice.serialin, &watchset); 
+
+ // set retry counter to 0
+ retrycnt = 0;
+ nchar = SL_MAXSTRING;
+ //
+ // Initialize the timeout (calculate when the timeout should expire)
+ // 
+ timeout_s = ((float)this->serialdevice.timeout) / 1000.0; // seconds
+
+ gettimeofday(&timeend,&tz);
+ timeend.tv_usec += (int)((timeout_s - (int)timeout_s) * 1000000.0);
+ timeend.tv_sec  += (int)(timeout_s); 
+ if(timeend.tv_usec > 1000000)
+ {
+  timeend.tv_usec -= 1000000;
+  timeend.tv_sec  += 1;
+ }
+ 
+ //
+ // Wait until the receiving buffer contains the requested number of characters
+ //
+ do
+ {
+  //
+  // Set the maximum file descriptor used, this avoid the system to look
+  // through all the file descriptors that a Linux process can have (up to 1024)
+  //
+  maxfd = this->serialdevice.serialin + 1;
+
+  //
+  // As select() will update will update the set, make a copy of it
+  //
+  inset = watchset;
+
+  //
+  // Set the timeout value (take into account time consumed by previous
+  // wait periods)
+  //
+  gettimeofday(&timeout,&tz);
+  timeout.tv_usec = timeend.tv_usec - timeout.tv_usec;
+  timeout.tv_sec  = timeend.tv_sec  - timeout.tv_sec;
+  if(timeout.tv_usec < 0)
+  {
+   timeout.tv_usec += 1000000;
+   timeout.tv_sec  -= 1;
+  }
+  
+	//
+  // Check if the timeout occured
+  // With reasonnable values this should not happen, but on overloaded
+  // systems with a short timeout value it may happens that the timeout
+  // expired at this point before the call to select()
+  //
+  if(timeout.tv_sec < 0)
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "timeout waiting for char to be read (sched)"
+              << ends;
+   ERROR_STREAM << tab << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_timeend",
+        out_stream.str(),
+        (const char *)tab);
+  }
+
+  //
+  // Block until characters become available on the file descriptor
+  // listed in the set.
+  //
+  readyfd = select(maxfd, &inset, NULL, NULL, &timeout);
+  
+	// don't return error if something has been read from serial line 
+	if ((readyfd <= 0) && (retrycnt > 0)) 
+		break;
+	
+	//
+  // Check if an error occured
+  //
+  if (readyfd < 0)
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "timeout waiting for char to be read (select() < 0)"
+              << ends;
+   ERROR_STREAM << tab << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_select",
+        out_stream.str(),
+        (const char *)tab);					
+  }
+
+  //
+  // Check if the timeout occured
+  //
+  if (readyfd == 0)
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "timeout waiting for char to be read"
+              << ends;						
+   ERROR_STREAM << tab << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_select",
+        out_stream.str(),
+        (const char *)tab);	
+  }
+
+  //
+  // Check if it's our file descriptor which is ready to be read (Should be, as
+  // it was the only watched one out).
+  //
+  if (!FD_ISSET(this->serialdevice.serialin, &inset))
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "fd_isset() wrong, who whoke me up?"
+              << ends;
+
+	 ERROR_STREAM << tab << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_FD_ISSET",
+        out_stream.str(),
+        (const char *)tab);
+  }
+
+  //
+  // Are there enough characters in the receiving buffer?
+  //
+  if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "error reading no. of char, errno=" << errno
+              << ends;					
+   ERROR_STREAM << tab << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_ioctl",
+        out_stream.str(),
+        (const char *)tab);
+  }
+
+  INFO_STREAM << tab << "ncharin=" << ncharin << endl;
+
+  //
+  // Empty the receiving buffer (if not done, the next call to select() will
+  // immediately return that this serialline has to be read, therefore
+  // the waiting loop would be very system consuming)
+  //
+  ncharin = read(
+	this->serialdevice.serialin,
+	this->serialdevice.buffer + this->serialdevice.ncharread,
+	(ncharin > (nchar - this->serialdevice.ncharread) ? 
+            (nchar - this->serialdevice.ncharread) : ncharin));
+
+	
+	if (ncharin < 0)
+  {
+   TangoSys_MemStream out_stream;
+   out_stream << "error reading from device, errno=" << errno
+              << ends;
+   ERROR_STREAM << tab;
+   ERROR_STREAM << out_stream.str() << endl;
+   Tango::Except::throw_exception(
+        (const char *)"Serial::error_read",
+        out_stream.str(),
+        (const char *)tab);
+  }
+  this->serialdevice.ncharread += ncharin;
+	retrycnt++;	
+ }
+ while(nretry >= retrycnt);	
+
+ //
+ // At this point the number of characters requested have been read.
+ //
+ this->serialdevice.buffer[this->serialdevice.ncharread] = 0;
+      
+ //
+ // Prepare return buffer (can not return "buffer" directly 
+ // because TANGO desallocate the memory return)
+ //
+ argout = new char[this->serialdevice.ncharread+1];
+ if(argout == 0)
+ {
+  TangoSys_MemStream out_stream;
+  out_stream << "unable to allocate memory for the return buffer, need "
+             << this->serialdevice.ncharread << " bytes" << ends;
+  ERROR_STREAM << tab << out_stream.str() << endl;
+  Tango::Except::throw_exception(
+        (const char *)"Serial::error_alloc",
+        out_stream.str(),
+        (const char *)tab);
+ }
+
+ // Do not use strncpy() as retry_read_string() is used by xxx_read_char()
+ int i;
+ for(i=0 ; i<this->serialdevice.ncharread ; i++)
+  argout[i] = this->serialdevice.buffer[i];
+
+ // Add string ending char, used only by ser_read_string()
+ argout[i]=0;
+
+ return argout;}
+ 
 //+------------------------------------------------------------------
 /**
 *      method: Serial::raw_read_string

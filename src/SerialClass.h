@@ -10,9 +10,9 @@
 //			
 // project :      TANGO Device Server
 //
-// $Author: syldup $
+// $Author: xavela $
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 // $Log: not supported by cvs2svn $
 //
@@ -39,6 +39,18 @@ namespace Serial
 //
 // Define classes for commands
 //
+class DevSerReadRetryCmd : public Tango::Command
+{
+public:
+	DevSerReadRetryCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
+	DevSerReadRetryCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	~DevSerReadRetryCmd() {};
+	
+	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+};
+
+
 class DevSerSetNewlineCmd : public Tango::Command
 {
 public:

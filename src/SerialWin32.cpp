@@ -9,6 +9,8 @@
 
 #include <Serial.h>
 #include <Tango.h>
+#include <time.h>
+
 // extract from "serialdsP.h" (TACO file)
 // Needed because different from old SL_NONE etc
 
@@ -444,6 +446,136 @@ OVERLAPPED	osWrite = {0};
 	  return bytes_written;
 	}
 }
+
+//+------------------------------------------------------------------
+/**
+*      method: Serial::retry_read_string
+*
+*      description:    
+*	     read a string from the serialline device in mode raw,
+*			 if first reading attempt successfull, retry to read "nretry" 
+*      times; if no more data found exit on timeout without error.
+*	     Useful in case of long strings with no fixed lenght ( > 64 bytes) 
+*			 Very unlucky case!!!
+*      The maximum number of characters that can be read is
+*      SL_MAXSTRING.
+*
+*	@param	argin: number N of retries
+* @return String read
+
+*/
+//+------------------------------------------------------------------
+char *Serial::retry_read_string(long nretry)
+{
+	char	*argout;
+	int		nchar=0;
+	int		retrycnt;		// retry reading counter
+	clock_t	starttime, finish;
+	bool	TIMEOUT = false;
+	
+	//
+	//first "empty" buffer by NULL terminating it
+	//
+	this->serialdevice.buffer[0] = 0;
+	this->serialdevice.ncharread = 0;
+
+	retrycnt = 0;	
+	do
+	{
+/*		// Get the current number of bytes in the receiving buffer
+		if(ClearCommError(serialdevice.hfile, &cur_error, &cur_stat) == FALSE)
+		{
+			ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
+			
+			Tango::Except::throw_exception(
+				(const char *)"Serial::error_nretry",
+				(const char*) "error reading serialline stats",
+				(const char *)"Serial::retry_read_string");
+			
+		}
+		memset
+		// number of bytes available
+		bytes_available = cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING;
+		
+		if(ReadFile(
+			serialdevice.hfile, 
+			this->serialdevice.buffer + this->serialdevice.ncharread, 
+			bytes_to_read, 
+			(DWORD *)&bytes_read, 
+			&osRead) == FALSE)
+		{
+			ERROR_STREAM << "retry_read_string: error reading from serialline" << endl;
+			Tango::Except::throw_exception(
+				(const char *)"Serial::ReadFile",
+				(const char*) "Error reading from serialline : retry_read_string",
+				(const char *)"Serial::retry_read_string");
+		}
+		
+		// if read succeed and if no bytes : 
+		if (bytes_read == 0 && TIMEOUT)
+			break;
+		
+		if (bytes_read < 0)
+		{
+			TangoSys_MemStream out_stream;
+			out_stream << "error reading from device, errno=" << errno
+				<< ends;
+			ERROR_STREAM << out_stream.str() << endl;
+			Tango::Except::throw_exception(
+				(const char *)"Serial::error_read",
+				out_stream.str(),
+				(const char *)"Serial::retry_read_string");
+		}
+		this->serialdevice.ncharread += bytes_read;
+*/
+		
+		starttime = clock();
+		
+		argout = raw_read_string();
+
+		
+		// store the last read
+		if(this->serialdevice.ncharread > 0)
+			::strcpy((argout+nchar), (const char *) this->serialdevice.buffer);
+
+
+
+		nchar = this->serialdevice.ncharread;
+
+		finish = clock();
+		double duration = (double)(finish - starttime) / CLOCKS_PER_SEC;
+
+
+		
+		if(duration > (double)this->serialdevice.timeout)
+		{
+			if(retrycnt < nretry)
+				TIMEOUT = true;
+			// the receive buffer is empty but no error !
+			if(!this->serialdevice.ncharread)
+				break;
+		}
+
+		retrycnt++;	
+		
+	}
+	while( retrycnt < nretry && !TIMEOUT);
+
+	if(TIMEOUT)
+	{
+	  Tango::Except::throw_exception(
+		  (const char *)"Serial::error_timeend",
+		  (const char *) "timeout waiting for the ended character ",
+		  (const char *)"Serial::retry_read_string");
+	}
+
+		DEBUG_STREAM << "**** \n\n ARGOUT NRETRY = " << argout << endl;
+		
+		
+	return argout;		
+		
+}
+
 	  
 /*======================================================================
 Function:    char * raw_read_string()

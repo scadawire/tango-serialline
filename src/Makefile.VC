@@ -3,13 +3,20 @@ device_server= Serial
 #
 #  Des includes particuliers
 #  Mettre /Ic:\monchemininclude /:\monautrechemininclude
-INCUSER= 
+INCUSER=
 #
 #  et vos Librairies
 # style
 # 
 # LIBUSER = "x:\moncheminlibrairie\malibrairie.lib"
-LIBUSER= 
+LIBUSER=
+
+#vos OBJ
+#OBJUSER = 
+
+# Le repertoire ou sont les sources autres que le DServeur
+#CPPDIRUSER = 
+
 
 #
 # ------------------Fin des modifications pour le end user -------------------------------------
@@ -33,6 +40,12 @@ LISTEOBJ = \
    $(OBJDIR)\main.OBJ\
    $(OBJDIR)\$(device_server)Class.OBJ
 
+SRCS		=    \
+    $(device_server).CPP\
+   ClassFactory.CPP\
+   main.CPP \
+   $(device_server)Class.CPP
+    
 
 
 # --------------------------------------

@@ -6,9 +6,9 @@
 //
 // project :	TANGO Device Server
 //
-// $Author: syldup $
+// $Author: xavela $
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 // $Log: not supported by cvs2svn $
 // Revision 1.3  2003/10/08 14:27:01  perez
@@ -57,8 +57,8 @@
 //using namespace Tango;
 
 /**
- * @author	$Author: syldup $
- * @version	$Revision: 1.1.1.1 $ $
+ * @author	$Author: xavela $
+ * @version	$Revision: 1.2 $ $
  */
 
 
@@ -122,6 +122,7 @@ unsigned long  baudrate;    /* baud rate */
 #define SL_RAW        0     /* raw read/write mode */
 #define SL_NCHAR      1     /* character read/write mode */
 #define SL_LINE       2     /* line read mode */
+#define SL_RETRY      3     /* retry read mode */
 
 #define SL_NONE       0
 #define SL_ODD        1
@@ -242,7 +243,7 @@ public :
 /**
  * The object desctructor.
  */	
-	~Serial() {};
+	~Serial() {delete_device();};
 //@}
 
 	
@@ -317,7 +318,7 @@ public :
  *	@return	response of the device behind the serial line
  *	@exception DevFailed
  */
-	Tango::DevString	write_read(Tango::DevString);
+	Tango::DevString	write_read(const Tango::DevVarLongStringArray *);
 /**
  * Return the number of chars available in receiving buffer
  *	@return	number of char available in receiving buffer
@@ -407,6 +408,15 @@ public :
  *	@exception DevFailed
  */
 	void	dev_ser_set_newline(Tango::DevShort);
+/**
+ * read a string from the serialline device in mode raw (no end
+ *	of string expected, just empty the entire serialline receiving buffer).
+ *	If read successfull, read again "nretry" times.
+ *	@param	argin	number of reading retries
+ *	@return	pointer to the string read updated
+ *	@exception DevFailed
+ */
+	Tango::DevString	dev_ser_read_retry(Tango::DevLong);
 
 /**
  *	Read the device properties from database
@@ -427,6 +437,18 @@ protected :
  *
  */
 		void open_desc(void);
+/**
+*      Read a string of characters from the serial line.
+*			 If string read retry to read "nretry" times.
+*			 Specify number of retries.
+*      The maximum number of characters that can be read is
+*      SL_MAXSTRING, if there are more characters in the received
+*      buffer, they are let there for the next read.
+*
+*	@param	argin: number N of retries
+* @return String read
+*/
+        char *retry_read_string(long);
 /**
  *      Read a string of characters from the serial line if
  *      there are no characters to be read return an empty string.

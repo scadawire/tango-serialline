@@ -6,9 +6,9 @@
 #
 # project :     Makefile to generate a Tango server
 #
-# $Author: syldup $
+# $Author: xavela $
 #
-# $Revision: 1.1.1.1 $
+# $Revision: 1.2 $
 #
 # $Log: not supported by cvs2svn $
 #
@@ -24,49 +24,44 @@
 #=============================================================================
 #
 linux = 1
+
 ifdef _solaris
 CC = CC
 BIN_DIR = solaris7_CC
 endif
 
 ifdef linux
-CC = c++-3.2.2
-AR = ar rv
-BIN_DIR = linux-i386
+CC = c++
+AR = ar
+BIN_DIR = 
 endif
 
-TANGO_HOME   =  $(TANGO_ROOT)/tango
-OMNI_HOME   =  $(TANGO_ROOT)/omniorb
-INCLUDE_DIRS =  -I$(DEV_ROOT)/tango/api/cpp/server -I$(DEV_ROOT)/tango/api/cpp/client \
-	-I$(TANGO_HOME)/$(BIN_DIR)/include	-I$(OMNI_HOME)/$(BIN_DIR)/include -I. 
-#	-I/segfs/tango/ORB/ORB_src/omniORB/omniORB-4.0.0-rc1//include \
-#	-I/segfs/tango/ORB/ORB_src/omniORB/omniORB-4.0.0-rc1//src/services/omniNotify/include
-LIB_DIRS     =  -L $(TANGO_HOME)/$(BIN_DIR)/lib -L $(OMNI_HOME)/$(BIN_DIR)/lib
+TANGO_HOME   =  /usr/local
+INCLUDE_DIRS =  -I$(TANGO_HOME)/include/$(BIN_DIR)	-I.
+LIB_DIRS     =  -L $(TANGO_HOME)/lib/$(BIN_DIR)
 
 ifdef _solaris
 CXXFLAGS =  -mt -D_PTHREADS $(INCLUDE_DIRS)
 LFLAGS =  -g $(LIB_DIRS)  		\
 				-ltango			\
-				-llog4tango			\
+				-llog4tango		\
 				-lomniORB4 		\
 				-lomniDynamic4	\
 				-lomnithread	\
 				-lpthread		\
-				-lposix4 -lsocket -lnsl
+				-lposix4 -lsocket -lnsl 
 endif
 
 ifdef linux
-CXXFLAGS =  -D_REENTRANT $(INCLUDE_DIRS)
-LFLAGS =   $(LIB_DIRS)  		\
-				-ltango \
-				-llog4tango \
+CXXFLAGS =  -g -D_REENTRANT $(INCLUDE_DIRS)
+LFLAGS =  -g $(LIB_DIRS)  		\
+				-ltango			\
+				-llog4tango		\
 				-lomniORB4 		\
 				-lomniDynamic4	\
 				-lomnithread	\
-				-ldl -lpthread
-#	  -L/segfs/tango/ORB/ORB_src/omniORB/omniORB-4.0.0-rc1/lib
+				-ldl -lpthread 
 endif
-
 
 
 
@@ -98,5 +93,7 @@ clean:
 install:
 	cp $(CLASS) $(TANGO_HOME)/bin/$(BIN_DIR)
 
+field_install: Serial
+	scp Serial root@eclfba2.ecs:/runtime/control/bin
 
 

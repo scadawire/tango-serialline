@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.1.1.1 2004-04-07 14:30:54 syldup Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.2 2004-06-30 09:22:48 xavela Exp $";
 //+=============================================================================
 //
 // file :        SerialClass.cpp
@@ -10,9 +10,9 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :     TANGO Device Server
 //
-// $Author: syldup $
+// $Author: xavela $
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 // $Log: not supported by cvs2svn $
 //
@@ -37,6 +37,90 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 namespace Serial
 {
+//+----------------------------------------------------------------------------
+//
+// method : 		DevSerReadRetryCmd::DevSerReadRetryCmd()
+// 
+// description : 	constructor for the command of the Serial.
+//
+// In : - name : The command name
+//		- in : The input parameter type
+//		- out : The output parameter type
+//		- in_desc : The input parameter description
+//		- out_desc : The output parameter description
+//
+//-----------------------------------------------------------------------------
+DevSerReadRetryCmd::DevSerReadRetryCmd(	const char		*name,
+								Tango::CmdArgType in,
+				       			Tango::CmdArgType out,
+								const char		*in_desc,
+				       			const char		*out_desc,
+								Tango::DispLevel level)
+:Command(name,in,out,in_desc,out_desc, level)
+{
+}
+//
+//	Constructor without in/out parameters description
+//
+DevSerReadRetryCmd::DevSerReadRetryCmd(	const char		*name,
+								Tango::CmdArgType in,
+				       			Tango::CmdArgType out)
+:Command(name,in,out)
+{
+}
+
+
+
+
+//+----------------------------------------------------------------------------
+//
+// method : 		DevSerReadRetryCmd::is_allowed()
+// 
+// description : 	method to test whether command is allowed or not in this
+//			state. In this case, the command is allowed only if
+//			the device is in ON state
+//
+// in : - device : The device on which the command must be excuted
+//		- in_any : The command input data
+//
+// returns :	boolean - true == is allowed , false == not allowed
+//
+//-----------------------------------------------------------------------------
+bool DevSerReadRetryCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
+{
+		//	End of Generated Code
+
+		//	Re-Start of Generated Code
+		return true;
+}
+
+
+
+
+//+----------------------------------------------------------------------------
+//
+// method : 		DevSerReadRetryCmd::execute()
+// 
+// description : 	method to trigger the execution of the command.
+//                PLEASE DO NOT MODIFY this method core without pogo   
+//
+// in : - device : The device on which the command must be excuted
+//		- in_any : The command input data
+//
+// returns : The command output data (packed in the Any object)
+//
+//-----------------------------------------------------------------------------
+CORBA::Any *DevSerReadRetryCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+{
+
+	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+
+	Tango::DevLong	argin;
+	extract(in_any, argin);
+
+	return insert((static_cast<Serial *>(device))->dev_ser_read_retry(argin));
+}
+
 //+----------------------------------------------------------------------------
 //
 // method : 		DevSerSetNewlineCmd::DevSerSetNewlineCmd()
@@ -871,7 +955,7 @@ CORBA::Any *WriteReadCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in
 
 	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
 
-	Tango::DevString	argin;
+	const Tango::DevVarLongStringArray	*argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->write_read(argin));
@@ -1572,8 +1656,8 @@ void SerialClass::command_factory()
 		"Array of characters read",
 		Tango::OPERATOR));
 	command_list.push_back(new WriteReadCmd("WriteRead",
-		Tango::DEV_STRING, Tango::DEV_STRING,
-		"command to write on the port com",
+		Tango::DEVVAR_LONGSTRINGARRAY, Tango::DEV_STRING,
+		"type of reading strategy(RAW,NCHAR..),command to write on the port com",
 		"response of the device behind the serial line",
 		Tango::OPERATOR));
 	command_list.push_back(new DevSerGetNCharCmd("DevSerGetNChar",
@@ -1635,6 +1719,11 @@ void SerialClass::command_factory()
 		Tango::DEV_SHORT, Tango::DEV_VOID,
 		"The new line character to set",
 		"no argout",
+		Tango::OPERATOR));
+	command_list.push_back(new DevSerReadRetryCmd("DevSerReadRetry",
+		Tango::DEV_LONG, Tango::DEV_STRING,
+		"number of reading retries",
+		"pointer to the string read updated",
 		Tango::OPERATOR));
 
 	//	add polling if any

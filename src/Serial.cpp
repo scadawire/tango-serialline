@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.1.1.1 2004-04-07 14:30:53 syldup Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.2 2004-06-30 09:22:48 xavela Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,15 +11,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: syldup $
+// $Author: xavela $
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 // $Log: not supported by cvs2svn $
 // 
 // changes from SOLEIL : 
 //	
-
 // Revision 1.3  2003/10/08 14:27:01  perez
 // Fix bugs of strlen() on binary data
 // Move from cout to logging
@@ -40,6 +39,15 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // Revision 1.0  2001/11/26 14:38:12  perez
 // Initial Revision (ported to TANGO2)
+//
+//
+// changes from ELETTRA :
+//
+// Revision 1.4  2004/02/27 10:50:01  gaio
+//  Add DevSerReadRetry() command
+//  Add WriteRead support for all reading modes
+//
+//
 //
 //
 // copyleft :     European Synchrotron Radiation Facility
@@ -81,6 +89,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //	DevSerSetStopbit	|	dev_ser_set_stopbit()
 //	DevSerSetBaudrate	|	dev_ser_set_baudrate()
 //	DevSerSetNewline	|	dev_ser_set_newline()
+//	DevSerReadRetry	|	dev_ser_read_retry()
 //
 //===================================================================
 
@@ -420,7 +429,6 @@ Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 	//	Add your own code to control device here
 	DEBUG_STREAM << "Serial::dev_ser_write_string(): writing: " << argin << endl;
 	
-	
 #ifdef __linux
 	nchar = write(
         this->serialdevice.serialout,
@@ -656,7 +664,6 @@ void Serial::dev_ser_set_timeout(Tango::DevShort argin)
 	argin_array.length(2);
 	argin_array[0] = SL_TIMEOUT;
 	argin_array[1] = argin;
-
 	try
 	{
 		// now do the serial line real initialisation 
@@ -931,7 +938,7 @@ void Serial::dev_ser_set_parameter(const Tango::DevVarLongArray *argin)
  *	Read a string of characters, the type of read is specified in the
  *	input parameter SL_RAW SL_NCHAR SL_LINE
  *
- * @param	argin	type of read SL_RAW SL_NCHAR SL_LINE
+ * @param	argin	type of read SL_RAW SL_NCHAR SL_LINE SL_RETRY
  * @return	String read
  *
  */
@@ -940,6 +947,7 @@ Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
 {
  long              read_type;
  long              nchar;
+ long              retry; 
  Tango::DevString  argout;
  char              tab[]="Serial::dev_ser_read_string(): ";
 
@@ -962,6 +970,12 @@ Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
 			INFO_STREAM << tab << "SL_LINE" << endl;
 			argout = line_read_string();
 			break;
+		case SL_RETRY :
+			retry = argin >> 8;
+			INFO_STREAM << tab << "SL_RETRY" << endl;
+			argout = retry_read_string(retry);
+			break;
+
 
 		default :
 			TangoSys_MemStream out_stream;
@@ -1001,6 +1015,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
  Tango::DevString	string_argout;
  long				read_type;
  long				nchar;
+ long				retry;
  char				tab[]="Serial::dev_ser_read_char(): ";
 
  INFO_STREAM << tab << "entering... !" << endl;
@@ -1023,10 +1038,14 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
         INFO_STREAM << tab << "SL_LINE" << endl;
         string_argout = line_read_string();
         break;
-
+  case SL_RETRY :
+		retry = argin >> 8;
+        INFO_STREAM << tab << "SL_RETRY retry = " << retry << endl;
+        string_argout = retry_read_string(retry);
+        break;
   default :
         TangoSys_MemStream out_stream;
-        out_stream << "unknown type of read, must be SL_RAW, SL_NCHAR, SL_LINE"
+        out_stream << "unknown type of read, must be SL_RAW, SL_NCHAR, SL_LINE, SL_RETRY"
                    << ends;
 
         ERROR_STREAM << tab << out_stream.str() << endl;
@@ -1211,42 +1230,109 @@ if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
 
 //+------------------------------------------------------------------
 /**
- *	method:	Serial::write_read
+ *	method:	Serial::dev_ser_read_retry
  *
- *	description:	method to execute "WriteRead"
- *	This method permit to send a request to a device throw the serial line and returns the
- *	response of the device.
- *	The commands write and read don't return until they have not finished.
+ *	description:	method to execute "DevSerReadRetry"
+ *	  Read a string from the serialline device in raw mode;
+ *		if first reading attempt successfull, retry to read "nretry" 
+ *    times; if no more data found exit on timeout without error.
+ *	  Useful in case of long strings with no fixed lenght ( > 64 bytes)
+ *		Very unlucky case!!!
  *
- * @param	argin	command to write on the port com
- * @return	response of the device behind the serial line
+ * @param	argin	number of reading retries
+ * @return	pointer to the string read updated
  *
  */
 //+------------------------------------------------------------------
-Tango::DevString Serial::write_read(Tango::DevString argin)
+Tango::DevString Serial::dev_ser_read_retry(Tango::DevLong argin)
 {
 	//	POGO has generated a method core with argout allocation.
 	//	If you would like to use a static reference without copying,
 	//	See "TANGO Device Server Programmer's Manual"
 	//		(chapter : Writing a TANGO DS / Exchanging data)
 	//------------------------------------------------------------
-	//call purge to get a "read message"  coherent with the "write message"
-	 // 2 = Flush the input and output buffer 
-	dev_ser_flush(2);
+	Tango::DevString	argout;
+	
+	DEBUG_STREAM << "Serial::dev_ser_read_retry(): entering... !" << endl;
 
-	// Then write the input message 
-	dev_ser_write_string(argin);
+	//	Add your own code to control device here
+    argout = retry_read_string(argin);
 
-	// take time to breath to avoid 995 error message 
-#ifdef __linux
-	sleep(1);
-#endif
-#ifdef WIN32 
-//	Sleep(1);
-#endif
-
-	return  dev_ser_read_line( );
+	return argout;
 }
 
-}	//	namespace
+//+------------------------------------------------------------------
+/**
+ *	method:	Serial::write_read
+ *
+ *	description:	method to execute "WriteRead"
+ *	This method permit to send a request to a device throw the serial 
+ *	line, select reading mode and returns the response of the device. 
+ *	The command read return until they have not finished or on timeout
+ *
+ * @param	argin reading mode,command to write on the port com
+ * @return	response of the device behind the serial line
+ *
+ */
+//+------------------------------------------------------------------
+Tango::DevString Serial::write_read(const Tango::DevVarLongStringArray *argin)
+{
+	//	POGO has generated a method core with argout allocation.
+	//	If you would like to use a static reference without copying,
+	//	See "TANGO Device Server Programmer's Manual"
+	//		(chapter : Writing a TANGO DS / Exchanging data)
+	//------------------------------------------------------------
+ Tango::DevString	argout;
+ long				read_type;
+ long				nchar;
+ long				retry;
+ char	tab[]="Serial::write_read(): ";
+ 
+ //call purge to get a "read message"  coherent with the "write message"
+ // 2 = Flush the input and output buffer 
+ dev_ser_flush(2);
 
+ // Write input message 
+
+ char * input_string;
+ input_string = (char*) ((*argin).svalue[0]).in();
+
+ dev_ser_write_string(input_string);
+
+ // Reading method (SL_NCHAR, SL_LINE, SL_RETRY)
+ read_type = (*argin).lvalue[0] & 0x000f;
+ 
+ switch (read_type)
+ {
+  case SL_NCHAR :
+		nchar = (*argin).lvalue[0] >> 8;
+        INFO_STREAM << tab << "SL_NCHAR nchar = " << nchar << endl;
+        argout = nchar_read_string(nchar);
+        break;
+  case SL_LINE :
+        INFO_STREAM << tab << "SL_LINE" << endl;
+        argout = line_read_string();
+        break;
+  case SL_RETRY :
+		retry = (*argin).lvalue[0] >> 8;
+        INFO_STREAM << tab << "SL_RETRY retry = " << retry << endl;
+				argout = retry_read_string(retry);
+				break;
+  default :
+        TangoSys_MemStream out_stream;
+        out_stream << "unknown type of read, must be SL_NCHAR, SL_LINE, SL_RETRY"
+                   << ends;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+        Tango::Except::throw_exception(
+               (const char *)"Serial::error_argin",
+               out_stream.str(),
+               (const char *)tab);
+ }
+ 	
+	return argout;
+
+}
+
+
+}	//	namespace
