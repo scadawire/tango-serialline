@@ -1,16 +1,21 @@
 #=============================================================================
 #
-# file :        Makefile.h
+# file :        Makefile
 #
-# description : Include for the EventTester class.
+# description : Include for the Serial class.
 #
 # project :     Makefile to generate a Tango server
 #
-# $Author: xavela $
+# $Author: taurel $
 #
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.1.1.1  2004/10/14 13:10:39  penel
+# Initial Import
+#
+# Revision 1.1  2004/09/29 06:24:30  penel
+# Initial revision
 # Revision 1.3  2004/10/22 14:17:01  xavela
 # xavier : only in win32 part, possibility to open a port COM higher than 9.
 # changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -31,45 +36,58 @@
 #         (c) - Software Engineering Group - ESRF
 #=============================================================================
 #
-linux = 1
 
 ifdef _solaris
 CC = CC
-BIN_DIR = solaris7_CC
+#BIN_DIR = solaris9_CC
+BIN_DIR=$(shell /csadmin/common/scripts/get_os)_CC
 endif
 
 ifdef linux
 CC = c++
 AR = ar
-BIN_DIR = 
+#BIN_DIR = suse82
+BIN_DIR=$(shell /csadmin/common/scripts/get_os)
 endif
 
-TANGO_HOME   =  /usr/local
-INCLUDE_DIRS =  -I$(TANGO_HOME)/include/$(BIN_DIR)	-I.
-LIB_DIRS     =  -L $(TANGO_HOME)/lib/$(BIN_DIR)
+TANGO_HOME   =  /segfs/tango
+CLASSES_HOME = $(TANGO_HOME)/cppserver
+INCLUDE_DIRS =  -I. \
+		-I$(TANGO_HOME)/include/$(BIN_DIR)\
+		-I$(CLASSES_HOME)/include
+		
+LIB_DIRS     =  -L $(TANGO_HOME)/lib/$(BIN_DIR) \
+		-L $(CLASSES_HOME)/lib/$(BIN_DIR)
+
+TARGET_LIB = $(TANGO_HOME)/cppserver/lib/$(BIN_DIR)/libtgclasses.a
 
 ifdef _solaris
 CXXFLAGS =  -mt -D_PTHREADS $(INCLUDE_DIRS)
 LFLAGS =  -g $(LIB_DIRS)  		\
-				-ltango			\
+				-ltango\
 				-llog4tango		\
 				-lomniORB4 		\
 				-lomniDynamic4	\
 				-lomnithread	\
 				-lpthread		\
-				-lposix4 -lsocket -lnsl 
+				-lCOS4			\
+				-ltgclasses		\
+				-lposix4 -lsocket -lnsl
 endif
 
 ifdef linux
 CXXFLAGS =  -g -D_REENTRANT $(INCLUDE_DIRS)
 LFLAGS =  -g $(LIB_DIRS)  		\
-				-ltango			\
+				-ltango\
 				-llog4tango		\
 				-lomniORB4 		\
 				-lomniDynamic4	\
 				-lomnithread	\
+				-lCOS4			\
+				-ltgclasses		\
 				-ldl -lpthread 
 endif
+
 
 
 
@@ -78,6 +96,7 @@ CLASS =	Serial
 SVC_OBJS = 	main.o	\
 		ClassFactory.o	\
 		$(CLASS)Class.o	\
+		$(CLASS)StateMachine.o \
 		$(CLASS).o
 
 SVC_INC = 	$(CLASS)Class.h \
@@ -86,22 +105,29 @@ SVC_INC = 	$(CLASS)Class.h \
 
 %.o: %.cpp $(SVC_INC)
 	$(CC) $(CXXFLAGS) -c $<
+
+class:	$(CLASS)
+
 			
 all: $(CLASS)
 
+	
 $(CLASS):	$(SVC_OBJS)
 	$(CC) $(SVC_OBJS) -o $(CLASS) $(LFLAGS)
 
-event_client:	event_client.o 
-	$(CC) event_client.o -o event_client $(LFLAGS)
-
 clean:
-	rm -f *.o $(CLASS) core
+	rm -f *.o  core
+
+clobber:
+	rm -f *.o $(CLASS) TST/read_pos TST/read_attr core
 	
 install:
 	cp $(CLASS) $(TANGO_HOME)/bin/$(BIN_DIR)
 
-field_install: Serial
-	scp Serial root@eclfba2.ecs:/runtime/control/bin
-
-
+lib:
+	@make no_debug=1
+	cp *.h $(CLASSES_HOME)/include
+	ar rv $(TARGET_LIB)		$(CLASS).o
+	ar rv $(TARGET_LIB)		$(CLASS)Class.o
+	ar rv $(TARGET_LIB)		$(CLASS)StateMachine.o
+	ident  $(TARGET_LIB)

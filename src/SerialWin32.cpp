@@ -755,12 +755,15 @@ COMSTAT		cur_stat;
 	timeout_ms = (unsigned long)((double)serialdevice.timeout);
 	starttime = GetTickCount();
 	int nb_char_available = 0;
-	do
+	int printable_char;
 
+	do
 	{
 		// first get status from comm port : Useful to get coherent Readfile  behaviour
 		ClearCommError(serialdevice.hfile, &cur_error,&cur_stat);
 		nb_char_available= cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING; 
+
+                if (nb_char_available <= 0) Sleep(1);
 
 		/*
 		* Read one char from the serialline with timeout watchdog 
@@ -769,10 +772,17 @@ COMSTAT		cur_stat;
 		{
 			result=ReadFile(serialdevice.hfile,&one_char,bytes_to_read, (DWORD *)&one_byte_read, &osRead) ;
 
-		DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << endl;
-		DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << endl;
+			DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << endl;
+			DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << endl;
+                	printable_char = (int) one_char;
+                	DEBUG_STREAM << "serial_linereadstring: printable char: " << printable_char << endl;
 
-		this->serialdevice.buffer[(this->serialdevice.ncharread++)] = one_char;
+                	this->serialdevice.buffer[(this->serialdevice.ncharread)] = one_char;
+                /*
+                 * VERY STRANGE - for Paragon motor I sometimes read the character 0 which then
+                 * terminates the string - andy.gotz@esrf.fr
+                 */
+                	if (printable_char != 0) this->serialdevice.ncharread++;
 		}
 		ellapsed = GetTickCount() - starttime;
 		

@@ -10,9 +10,9 @@
 //			
 // project :      TANGO Device Server
 //
-// $Author: xavela $
+// $Author: taurel $
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 // $Log: not supported by cvs2svn $
 // Revision 1.3  2004/10/22 14:17:01  xavela
@@ -40,226 +40,445 @@
 #define _SERIALCLASS_H
 
 #include <tango.h>
+#include <Serial.h>
 
 
-namespace Serial
+namespace Serial_ns
 {
-//
-// Define classes for commands
-//
+//=====================================
+//	Define classes for attributes
+//=====================================
+//=========================================
+//	Define classes for commands
+//=========================================
 class DevSerReadRetryCmd : public Tango::Command
 {
 public:
-	DevSerReadRetryCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadRetryCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadRetryCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadRetryCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadRetryCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadRetry_allowed(any);}
 };
+
 
 
 class DevSerSetNewlineCmd : public Tango::Command
 {
 public:
-	DevSerSetNewlineCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetNewlineCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetNewlineCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetNewlineCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetNewlineCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetNewline_allowed(any);}
 };
+
 
 
 class DevSerSetBaudrateCmd : public Tango::Command
 {
 public:
-	DevSerSetBaudrateCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetBaudrateCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetBaudrateCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetBaudrateCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetBaudrateCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetBaudrate_allowed(any);}
 };
+
 
 
 class DevSerSetStopbitCmd : public Tango::Command
 {
 public:
-	DevSerSetStopbitCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetStopbitCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetStopbitCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetStopbitCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetStopbitCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetStopbit_allowed(any);}
 };
+
 
 
 class DevSerSetCharLengthCmd : public Tango::Command
 {
 public:
-	DevSerSetCharLengthCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetCharLengthCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetCharLengthCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetCharLengthCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetCharLengthCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetCharLength_allowed(any);}
 };
+
 
 
 class DevSerSetParityCmd : public Tango::Command
 {
 public:
-	DevSerSetParityCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetParityCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetParityCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetParityCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetParityCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetParity_allowed(any);}
 };
+
 
 
 class DevSerSetTimeoutCmd : public Tango::Command
 {
 public:
-	DevSerSetTimeoutCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetTimeoutCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetTimeoutCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetTimeoutCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetTimeoutCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetTimeout_allowed(any);}
 };
+
 
 
 class DevSerSetParameterCmd : public Tango::Command
 {
 public:
-	DevSerSetParameterCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerSetParameterCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerSetParameterCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetParameterCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerSetParameterCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetParameter_allowed(any);}
 };
+
 
 
 class DevSerFlushCmd : public Tango::Command
 {
 public:
-	DevSerFlushCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerFlushCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerFlushCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerFlushCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerFlushCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerFlush_allowed(any);}
 };
+
 
 
 class DevSerReadLineCmd : public Tango::Command
 {
 public:
-	DevSerReadLineCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadLineCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadLineCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadLineCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadLineCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadLine_allowed(any);}
 };
+
 
 
 class DevSerReadRawCmd : public Tango::Command
 {
 public:
-	DevSerReadRawCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadRawCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadRawCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadRawCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadRawCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadRaw_allowed(any);}
 };
+
 
 
 class DevSerReadNCharCmd : public Tango::Command
 {
 public:
-	DevSerReadNCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadNCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadNCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadNCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadNCharCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadNChar_allowed(any);}
 };
+
 
 
 class DevSerGetNCharCmd : public Tango::Command
 {
 public:
-	DevSerGetNCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerGetNCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerGetNCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerGetNCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerGetNCharCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerGetNChar_allowed(any);}
 };
+
 
 
 class WriteReadCmd : public Tango::Command
 {
 public:
-	WriteReadCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	WriteReadCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	WriteReadCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	WriteReadCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~WriteReadCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_WriteRead_allowed(any);}
 };
+
 
 
 class DevSerReadCharCmd : public Tango::Command
 {
 public:
-	DevSerReadCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadCharCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadChar_allowed(any);}
 };
+
 
 
 class DevSerReadStringCmd : public Tango::Command
 {
 public:
-	DevSerReadStringCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerReadStringCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerReadStringCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadStringCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerReadStringCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadString_allowed(any);}
 };
+
 
 
 class DevSerWriteCharCmd : public Tango::Command
 {
 public:
-	DevSerWriteCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerWriteCharCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerWriteCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerWriteCharCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerWriteCharCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerWriteChar_allowed(any);}
 };
+
 
 
 class DevSerWriteStringCmd : public Tango::Command
 {
 public:
-	DevSerWriteStringCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *, Tango::DispLevel);
-	DevSerWriteStringCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
+	DevSerWriteStringCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerWriteStringCmd(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
 	~DevSerWriteStringCmd() {};
 	
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerWriteString_allowed(any);}
 };
 
 
@@ -276,11 +495,13 @@ public:
 //------------------------------------
 
 public:
+	Tango::DbData	cl_prop;
 
 //	Method prototypes
 	static SerialClass *init(const char *);
 	static SerialClass *instance();
 	~SerialClass();
+	Tango::DbDatum	get_class_property(string &);
 	
 protected:
 	SerialClass(string &);
@@ -293,6 +514,6 @@ private:
 };
 
 
-}	//	namespace Serial
+}	//	namespace Serial_ns
 
 #endif // _SERIALCLASS_H

@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.4 2004-11-02 11:40:23 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.5 2005-03-22 08:02:31 taurel Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,9 +11,9 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: xavela $
+// $Author: taurel $
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 // $Log: not supported by cvs2svn $
 // Revision 1.3  2004/10/22 14:17:01  xavela
@@ -76,33 +76,34 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //	The folowing table gives the correspondance
 //	between commands and method's name.
 //
-//	Command's name	|	Method's name
+//  Command's name       |  Method's name
 //	----------------------------------------
-//	State	|	dev_state()
-//	Status	|	dev_status()
-//	DevSerWriteString	|	dev_ser_write_string()
-//	DevSerWriteChar	|	dev_ser_write_char()
-//	DevSerReadString	|	dev_ser_read_string()
-//	DevSerReadChar	|	dev_ser_read_char()
-//	WriteRead	|	write_read()
-//	DevSerGetNChar	|	dev_ser_get_nchar()
-//	DevSerReadNChar	|	dev_ser_read_nchar()
-//	DevSerReadRaw	|	dev_ser_read_raw()
-//	DevSerReadLine	|	dev_ser_read_line()
-//	DevSerFlush	|	dev_ser_flush()
-//	DevSerSetParameter	|	dev_ser_set_parameter()
-//	DevSerSetTimeout	|	dev_ser_set_timeout()
-//	DevSerSetParity	|	dev_ser_set_parity()
-//	DevSerSetCharLength	|	dev_ser_set_char_length()
-//	DevSerSetStopbit	|	dev_ser_set_stopbit()
-//	DevSerSetBaudrate	|	dev_ser_set_baudrate()
-//	DevSerSetNewline	|	dev_ser_set_newline()
-//	DevSerReadRetry	|	dev_ser_read_retry()
+//  State                |  dev_state()
+//  Status               |  dev_status()
+//  DevSerWriteString    |  dev_ser_write_string()
+//  DevSerWriteChar      |  dev_ser_write_char()
+//  DevSerReadString     |  dev_ser_read_string()
+//  DevSerReadChar       |  dev_ser_read_char()
+//  WriteRead            |  write_read()
+//  DevSerGetNChar       |  dev_ser_get_nchar()
+//  DevSerReadNChar      |  dev_ser_read_nchar()
+//  DevSerReadRaw        |  dev_ser_read_raw()
+//  DevSerReadLine       |  dev_ser_read_line()
+//  DevSerFlush          |  dev_ser_flush()
+//  DevSerSetParameter   |  dev_ser_set_parameter()
+//  DevSerSetTimeout     |  dev_ser_set_timeout()
+//  DevSerSetParity      |  dev_ser_set_parity()
+//  DevSerSetCharLength  |  dev_ser_set_char_length()
+//  DevSerSetStopbit     |  dev_ser_set_stopbit()
+//  DevSerSetBaudrate    |  dev_ser_set_baudrate()
+//  DevSerSetNewline     |  dev_ser_set_newline()
+//  DevSerReadRetry      |  dev_ser_read_retry()
 //
 //===================================================================
 
 #include <tango.h>
 #include <Serial.h>
+#include <SerialClass.h>
 #include <stdio.h>
 #include <errno.h>
 
@@ -114,7 +115,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 #endif
 
 
-namespace Serial
+namespace Serial_ns
 {
 
 #ifdef WIN32
@@ -137,18 +138,18 @@ namespace Serial
 //      - s : Device name 
 //
 //-----------------------------------------------------------------------------
-Serial::Serial(Tango::DeviceClass *cl,string &s):Tango::Device_2Impl(cl,s.c_str())
+Serial::Serial(Tango::DeviceClass *cl,string &s):Tango::Device_3Impl(cl,s.c_str())
 {
 	init_device();
 }
 
-Serial::Serial(Tango::DeviceClass *cl,const char *s):Tango::Device_2Impl(cl,s)
+Serial::Serial(Tango::DeviceClass *cl,const char *s):Tango::Device_3Impl(cl,s)
 {
 	init_device();
 }
 
 Serial::Serial(Tango::DeviceClass *cl,const char *s,const char *d)
-	:Tango::Device_2Impl(cl,s,d)
+	:Tango::Device_3Impl(cl,s,d)
 {
 	init_device();
 }
@@ -186,7 +187,7 @@ char           tab[]="Serial::init_device(): ";
 	serialdevice.null          = 0;
 	serialdevice.backspace     = 0;
 	serialdevice.del           = 0;
-	
+
 	// Read device resources from database
 	serialline   = "";
 	timeout      = -1;
@@ -376,25 +377,86 @@ void Serial::get_device_property()
 	
 	//	Read device properties from database.(Automatic code generation)
 	//-------------------------------------------------------------
-	Tango::DbData	data;
-	data.push_back(Tango::DbDatum("Serialline"));
-	data.push_back(Tango::DbDatum("Timeout"));
-	data.push_back(Tango::DbDatum("Parity"));
-	data.push_back(Tango::DbDatum("Charlength"));
-	data.push_back(Tango::DbDatum("Stopbits"));
-	data.push_back(Tango::DbDatum("Baudrate"));
-	data.push_back(Tango::DbDatum("Newline"));
+	if (Tango::Util::instance()->_UseDb==false)
+		return;
+	Tango::DbData	dev_prop;
+	dev_prop.push_back(Tango::DbDatum("Serialline"));
+	dev_prop.push_back(Tango::DbDatum("Timeout"));
+	dev_prop.push_back(Tango::DbDatum("Parity"));
+	dev_prop.push_back(Tango::DbDatum("Charlength"));
+	dev_prop.push_back(Tango::DbDatum("Stopbits"));
+	dev_prop.push_back(Tango::DbDatum("Baudrate"));
+	dev_prop.push_back(Tango::DbDatum("Newline"));
 
 	//	Call database and extract values
 	//--------------------------------------------
-	get_db_device()->get_property(data);
-	if (data[0].is_empty()==false)	data[0]  >>  serialline;
-	if (data[1].is_empty()==false)	data[1]  >>  timeout;
-	if (data[2].is_empty()==false)	data[2]  >>  parity;
-	if (data[3].is_empty()==false)	data[3]  >>  charlength;
-	if (data[4].is_empty()==false)	data[4]  >>  stopbits;
-	if (data[5].is_empty()==false)	data[5]  >>  baudrate;
-	if (data[6].is_empty()==false)	data[6]  >>  newline;
+	get_db_device()->get_property(dev_prop);
+	SerialClass	*ds_class =
+		(static_cast<SerialClass *>(get_device_class()));
+	int	i = -1;
+	//	Extract Serialline value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  serialline;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  serialline;
+	}
+
+	//	Extract Timeout value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  timeout;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  timeout;
+	}
+
+	//	Extract Parity value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  parity;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  parity;
+	}
+
+	//	Extract Charlength value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  charlength;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  charlength;
+	}
+
+	//	Extract Stopbits value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  stopbits;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  stopbits;
+	}
+
+	//	Extract Baudrate value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  baudrate;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  baudrate;
+	}
+
+	//	Extract Newline value
+	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  newline;
+	else
+	{
+		//	Try to get value from class property
+		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  newline;
+	}
+
 
 
 	//	End of Automatic code generation
@@ -946,7 +1008,7 @@ void Serial::dev_ser_set_parameter(const Tango::DevVarLongArray *argin)
  *	Read a string of characters, the type of read is specified in the
  *	input parameter SL_RAW SL_NCHAR SL_LINE
  *
- * @param	argin	type of read SL_RAW SL_NCHAR SL_LINE SL_RETRY
+ * @param	argin	type of read SL_RAW SL_NCHAR SL_LINE
  * @return	String read
  *
  */
@@ -1123,14 +1185,13 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
   os.seekp(0);
   os.seekg(0);
  }
-
- //- To avoid any memory leaks !
- if(string_argout)
+ 
+//- To avoid any memory leaks !
+ if (string_argout)
  {
-	 delete [] string_argout;
-	 string_argout = 0;
+ 	delete [] string_argout;
+	string_argout = 0;
  }
-
 
 	return argout;
 }
@@ -1184,7 +1245,8 @@ void Serial::dev_ser_flush(Tango::DevLong argin)
  if((argin == 1) || (argin == 2))
  {
 	#ifdef WIN32
-		 PurgeComm( serialdevice.hfile, PURGE_TXABORT | PURGE_TXCLEAR );
+		 PurgeComm( serialdevice.hfile, PURGE_TXCLEAR | PURGE_TXABORT);
+
 	#endif
 	#ifdef __linux
 		 tcflush(this->serialdevice.serialin, TCOFLUSH);
@@ -1249,11 +1311,9 @@ if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
  *	method:	Serial::dev_ser_read_retry
  *
  *	description:	method to execute "DevSerReadRetry"
- *	  Read a string from the serialline device in raw mode;
- *		if first reading attempt successfull, retry to read "nretry" 
- *    times; if no more data found exit on timeout without error.
- *	  Useful in case of long strings with no fixed lenght ( > 64 bytes)
- *		Very unlucky case!!!
+ *	read a string from the serialline device in mode raw (no end
+ *	of string expected, just empty the entire serialline receiving buffer).
+ *	If read successfull, read again "nretry" times.
  *
  * @param	argin	number of reading retries
  * @return	pointer to the string read updated
@@ -1282,11 +1342,11 @@ Tango::DevString Serial::dev_ser_read_retry(Tango::DevLong argin)
  *	method:	Serial::write_read
  *
  *	description:	method to execute "WriteRead"
- *	This method permit to send a request to a device throw the serial 
- *	line, select reading mode and returns the response of the device. 
- *	The command read return until they have not finished or on timeout
+ *	This method permit to send a request to a device throw the serial line and returns the
+ *	response of the device.
+ *	The commands write and read don't return until they have not finished.
  *
- * @param	argin reading mode,command to write on the port com
+ * @param	argin	type of reading strategy(RAW,NCHAR..),command to write on the port com
  * @return	response of the device behind the serial line
  *
  */

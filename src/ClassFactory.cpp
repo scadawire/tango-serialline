@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.4 2004-11-02 11:40:23 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.5 2005-03-22 08:02:30 taurel Exp $";
 
 //+=============================================================================
 
@@ -22,15 +22,21 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //
 
-// $Author: xavela $
+// $Author: taurel $
 
 //
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 //
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2004/11/02 11:40:23  xavela
+// xavier :
+// in Serial.cpp :
+// add a delete to avoid memory leaks in Serial::Dev_Ser_Read_Char method.
+// add, in Serial::Dev_Ser_Flush, | PURGE_RXABORT and | PURGE_TXABORT for the Win32 part.
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -107,9 +113,9 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
  *
 
- * @author	$Author: xavela $
+ * @author	$Author: taurel $
 
- * @version	$Revision: 1.4 $ $
+ * @version	$Revision: 1.5 $ $
 
  */
 
@@ -121,7 +127,7 @@ void Tango::DServer::class_factory()
 
 
 
-	add_class(Serial::SerialClass::init("Serial"));
+	add_class(Serial_ns::SerialClass::init("Serial"));
 
 
 

@@ -38,11 +38,13 @@ LISTEOBJ = \
    $(OBJDIR)\$(device_server).OBJ\
    $(OBJDIR)\ClassFactory.OBJ\
    $(OBJDIR)\main.OBJ\
+   $(OBJDIR)\$(device_server)StateMachine.OBJ\
    $(OBJDIR)\$(device_server)Class.OBJ
 
 SRCS		=    \
     $(device_server).CPP\
    ClassFactory.CPP\
+   $(device_server)StateMachine.CPP\
    main.CPP \
    $(device_server)Class.CPP
     

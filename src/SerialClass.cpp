@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.4 2004-11-02 11:40:23 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.5 2005-03-22 08:02:31 taurel Exp $";
 //+=============================================================================
 //
 // file :        SerialClass.cpp
@@ -10,9 +10,9 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :     TANGO Device Server
 //
-// $Author: xavela $
+// $Author: taurel $
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 // $Log: not supported by cvs2svn $
 // Revision 1.3  2004/10/22 14:17:01  xavela
@@ -43,68 +43,8 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 #include <SerialClass.h>
 
 
-namespace Serial
+namespace Serial_ns
 {
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadRetryCmd::DevSerReadRetryCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadRetryCmd::DevSerReadRetryCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadRetryCmd::DevSerReadRetryCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadRetryCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadRetryCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
-
 //+----------------------------------------------------------------------------
 //
 // method : 		DevSerReadRetryCmd::execute()
@@ -121,73 +61,13 @@ bool DevSerReadRetryCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any 
 CORBA::Any *DevSerReadRetryCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadRetryCmd::execute(): arrived" << endl;
 
 	Tango::DevLong	argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_retry(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetNewlineCmd::DevSerSetNewlineCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetNewlineCmd::DevSerSetNewlineCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetNewlineCmd::DevSerSetNewlineCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetNewlineCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetNewlineCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -205,7 +85,7 @@ bool DevSerSetNewlineCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any
 CORBA::Any *DevSerSetNewlineCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetNewlineCmd::execute(): arrived" << endl;
 
 	Tango::DevShort	argin;
 	extract(in_any, argin);
@@ -213,66 +93,6 @@ CORBA::Any *DevSerSetNewlineCmd::execute(Tango::DeviceImpl *device,const CORBA::
 	((static_cast<Serial *>(device))->dev_ser_set_newline(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetBaudrateCmd::DevSerSetBaudrateCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetBaudrateCmd::DevSerSetBaudrateCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetBaudrateCmd::DevSerSetBaudrateCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetBaudrateCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetBaudrateCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -290,7 +110,7 @@ bool DevSerSetBaudrateCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::An
 CORBA::Any *DevSerSetBaudrateCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetBaudrateCmd::execute(): arrived" << endl;
 
 	Tango::DevULong	argin;
 	extract(in_any, argin);
@@ -298,66 +118,6 @@ CORBA::Any *DevSerSetBaudrateCmd::execute(Tango::DeviceImpl *device,const CORBA:
 	((static_cast<Serial *>(device))->dev_ser_set_baudrate(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetStopbitCmd::DevSerSetStopbitCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetStopbitCmd::DevSerSetStopbitCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetStopbitCmd::DevSerSetStopbitCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetStopbitCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetStopbitCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -375,7 +135,7 @@ bool DevSerSetStopbitCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any
 CORBA::Any *DevSerSetStopbitCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetStopbitCmd::execute(): arrived" << endl;
 
 	Tango::DevShort	argin;
 	extract(in_any, argin);
@@ -383,66 +143,6 @@ CORBA::Any *DevSerSetStopbitCmd::execute(Tango::DeviceImpl *device,const CORBA::
 	((static_cast<Serial *>(device))->dev_ser_set_stopbit(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetCharLengthCmd::DevSerSetCharLengthCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetCharLengthCmd::DevSerSetCharLengthCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetCharLengthCmd::DevSerSetCharLengthCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetCharLengthCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetCharLengthCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -460,7 +160,7 @@ bool DevSerSetCharLengthCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::
 CORBA::Any *DevSerSetCharLengthCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetCharLengthCmd::execute(): arrived" << endl;
 
 	Tango::DevShort	argin;
 	extract(in_any, argin);
@@ -468,66 +168,6 @@ CORBA::Any *DevSerSetCharLengthCmd::execute(Tango::DeviceImpl *device,const CORB
 	((static_cast<Serial *>(device))->dev_ser_set_char_length(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetParityCmd::DevSerSetParityCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetParityCmd::DevSerSetParityCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetParityCmd::DevSerSetParityCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetParityCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetParityCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -545,7 +185,7 @@ bool DevSerSetParityCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any 
 CORBA::Any *DevSerSetParityCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetParityCmd::execute(): arrived" << endl;
 
 	Tango::DevShort	argin;
 	extract(in_any, argin);
@@ -553,66 +193,6 @@ CORBA::Any *DevSerSetParityCmd::execute(Tango::DeviceImpl *device,const CORBA::A
 	((static_cast<Serial *>(device))->dev_ser_set_parity(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetTimeoutCmd::DevSerSetTimeoutCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetTimeoutCmd::DevSerSetTimeoutCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetTimeoutCmd::DevSerSetTimeoutCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetTimeoutCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetTimeoutCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -630,7 +210,7 @@ bool DevSerSetTimeoutCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any
 CORBA::Any *DevSerSetTimeoutCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetTimeoutCmd::execute(): arrived" << endl;
 
 	Tango::DevShort	argin;
 	extract(in_any, argin);
@@ -638,66 +218,6 @@ CORBA::Any *DevSerSetTimeoutCmd::execute(Tango::DeviceImpl *device,const CORBA::
 	((static_cast<Serial *>(device))->dev_ser_set_timeout(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadLineCmd::DevSerReadLineCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadLineCmd::DevSerReadLineCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadLineCmd::DevSerReadLineCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadLineCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadLineCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -715,70 +235,10 @@ bool DevSerReadLineCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &
 CORBA::Any *DevSerReadLineCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadLineCmd::execute(): arrived" << endl;
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_line());
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadRawCmd::DevSerReadRawCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadRawCmd::DevSerReadRawCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadRawCmd::DevSerReadRawCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadRawCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadRawCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -796,70 +256,10 @@ bool DevSerReadRawCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &i
 CORBA::Any *DevSerReadRawCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadRawCmd::execute(): arrived" << endl;
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_raw());
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadNCharCmd::DevSerReadNCharCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadNCharCmd::DevSerReadNCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadNCharCmd::DevSerReadNCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadNCharCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadNCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -877,73 +277,13 @@ bool DevSerReadNCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any 
 CORBA::Any *DevSerReadNCharCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadNCharCmd::execute(): arrived" << endl;
 
 	Tango::DevLong	argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_nchar(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		WriteReadCmd::WriteReadCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-WriteReadCmd::WriteReadCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-WriteReadCmd::WriteReadCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		WriteReadCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool WriteReadCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -961,73 +301,13 @@ bool WriteReadCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_an
 CORBA::Any *WriteReadCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "WriteReadCmd::execute(): arrived" << endl;
 
 	const Tango::DevVarLongStringArray	*argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->write_read(argin));
 }
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerWriteStringCmd::DevSerWriteStringCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerWriteStringCmd::DevSerWriteStringCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerWriteStringCmd::DevSerWriteStringCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerWriteStringCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerWriteStringCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
 
 
 
@@ -1047,73 +327,13 @@ bool DevSerWriteStringCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::An
 CORBA::Any *DevSerWriteStringCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerWriteStringCmd::execute(): arrived" << endl;
 
 	Tango::DevString	argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_write_string(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerWriteCharCmd::DevSerWriteCharCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerWriteCharCmd::DevSerWriteCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerWriteCharCmd::DevSerWriteCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerWriteCharCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerWriteCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1131,73 +351,13 @@ bool DevSerWriteCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any 
 CORBA::Any *DevSerWriteCharCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerWriteCharCmd::execute(): arrived" << endl;
 
 	const Tango::DevVarCharArray	*argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_write_char(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetParameterCmd::DevSerSetParameterCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerSetParameterCmd::DevSerSetParameterCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerSetParameterCmd::DevSerSetParameterCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerSetParameterCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerSetParameterCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1215,7 +375,7 @@ bool DevSerSetParameterCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::A
 CORBA::Any *DevSerSetParameterCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerSetParameterCmd::execute(): arrived" << endl;
 
 	const Tango::DevVarLongArray	*argin;
 	extract(in_any, argin);
@@ -1223,66 +383,6 @@ CORBA::Any *DevSerSetParameterCmd::execute(Tango::DeviceImpl *device,const CORBA
 	((static_cast<Serial *>(device))->dev_ser_set_parameter(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerFlushCmd::DevSerFlushCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerFlushCmd::DevSerFlushCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerFlushCmd::DevSerFlushCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerFlushCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerFlushCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1300,7 +400,7 @@ bool DevSerFlushCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_
 CORBA::Any *DevSerFlushCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerFlushCmd::execute(): arrived" << endl;
 
 	Tango::DevLong	argin;
 	extract(in_any, argin);
@@ -1308,66 +408,6 @@ CORBA::Any *DevSerFlushCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &
 	((static_cast<Serial *>(device))->dev_ser_flush(argin));
 	return new CORBA::Any();
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadStringCmd::DevSerReadStringCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadStringCmd::DevSerReadStringCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadStringCmd::DevSerReadStringCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadStringCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadStringCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1385,73 +425,13 @@ bool DevSerReadStringCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any
 CORBA::Any *DevSerReadStringCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadStringCmd::execute(): arrived" << endl;
 
 	Tango::DevLong	argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_string(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadCharCmd::DevSerReadCharCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerReadCharCmd::DevSerReadCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerReadCharCmd::DevSerReadCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerReadCharCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerReadCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1469,73 +449,13 @@ bool DevSerReadCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &
 CORBA::Any *DevSerReadCharCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerReadCharCmd::execute(): arrived" << endl;
 
 	Tango::DevLong	argin;
 	extract(in_any, argin);
 
 	return insert((static_cast<Serial *>(device))->dev_ser_read_char(argin));
 }
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerGetNCharCmd::DevSerGetNCharCmd()
-// 
-// description : 	constructor for the command of the Serial.
-//
-// In : - name : The command name
-//		- in : The input parameter type
-//		- out : The output parameter type
-//		- in_desc : The input parameter description
-//		- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-DevSerGetNCharCmd::DevSerGetNCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out,
-								const char		*in_desc,
-				       			const char		*out_desc,
-								Tango::DispLevel level)
-:Command(name,in,out,in_desc,out_desc, level)
-{
-}
-//
-//	Constructor without in/out parameters description
-//
-DevSerGetNCharCmd::DevSerGetNCharCmd(	const char		*name,
-								Tango::CmdArgType in,
-				       			Tango::CmdArgType out)
-:Command(name,in,out)
-{
-}
-
-
-
-
-//+----------------------------------------------------------------------------
-//
-// method : 		DevSerGetNCharCmd::is_allowed()
-// 
-// description : 	method to test whether command is allowed or not in this
-//			state. In this case, the command is allowed only if
-//			the device is in ON state
-//
-// in : - device : The device on which the command must be excuted
-//		- in_any : The command input data
-//
-// returns :	boolean - true == is allowed , false == not allowed
-//
-//-----------------------------------------------------------------------------
-bool DevSerGetNCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &in_any)
-{
-		//	End of Generated Code
-
-		//	Re-Start of Generated Code
-		return true;
-}
-
-
-
 
 //+----------------------------------------------------------------------------
 //
@@ -1553,11 +473,10 @@ bool DevSerGetNCharCmd::is_allowed(Tango::DeviceImpl *device, const CORBA::Any &
 CORBA::Any *DevSerGetNCharCmd::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
 {
 
-	cout2 << "DevTemplateCmd::execute(): arrived" << endl;
+	cout2 << "DevSerGetNCharCmd::execute(): arrived" << endl;
 
 	return insert((static_cast<Serial *>(device))->dev_ser_get_nchar());
 }
-
 
 //
 //----------------------------------------------------------------
@@ -1735,11 +654,28 @@ void SerialClass::command_factory()
 		Tango::OPERATOR));
 
 	//	add polling if any
-	for (int i=0 ; i<command_list.size(); i++)
+	for (unsigned int i=0 ; i<command_list.size(); i++)
 	{
 	}
 }
 
+//+----------------------------------------------------------------------------
+//
+// method : 		SerialClass::get_class_property
+// 
+// description : 	Get the class property for specified name.
+//
+// in :		string	name : The property name
+//
+//+----------------------------------------------------------------------------
+Tango::DbDatum SerialClass::get_class_property(string &name)
+{
+	for (int i=0 ; i<cl_prop.size() ; i++)
+		if (cl_prop[i].name == name)
+			return cl_prop[i];
+	//	if not found, return  an empty DbDatum
+	return Tango::DbDatum(name);
+}
 //+----------------------------------------------------------------------------
 //
 // method : 		SerialClass::device_factory
@@ -1752,23 +688,28 @@ void SerialClass::command_factory()
 //-----------------------------------------------------------------------------
 void SerialClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 {
-	
-	for (long i=0 ; i < devlist_ptr->length() ; i++)
+
+	//	Create all devices.(Automatic code generation)
+	//-------------------------------------------------------------
+	for (unsigned long i=0 ; i < devlist_ptr->length() ; i++)
 	{
 		cout4 << "Device name : " << (*devlist_ptr)[i].in() << endl;
 						
-		// Create device and add it into the device list
+		// Create devices and add it into the device list
 		//----------------------------------------------------
 		device_list.push_back(new Serial(this, (*devlist_ptr)[i]));							 
 
 		// Export device to the outside world
-		// Check before id database used.
+		// Check before if database used.
 		//---------------------------------------------
-		if (Tango::Util::_UseDb == true)
+		if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
 			export_device(device_list.back());
 		else
 			export_device(device_list.back(), (*devlist_ptr)[i]);
 	}
+	//	End of Automatic code generation
+	//-------------------------------------------------------------
+
 }
 //+----------------------------------------------------------------------------
 //
@@ -1791,7 +732,8 @@ void SerialClass::write_class_property()
 	title << str_title;
 
 	Tango::DbDatum	description("Description");
-	string	str_desc("C++ source for the SerialClass");
+	vector<string>	str_desc;
+	str_desc.push_back("C++ source for the SerialClass");
 	description << str_desc;
 	
 	Tango::DbData	data;

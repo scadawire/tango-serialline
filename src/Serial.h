@@ -6,9 +6,9 @@
 //
 // project :	TANGO Device Server
 //
-// $Author: xavela $
+// $Author: taurel $
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 // $Log: not supported by cvs2svn $
 // Revision 1.3  2004/10/22 14:17:01  xavela
@@ -65,8 +65,8 @@
 //using namespace Tango;
 
 /**
- * @author	$Author: xavela $
- * @version	$Revision: 1.4 $ $
+ * @author	$Author: taurel $
+ * @version	$Revision: 1.5 $ $
  */
 
 
@@ -153,7 +153,7 @@ unsigned long  baudrate;    /* baud rate */
 #define SL_NEWLINE    8 /* new line character parameter */
 
 
-namespace Serial
+namespace Serial_ns
 {
 
 /**
@@ -166,7 +166,7 @@ namespace Serial
  */
 
 
-class Serial: public Tango::Device_2Impl
+class Serial: public Tango::Device_3Impl
 {
 public :
 	//	Add your own data members here
@@ -227,14 +227,14 @@ public :
  *	@param cl	Class.
  *	@param s 	Device Name
  */
-	Serial(Tango::DeviceClass *,string &);
+	Serial(Tango::DeviceClass *cl,string &s);
 /**
  * Constructs a newly allocated Command object.
  *
  *	@param cl	Class.
  *	@param s 	Device Name
  */
-	Serial(Tango::DeviceClass *,const char *);
+	Serial(Tango::DeviceClass *cl,const char *s);
 /**
  * Constructs a newly allocated Command object.
  *
@@ -242,7 +242,7 @@ public :
  *	@param s 	Device name
  *	@param d	Device description.
  */
-	Serial(Tango::DeviceClass *,const char *,const char *);
+	Serial(Tango::DeviceClass *cl,const char *s,const char *d);
 //@}
 
 /**@name Destructor
@@ -278,8 +278,79 @@ public :
 
 //@{
 /**
- * Command to read the device status.
- *	The method dev_status() override a DeviceImpl class virtual method.
+ *	Execution allowed for DevSerWriteString command.
+ */
+	virtual bool is_DevSerWriteString_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerWriteChar command.
+ */
+	virtual bool is_DevSerWriteChar_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadString command.
+ */
+	virtual bool is_DevSerReadString_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadChar command.
+ */
+	virtual bool is_DevSerReadChar_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for WriteRead command.
+ */
+	virtual bool is_WriteRead_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerGetNChar command.
+ */
+	virtual bool is_DevSerGetNChar_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadNChar command.
+ */
+	virtual bool is_DevSerReadNChar_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadRaw command.
+ */
+	virtual bool is_DevSerReadRaw_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadLine command.
+ */
+	virtual bool is_DevSerReadLine_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerFlush command.
+ */
+	virtual bool is_DevSerFlush_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetParameter command.
+ */
+	virtual bool is_DevSerSetParameter_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetTimeout command.
+ */
+	virtual bool is_DevSerSetTimeout_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetParity command.
+ */
+	virtual bool is_DevSerSetParity_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetCharLength command.
+ */
+	virtual bool is_DevSerSetCharLength_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetStopbit command.
+ */
+	virtual bool is_DevSerSetStopbit_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetBaudrate command.
+ */
+	virtual bool is_DevSerSetBaudrate_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerSetNewline command.
+ */
+	virtual bool is_DevSerSetNewline_allowed(const CORBA::Any &any);
+/**
+ *	Execution allowed for DevSerReadRetry command.
+ */
+	virtual bool is_DevSerReadRetry_allowed(const CORBA::Any &any);
+/**
+ * This command gets the device status (stored in its <i>device_status</i> data member) and returns it to the caller.
  *	@return	Status descrition
  *	@exception DevFailed
  */
@@ -322,7 +393,7 @@ public :
  * This method permit to send a request to a device throw the serial line and returns the
  *	response of the device.
  *	The commands write and read don't return until they have not finished.
- *	@param	argin	command to write on the port com
+ *	@param	argin	type of reading strategy(RAW,NCHAR..),command to write on the port com
  *	@return	response of the device behind the serial line
  *	@exception DevFailed
  */
