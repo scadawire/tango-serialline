@@ -1,0 +1,19 @@
+Changes from ELETTRA:
+Modifications in SerialLinux.cpp:
+	-Add DevSerReadRetry() in SerialLinux.cpp
+	    description:    
+		     read a string from the serialline device in raw mode,
+				 if first reading attempt successfull, retry to read "nretry" 
+	       times; if no more data found exit on timeout without error.
+		     Useful in case of reading long strings with no fixed lenght 
+				 (ex. serialline hwfifo size < 64 bytes) 
+				 Very unlucky case!!!
+	       The maximum number of characters that can be read is
+		     SL_MAXSTRING.
+
+Modification in Serial.cpp:
+	- Added dev_ser_read_retry()
+	- Added retry method (SL_RETRY) to write_read(), dev_ser_read_char() and 
+		dev_ser_read_string() 
+  - write_read support for all readings modes (SL_NCHAR,SL_LINE,SL_RETRY)
+	  (SL_RAW is equal to SL_RETRY with "nretry" set to 0) (see Serial.h)
