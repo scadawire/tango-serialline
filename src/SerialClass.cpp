@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.2 2004-06-30 09:22:48 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.3 2004-10-22 14:17:01 xavela Exp $";
 //+=============================================================================
 //
 // file :        SerialClass.cpp
@@ -12,9 +12,13 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // $Author: xavela $
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2004/06/30 09:22:48  xavela
+// xavier : ajout de la methode dev_ser_read_nretry()
+// pour la partie win32
+//
 //
 // copyleft :   European Synchrotron Radiation Facility
 //              BP 220, Grenoble 38043

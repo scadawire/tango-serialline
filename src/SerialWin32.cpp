@@ -330,11 +330,31 @@ COMMTIMEOUTS	comm_timeouts;
 //+------------------------------------------------------------------
 void Serial::open_desc()
 {
+
+	std::string port_to_open;
+
+	//- Init the string port_to_open
+	port_to_open.erase();
+	port_to_open = "\\\\.\\";
+
+//- CAUTION : 
+//-----------
+	/*	Using COM ports above COM9 : */
+	//- COM ports above COM9 cannot be opened using the regular notation, 
+	//-		but it requires a more cryptic syntax (that can also be used for the other COM-ports. 
+	//-		The syntax used for these ports is \\.\COMxx (where xx specifies the port number). 
+	//-		Open COM14 will look like this in code: serial.Open(_T("\\\\.\\COM14"),0,0,false);
+	//- This is described in more detail in the Microsoft Knowledge Base in article Q115831 
+	//- Check the following url for more advice : http://support.microsoft.com/kb/q115831/
+
+	//- The following syntax permits to open more than 9 serial ports
+	strcat((char*)port_to_open.c_str(), serialdevice.serialline);
+
 	/*
 	* Open the serialline (communication device for Windows)
 	*/
 	serialdevice.hfile = CreateFile(
-		  serialdevice.serialline,
+		  port_to_open.c_str(),
 		  GENERIC_READ | GENERIC_WRITE,
 		  0,                     // no sharing
 		  NULL,                  // no security attrs
@@ -345,13 +365,14 @@ void Serial::open_desc()
 	if (serialdevice.hfile == INVALID_HANDLE_VALUE)
 	{
   
+	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << endl ;
 	  Tango::Except::throw_exception(
 		  (const char *) "Serial",
 		  (const char *) "Error opening descriptor file",
 		  (const char *) "Serial::open_desc_win32");
   
 	}
-	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened" << endl ;
+	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened = " << serialdevice.serialline << endl ;
   
 }
 	  

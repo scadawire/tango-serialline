@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.2 2004-06-30 09:22:48 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.3 2004-10-22 14:17:01 xavela Exp $";
 
 //+=============================================================================
 
@@ -26,11 +26,15 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 //
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2004/06/30 09:22:48  xavela
+// xavier : ajout de la methode dev_ser_read_nretry()
+// pour la partie win32
+//
 // Revision 1.1.1.1  2004/04/07 14:30:54  syldup
 // initial import
 //
@@ -101,7 +105,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
  * @author	$Author: xavela $
 
- * @version	$Revision: 1.2 $ $
+ * @version	$Revision: 1.3 $ $
 
  */
 

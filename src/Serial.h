@@ -8,9 +8,13 @@
 //
 // $Author: xavela $
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2004/06/30 09:22:48  xavela
+// xavier : ajout de la methode dev_ser_read_nretry()
+// pour la partie win32
+//
 // Revision 1.3  2003/10/08 14:27:01  perez
 // Fix bugs of strlen() on binary data
 // Move from cout to logging
@@ -58,7 +62,7 @@
 
 /**
  * @author	$Author: xavela $
- * @version	$Revision: 1.2 $ $
+ * @version	$Revision: 1.3 $ $
  */
 
 

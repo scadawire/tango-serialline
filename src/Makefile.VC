@@ -21,7 +21,7 @@ LIBUSER=
 #
 # ------------------Fin des modifications pour le end user -------------------------------------
 #
-make_dir=$(TANGO_WIN32_ROOT)\env\
+make_dir=$(SOLEIL_ROOT)\env\
 
 
 #  Les définitions communes à tous les DeviceServeurs
