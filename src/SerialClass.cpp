@@ -1,4 +1,14 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.5 2005-03-22 08:02:31 taurel Exp $";
+
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.6 2005-05-12 08:24:49 xavela Exp $";
+
+static const char *TagName = "$Name: not supported by cvs2svn $";
+
+static const char *FileName= "$Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v $"; 
+
+static const char *HttpServer= "http://controle/DeviceServer/doc/";
+
+static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $"; 
+
 //+=============================================================================
 //
 // file :        SerialClass.cpp
@@ -10,11 +20,16 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :     TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2005/03/22 08:02:31  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -736,13 +751,58 @@ void SerialClass::write_class_property()
 	str_desc.push_back("C++ source for the SerialClass");
 	description << str_desc;
 	
-	Tango::DbData	data;
-	data.push_back(title);
-	data.push_back(description);
+		// Use the doc_url field to store all information 
+		// on the server version and CVS 
+		string::size_type pos, len; 
+		
+		// 1) Manage module name  
+		//  get rid of the $RCSfile:  prefix and of Class.cpp suffix 
+		string classname = RCSfile;
+		
+		pos = classname.find("$RCSfile: ");
+		len = classname.length();
+		
+		if (pos != string::npos) 
+			classname= classname.substr(pos+10, len- pos-10); 
 
-	//	Call database and and values
-	//--------------------------------------------
-	get_db_class()->put_property(data);
+		pos = classname.find ("Class.cpp",0);
+		if (pos != string::npos) 
+			classname=classname.substr(0,pos);
+		
+		// 2)  Manage version number with SOLEIL CVS rules 
+		// tag name is in the form : release_1_0 ==> transform it to 1.0
+		// 
+		string version ; 
+		string str_TagName=string(TagName); 
+		
+		pos = str_TagName.find_first_of("_",0); 
+		if (pos != string::npos) 
+			version= str_TagName.substr(pos+1, 3);
+
+		pos = version.find_first_of("_",0); 
+		if (pos != string::npos) 
+			version[pos] = '.';
+
+		
+	//  Store all info in the str_url property		
+		
+		string	str_url=  "Documentation URL = " + string(HttpServer) + classname +"-" + version + "/index.html" + "\n";
+		str_url= str_url + " Version CVS Tag = " + string(TagName)+ "\n"; 
+		str_url= str_url + " CVS location = " + string(FileName)+ "\n"; 
+		
+		Tango::DbDatum	doc_url("doc_url");
+		
+		doc_url << str_url;
+
+		// Push everything in DataBase
+
+		Tango::DbData	data;
+		data.push_back(title);
+		data.push_back(description);
+		data.push_back(doc_url);
+		//	Call database and and values
+		//--------------------------------------------
+		get_db_class()->put_property(data);
 }
 
 }	// namespace
