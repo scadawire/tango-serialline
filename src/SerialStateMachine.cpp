@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialStateMachine.cpp,v 1.1 2005-03-22 08:02:31 taurel Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialStateMachine.cpp,v 1.2 2005-05-31 08:03:41 xavela Exp $";
 //+=============================================================================
 //
 // file :         SerialStateMachine.cpp
@@ -8,11 +8,16 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2005/03/22 08:02:31  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 //
 // copyleft :     European Synchrotron Radiation Facility
 //                BP 220, Grenoble 38043
@@ -299,6 +304,20 @@ bool Serial::is_DevSerSetNewline_allowed(const CORBA::Any &any)
 //
 //-----------------------------------------------------------------------------
 bool Serial::is_DevSerReadRetry_allowed(const CORBA::Any &any)
+{
+		//	End of Generated Code
+
+		//	Re-Start of Generated Code
+	return true;
+}
+//+----------------------------------------------------------------------------
+//
+// method : 		Serial::is_DevSerReadNBinData_allowed
+// 
+// description : 	Execution allowed for DevSerReadNBinData command.
+//
+//-----------------------------------------------------------------------------
+bool Serial::is_DevSerReadNBinData_allowed(const CORBA::Any &any)
 {
 		//	End of Generated Code
 

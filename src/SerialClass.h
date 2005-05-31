@@ -10,11 +10,16 @@
 //			
 // project :      TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2005/03/22 08:02:31  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -51,6 +56,30 @@ namespace Serial_ns
 //=========================================
 //	Define classes for commands
 //=========================================
+class DevSerReadNBinDataClass : public Tango::Command
+{
+public:
+	DevSerReadNBinDataClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerReadNBinDataClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~DevSerReadNBinDataClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerReadNBinData_allowed(any);}
+};
+
+
+
 class DevSerReadRetryCmd : public Tango::Command
 {
 public:
@@ -514,6 +543,6 @@ private:
 };
 
 
-}	//	namespace Serial_ns
+}	//	namespace Serial
 
 #endif // _SERIALCLASS_H

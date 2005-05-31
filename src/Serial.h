@@ -6,11 +6,16 @@
 //
 // project :	TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2005/03/22 08:02:31  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -65,8 +70,8 @@
 //using namespace Tango;
 
 /**
- * @author	$Author: taurel $
- * @version	$Revision: 1.5 $ $
+ * @author	$Author: xavela $
+ * @version	$Revision: 1.6 $ $
  */
 
 
@@ -350,6 +355,10 @@ public :
  */
 	virtual bool is_DevSerReadRetry_allowed(const CORBA::Any &any);
 /**
+ *	Execution allowed for DevSerReadNBinData command.
+ */
+	virtual bool is_DevSerReadNBinData_allowed(const CORBA::Any &any);
+/**
  * This command gets the device status (stored in its <i>device_status</i> data member) and returns it to the caller.
  *	@return	Status descrition
  *	@exception DevFailed
@@ -496,6 +505,16 @@ public :
  *	@exception DevFailed
  */
 	Tango::DevString	dev_ser_read_retry(Tango::DevLong);
+/**
+ * Read the specified number of char from the serial line.
+ *	If the number of caracters is greater than caracters avaiable, this command returns
+ *	all caracters avaiables.
+ *	If there are no characters to be read returns an empty array.
+ *	@param	argin	nb char to read
+ *	@return	array of data
+ *	@exception DevFailed
+ */
+	Tango::DevVarCharArray	*dev_ser_read_nbin_data(Tango::DevLong);
 
 /**
  *	Read the device properties from database

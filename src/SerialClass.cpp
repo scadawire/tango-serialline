@@ -1,5 +1,5 @@
 
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.6 2005-05-12 08:24:49 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.7 2005-05-31 08:03:40 xavela Exp $";
 
 static const char *TagName = "$Name: not supported by cvs2svn $";
 
@@ -22,9 +22,12 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 //
 // $Author: xavela $
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2005/05/12 08:24:49  xavela
+// xavier : add tag in serialClass for command info
+//
 // Revision 1.5  2005/03/22 08:02:31  taurel
 // - Ported to Tango V5
 // - Added small changed from AG in the Windows part (One Sleep to calm down thing and
@@ -60,6 +63,30 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 
 namespace Serial_ns
 {
+//+----------------------------------------------------------------------------
+//
+// method : 		DevSerReadNBinDataClass::execute()
+// 
+// description : 	method to trigger the execution of the command.
+//                PLEASE DO NOT MODIFY this method core without pogo   
+//
+// in : - device : The device on which the command must be excuted
+//		- in_any : The command input data
+//
+// returns : The command output data (packed in the Any object)
+//
+//-----------------------------------------------------------------------------
+CORBA::Any *DevSerReadNBinDataClass::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+{
+
+	cout2 << "DevSerReadNBinDataClass::execute(): arrived" << endl;
+
+	Tango::DevLong	argin;
+	extract(in_any, argin);
+
+	return insert((static_cast<Serial *>(device))->dev_ser_read_nbin_data(argin));
+}
+
 //+----------------------------------------------------------------------------
 //
 // method : 		DevSerReadRetryCmd::execute()
@@ -667,6 +694,11 @@ void SerialClass::command_factory()
 		"number of reading retries",
 		"pointer to the string read updated",
 		Tango::OPERATOR));
+	command_list.push_back(new DevSerReadNBinDataClass("DevSerReadNBinData",
+		Tango::DEV_LONG, Tango::DEVVAR_CHARARRAY,
+		"nb char to read",
+		"array of data",
+		Tango::OPERATOR));
 
 	//	add polling if any
 	for (unsigned int i=0 ; i<command_list.size(); i++)
@@ -726,6 +758,7 @@ void SerialClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 	//-------------------------------------------------------------
 
 }
+
 //+----------------------------------------------------------------------------
 //
 // method : 		SerialClass::write_class_property
@@ -750,7 +783,7 @@ void SerialClass::write_class_property()
 	vector<string>	str_desc;
 	str_desc.push_back("C++ source for the SerialClass");
 	description << str_desc;
-	
+		
 		// Use the doc_url field to store all information 
 		// on the server version and CVS 
 		string::size_type pos, len; 

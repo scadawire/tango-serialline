@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.5 2005-03-22 08:02:31 taurel Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.6 2005-05-31 08:03:40 xavela Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,11 +11,16 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2005/03/22 08:02:31  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -98,6 +103,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //  DevSerSetBaudrate    |  dev_ser_set_baudrate()
 //  DevSerSetNewline     |  dev_ser_set_newline()
 //  DevSerReadRetry      |  dev_ser_read_retry()
+//  DevSerReadNBinData   |  dev_ser_read_nbin_data()
 //
 //===================================================================
 
@@ -1410,5 +1416,50 @@ Tango::DevString Serial::write_read(const Tango::DevVarLongStringArray *argin)
 
 }
 
+
+//+------------------------------------------------------------------
+/**
+ *	method:	Serial::dev_ser_read_nbin_data
+ *
+ *	description:	method to execute "DevSerReadNBinData"
+ *	Read the specified number of char from the serial line.
+ *	If the number of caracters is greater than caracters avaiable, this command returns
+ *	all caracters avaiables.
+ *	If there are no characters to be read returns an empty array.
+ *
+ * @param	argin	nb char to read
+ * @return	array of data
+ *
+ */
+//+------------------------------------------------------------------
+Tango::DevVarCharArray *Serial::dev_ser_read_nbin_data(Tango::DevLong argin)
+{
+	//	POGO has generated a method core with argout allocation.
+	//	If you would like to use a static reference without copying,
+	//	See "TANGO Device Server Programmer's Manual"
+	//		(chapter : Writing a TANGO DS / Exchanging data)
+	//------------------------------------------------------------
+	Tango::DevVarCharArray	*argout  = new Tango::DevVarCharArray();
+	DEBUG_STREAM << "Serial::dev_ser_read_nbin_data(): entering... !" << endl;
+
+	//	Add your own code to control device here
+	
+	//- get the number of chars in the buffer
+	Tango::DevLong number = this->dev_ser_get_nchar();
+	
+	long n = 0;
+	if(argin < number) n = argin;
+	else n = number;
+	
+	//- read the number specified
+	Tango::DevString str = nchar_read_string(n);
+
+	//- copy data
+	argout->length(n);
+	for(int i = 0; i < argout->length(); i++)
+		(*argout)[i] = str[i];
+
+	return argout;
+}
 
 }	//	namespace
