@@ -60,6 +60,7 @@ char			temp[256];
 	oldserialline.charlength = serialdevice.charlength;
 	oldserialline.stopbits   = serialdevice.stopbits;
 	oldserialline.baudrate   = serialdevice.baudrate;
+	oldserialline.newline	 = serialdevice.newline;
 	
 	/*
 	* Get device parameters passed
@@ -273,6 +274,7 @@ DCB		comm_prop;
 	comm_prop.ByteSize = serialdevice.charlength;  // giving bits
 	comm_prop.StopBits = serialdevice.stopbits;    // 0-2=1,1.5,2bit
 	comm_prop.Parity   = serialdevice.parity;      // 0-4=no,odd,even,mark,space
+	comm_prop.EofChar  = serialdevice.newline;     // signal the end of data
   
 
 	/*
@@ -412,7 +414,7 @@ OVERLAPPED	osWrite = {0};
 	* background the write on the SL)
 	* + 1 for the terminator
 	*/
-	str_len = strlen(str) + 1;
+	str_len = strlen(str);
 	if (WriteFile(serialdevice.hfile, str, str_len,( DWORD *)&bytes_written, &osWrite) == false)
 	{
 	  ERROR_STREAM << " String NOT written = " << str << endl;
@@ -448,7 +450,7 @@ OVERLAPPED	osWrite = {0};
 	*/
 	str_len = dvca->length();
 	tmp = new char[str_len+1];
-	::memset(tmp,'\0',str_len);
+	::memset(tmp,'\0',(str_len+1));
 
 	for(int i=0;i<str_len;i++)
 		tmp[i] = (*dvca)[i];
