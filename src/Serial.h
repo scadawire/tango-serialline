@@ -6,11 +6,14 @@
 //
 // project :	TANGO Device Server
 //
-// $Author: xavela $
+// $Author: jensmeyer $
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2005/05/31 08:03:40  xavela
+// xavier : DevSerReadNBinData command added
+//
 // Revision 1.5  2005/03/22 08:02:31  taurel
 // - Ported to Tango V5
 // - Added small changed from AG in the Windows part (One Sleep to calm down thing and
@@ -70,8 +73,8 @@
 //using namespace Tango;
 
 /**
- * @author	$Author: xavela $
- * @version	$Revision: 1.6 $ $
+ * @author	$Author: jensmeyer $
+ * @version	$Revision: 1.7 $ $
  */
 
 
@@ -193,27 +196,31 @@ public :
  */
 //@{
 /**
- *	
+ *	The path and name of the serial line device to be used.
  */
 	string	serialline;
 /**
- *	
+ *	The timout value im ms for for answers of requests send to the serial line.
+ *	This value should be lower than the Tango client server timout value.
  */
 	Tango::DevShort	timeout;
 /**
- *	
+ *	The parity used with the serial line protocol.
+ *	The possibilities are none, even or odd.
  */
 	string	parity;
 /**
- *	
+ *	The character length used with the serial line protocol.
+ *	The possibilities are 8, 7, 6 or 5 bits per character.
  */
 	Tango::DevShort	charlength;
 /**
- *	
+ *	The number of stop bits used with the serial line protocol.
+ *	The possibilities are 1 or 2 stop bits
  */
 	Tango::DevShort	stopbits;
 /**
- *	
+ *	The communication speed in baud used with the serial line protocol.
  */
 	Tango::DevLong	baudrate;
 /**
@@ -360,7 +367,7 @@ public :
 	virtual bool is_DevSerReadNBinData_allowed(const CORBA::Any &any);
 /**
  * This command gets the device status (stored in its <i>device_status</i> data member) and returns it to the caller.
- *	@return	Status descrition
+ *	@return	Status description
  *	@exception DevFailed
  */
 	virtual Tango::ConstDevString	dev_status();

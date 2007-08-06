@@ -1,5 +1,5 @@
 
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.7 2005-05-31 08:03:40 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.8 2007-08-06 15:57:47 jensmeyer Exp $";
 
 static const char *TagName = "$Name: not supported by cvs2svn $";
 
@@ -20,11 +20,14 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 //
 // project :     TANGO Device Server
 //
-// $Author: xavela $
+// $Author: jensmeyer $
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2005/05/31 08:03:40  xavela
+// xavier : DevSerReadNBinData command added
+//
 // Revision 1.6  2005/05/12 08:24:49  xavela
 // xavier : add tag in serialClass for command info
 //
@@ -540,6 +543,8 @@ SerialClass::SerialClass(string &s):DeviceClass(s)
 {
 
 	cout2 << "Entering SerialClass constructor" << endl;
+	set_default_property();
+	get_class_property();
 	write_class_property();
 	
 	cout2 << "Leaving SerialClass constructor" << endl;
@@ -715,13 +720,44 @@ void SerialClass::command_factory()
 // in :		string	name : The property name
 //
 //+----------------------------------------------------------------------------
-Tango::DbDatum SerialClass::get_class_property(string &name)
+Tango::DbDatum SerialClass::get_class_property(string &prop_name)
 {
-	for (int i=0 ; i<cl_prop.size() ; i++)
-		if (cl_prop[i].name == name)
+	for (unsigned int i=0 ; i<cl_prop.size() ; i++)
+		if (cl_prop[i].name == prop_name)
 			return cl_prop[i];
 	//	if not found, return  an empty DbDatum
-	return Tango::DbDatum(name);
+	return Tango::DbDatum(prop_name);
+}
+//+----------------------------------------------------------------------------
+//
+// method : 		SerialClass::get_default_device_property()
+// 
+// description : 	Return the default value for device property.
+//
+//-----------------------------------------------------------------------------
+Tango::DbDatum SerialClass::get_default_device_property(string &prop_name)
+{
+	for (unsigned int i=0 ; i<dev_def_prop.size() ; i++)
+		if (dev_def_prop[i].name == prop_name)
+			return dev_def_prop[i];
+	//	if not found, return  an empty DbDatum
+	return Tango::DbDatum(prop_name);
+}
+
+//+----------------------------------------------------------------------------
+//
+// method : 		SerialClass::get_default_class_property()
+// 
+// description : 	Return the default value for class property.
+//
+//-----------------------------------------------------------------------------
+Tango::DbDatum SerialClass::get_default_class_property(string &prop_name)
+{
+	for (unsigned int i=0 ; i<cl_def_prop.size() ; i++)
+		if (cl_def_prop[i].name == prop_name)
+			return cl_def_prop[i];
+	//	if not found, return  an empty DbDatum
+	return Tango::DbDatum(prop_name);
 }
 //+----------------------------------------------------------------------------
 //
@@ -759,6 +795,161 @@ void SerialClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 
 }
 
+
+
+//+----------------------------------------------------------------------------
+//
+// method : 		SerialClass::get_class_property()
+// 
+// description : 	Read the class properties from database.
+//
+//-----------------------------------------------------------------------------
+void SerialClass::get_class_property()
+{
+	//	Initialize your default values here (if not done with  POGO).
+	//------------------------------------------------------------------
+
+	//	Read class properties from database.(Automatic code generation)
+	//------------------------------------------------------------------
+
+	//	Call database and extract values
+	//--------------------------------------------
+	if (Tango::Util::instance()->_UseDb==true)
+		get_db_class()->get_property(cl_prop);
+	Tango::DbDatum	def_prop;
+	int	i = -1;
+
+
+	//	End of Automatic code generation
+	//------------------------------------------------------------------
+
+}
+
+//+----------------------------------------------------------------------------
+//
+// method : 	SerialClass::set_default_property
+// 
+// description: Set default property (class and device) for wizard.
+//              For each property, add to wizard property name and description
+//              If default value has been set, add it to wizard property and
+//              store it in a DbDatum.
+//
+//-----------------------------------------------------------------------------
+void SerialClass::set_default_property()
+{
+	string	prop_name;
+	string	prop_desc;
+	string	prop_def;
+
+	vector<string>	vect_data;
+	//	Set Default Class Properties
+	//	Set Default Device Properties
+	prop_name = "Serialline";
+	prop_desc = "The path and name of the serial line device to be used.";
+	prop_def  = "/dev/ttyR1";
+	vect_data.clear();
+	vect_data.push_back("/dev/ttyR1");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Timeout";
+	prop_desc = "The timout value im ms for for answers of requests send to the serial line.\nThis value should be lower than the Tango client server timout value.";
+	prop_def  = "100";
+	vect_data.clear();
+	vect_data.push_back("100");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Parity";
+	prop_desc = "The parity used with the serial line protocol.\nThe possibilities are none, even or odd.";
+	prop_def  = "none";
+	vect_data.clear();
+	vect_data.push_back("none");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Charlength";
+	prop_desc = "The character length used with the serial line protocol.\nThe possibilities are 8, 7, 6 or 5 bits per character.";
+	prop_def  = "8";
+	vect_data.clear();
+	vect_data.push_back("8");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Stopbits";
+	prop_desc = "The number of stop bits used with the serial line protocol.\nThe possibilities are 1 or 2 stop bits";
+	prop_def  = "1";
+	vect_data.clear();
+	vect_data.push_back("1");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Baudrate";
+	prop_desc = "The communication speed in baud used with the serial line protocol.";
+	prop_def  = "9600";
+	vect_data.clear();
+	vect_data.push_back("9600");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+	prop_name = "Newline";
+	prop_desc = "End of message Character used in particular by the DevSerReadLine command\nDefault = 13";
+	prop_def  = "13";
+	vect_data.clear();
+	vect_data.push_back("13");
+	if (prop_def.length()>0)
+	{
+		Tango::DbDatum	data(prop_name);
+		data << vect_data ;
+		dev_def_prop.push_back(data);
+		add_wiz_dev_prop(prop_name, prop_desc,  prop_def);
+	}
+	else
+		add_wiz_dev_prop(prop_name, prop_desc);
+
+}
 //+----------------------------------------------------------------------------
 //
 // method : 		SerialClass::write_class_property
@@ -773,69 +964,82 @@ void SerialClass::write_class_property()
 	if (Tango::Util::_UseDb == false)
 		return;
 
-	//	Prepeare DbDatum
-	//--------------------------------------------
+	Tango::DbData	data;
+	string	classname = get_name();
+	string	header;
+	string::size_type	start, end;
+
+	//	Put title
 	Tango::DbDatum	title("ProjectTitle");
 	string	str_title("TANGO Device Server");
 	title << str_title;
+	data.push_back(title);
 
+	//	Put Description
 	Tango::DbDatum	description("Description");
 	vector<string>	str_desc;
 	str_desc.push_back("C++ source for the SerialClass");
 	description << str_desc;
+	data.push_back(description);
 		
-		// Use the doc_url field to store all information 
-		// on the server version and CVS 
-		string::size_type pos, len; 
-		
-		// 1) Manage module name  
-		//  get rid of the $RCSfile:  prefix and of Class.cpp suffix 
-		string classname = RCSfile;
-		
-		pos = classname.find("$RCSfile: ");
-		len = classname.length();
-		
-		if (pos != string::npos) 
-			classname= classname.substr(pos+10, len- pos-10); 
+	//	put cvs location
+	string	rcsId(RcsId);
+	string	filename(classname);
+	start = rcsId.find("/");
+	if (start!=string::npos)
+	{
+		filename += "Class.cpp";
+		end   = rcsId.find(filename);
+		if (end>start)
+		{
+			string	strloc = rcsId.substr(start, end-start);
+			//	Check if specific repository
+			start = strloc.find("/cvsroot/");
+			if (start!=string::npos && start>0)
+			{
+				string	repository = strloc.substr(0, start);
+				if (repository.find("/segfs/")!=string::npos)
+					strloc = "ESRF:" + strloc.substr(start, strloc.length()-start);
+			}
+			Tango::DbDatum	cvs_loc("cvs_location");
+			cvs_loc << strloc;
+			data.push_back(cvs_loc);
+		}
+	}
 
-		pos = classname.find ("Class.cpp",0);
-		if (pos != string::npos) 
-			classname=classname.substr(0,pos);
-		
-		// 2)  Manage version number with SOLEIL CVS rules 
-		// tag name is in the form : release_1_0 ==> transform it to 1.0
-		// 
-		string version ; 
-		string str_TagName=string(TagName); 
-		
-		pos = str_TagName.find_first_of("_",0); 
-		if (pos != string::npos) 
-			version= str_TagName.substr(pos+1, 3);
+	//	Get CVS tag revision
+	string	tagname(TagName);
+	header = "$Name: ";
+	start = header.length();
+	string	endstr(" $");
+	end   = tagname.find(endstr);
+	if (end!=string::npos && end>start)
+	{
+		string	strtag = tagname.substr(start, end-start);
+		Tango::DbDatum	cvs_tag("cvs_tag");
+		cvs_tag << strtag;
+		data.push_back(cvs_tag);
+	}
 
-		pos = version.find_first_of("_",0); 
-		if (pos != string::npos) 
-			version[pos] = '.';
+	//	Get URL location
+	string	httpServ(HttpServer);
+	if (httpServ.length()>0)
+	{
+		Tango::DbDatum	db_doc_url("doc_url");
+		db_doc_url << httpServ;
+		data.push_back(db_doc_url);
+	}
 
-		
-	//  Store all info in the str_url property		
-		
-		string	str_url=  "Documentation URL = " + string(HttpServer) + classname +"-" + version + "/index.html" + "\n";
-		str_url= str_url + " Version CVS Tag = " + string(TagName)+ "\n"; 
-		str_url= str_url + " CVS location = " + string(FileName)+ "\n"; 
-		
-		Tango::DbDatum	doc_url("doc_url");
-		
-		doc_url << str_url;
+	//  Put inheritance
+	Tango::DbDatum	inher_datum("InheritedFrom");
+	vector<string> inheritance;
+	inheritance.push_back("Device_3Impl");
+	inher_datum << inheritance;
+	data.push_back(inher_datum);
 
-		// Push everything in DataBase
-
-		Tango::DbData	data;
-		data.push_back(title);
-		data.push_back(description);
-		data.push_back(doc_url);
-		//	Call database and and values
-		//--------------------------------------------
-		get_db_class()->put_property(data);
+	//	Call database and and values
+	//--------------------------------------------
+	get_db_class()->put_property(data);
 }
 
 }	// namespace

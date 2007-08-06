@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.6 2005-05-31 08:03:40 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.7 2007-08-06 15:57:47 jensmeyer Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,11 +11,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: xavela $
+// $Author: jensmeyer $
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2005/05/31 08:03:40  xavela
+// xavier : DevSerReadNBinData command added
+//
 // Revision 1.5  2005/03/22 08:02:31  taurel
 // - Ported to Tango V5
 // - Added small changed from AG in the Windows part (One Sleep to calm down thing and
@@ -78,7 +81,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //===================================================================
 //
-//	The folowing table gives the correspondance
+//	The following table gives the correspondance
 //	between commands and method's name.
 //
 //  Command's name       |  Method's name
@@ -383,8 +386,6 @@ void Serial::get_device_property()
 	
 	//	Read device properties from database.(Automatic code generation)
 	//-------------------------------------------------------------
-	if (Tango::Util::instance()->_UseDb==false)
-		return;
 	Tango::DbData	dev_prop;
 	dev_prop.push_back(Tango::DbDatum("Serialline"));
 	dev_prop.push_back(Tango::DbDatum("Timeout"));
@@ -396,72 +397,75 @@ void Serial::get_device_property()
 
 	//	Call database and extract values
 	//--------------------------------------------
-	get_db_device()->get_property(dev_prop);
+	if (Tango::Util::instance()->_UseDb==true)
+		get_db_device()->get_property(dev_prop);
+	Tango::DbDatum	def_prop, cl_prop;
 	SerialClass	*ds_class =
 		(static_cast<SerialClass *>(get_device_class()));
 	int	i = -1;
-	//	Extract Serialline value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  serialline;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  serialline;
-	}
 
-	//	Extract Timeout value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  timeout;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  timeout;
-	}
+	//	Try to initialize Serialline from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  serialline;
+	//	Try to initialize Serialline from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  serialline;
+	//	And try to extract Serialline value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  serialline;
 
-	//	Extract Parity value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  parity;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  parity;
-	}
+	//	Try to initialize Timeout from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  timeout;
+	//	Try to initialize Timeout from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  timeout;
+	//	And try to extract Timeout value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  timeout;
 
-	//	Extract Charlength value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  charlength;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  charlength;
-	}
+	//	Try to initialize Parity from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  parity;
+	//	Try to initialize Parity from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  parity;
+	//	And try to extract Parity value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  parity;
 
-	//	Extract Stopbits value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  stopbits;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  stopbits;
-	}
+	//	Try to initialize Charlength from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  charlength;
+	//	Try to initialize Charlength from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  charlength;
+	//	And try to extract Charlength value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  charlength;
 
-	//	Extract Baudrate value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  baudrate;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  baudrate;
-	}
+	//	Try to initialize Stopbits from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  stopbits;
+	//	Try to initialize Stopbits from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  stopbits;
+	//	And try to extract Stopbits value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  stopbits;
 
-	//	Extract Newline value
-	if (dev_prop[++i].is_empty()==false)	dev_prop[i]  >>  newline;
-	else
-	{
-		//	Try to get value from class property
-		Tango::DbDatum	cl_prop = ds_class->get_class_property(dev_prop[i].name);
-		if (cl_prop.is_empty()==false)	cl_prop  >>  newline;
-	}
+	//	Try to initialize Baudrate from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  baudrate;
+	//	Try to initialize Baudrate from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  baudrate;
+	//	And try to extract Baudrate value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  baudrate;
+
+	//	Try to initialize Newline from class property
+	cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+	if (cl_prop.is_empty()==false)	cl_prop  >>  newline;
+	//	Try to initialize Newline from default device value
+	def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+	if (def_prop.is_empty()==false)	def_prop  >>  newline;
+	//	And try to extract Newline value from database
+	if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  newline;
 
 
 

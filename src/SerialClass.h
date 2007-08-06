@@ -10,11 +10,14 @@
 //			
 // project :      TANGO Device Server
 //
-// $Author: xavela $
+// $Author: jensmeyer $
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2005/05/31 08:03:41  xavela
+// xavier : DevSerReadNBinData command added
+//
 // Revision 1.5  2005/03/22 08:02:31  taurel
 // - Ported to Tango V5
 // - Added small changed from AG in the Windows part (One Sleep to calm down thing and
@@ -519,30 +522,37 @@ public:
 class SerialClass : public Tango::DeviceClass
 {
 public:
+//	properties member data
 
 //	add your own data members here
 //------------------------------------
 
 public:
 	Tango::DbData	cl_prop;
+	Tango::DbData	cl_def_prop;
+	Tango::DbData	dev_def_prop;
 
 //	Method prototypes
 	static SerialClass *init(const char *);
 	static SerialClass *instance();
 	~SerialClass();
 	Tango::DbDatum	get_class_property(string &);
+	Tango::DbDatum	get_default_device_property(string &);
+	Tango::DbDatum	get_default_class_property(string &);
 	
 protected:
 	SerialClass(string &);
 	static SerialClass *_instance;
 	void command_factory();
+	void get_class_property();
 	void write_class_property();
+	void set_default_property();
 
 private:
 	void device_factory(const Tango::DevVarStringArray *);
 };
 
 
-}	//	namespace Serial
+}	//	namespace Serial_ns
 
 #endif // _SERIALCLASS_H
