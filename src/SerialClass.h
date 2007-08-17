@@ -12,9 +12,14 @@
 //
 // $Author: jensmeyer $
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2007/08/06 15:57:47  jensmeyer
+// Regenerated the sources with Pogo to add default values and
+// descriptions to the properties.
+// No the Serial class can be used with the set-up wizard.
+//
 // Revision 1.6  2005/05/31 08:03:41  xavela
 // xavier : DevSerReadNBinData command added
 //
@@ -519,7 +524,11 @@ public:
 // The SerialClass singleton definition
 //
 
-class SerialClass : public Tango::DeviceClass
+class
+#ifdef WIN32
+	__declspec(dllexport)
+#endif
+		SerialClass : public Tango::DeviceClass
 {
 public:
 //	properties member data
