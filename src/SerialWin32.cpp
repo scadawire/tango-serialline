@@ -762,12 +762,27 @@ COMSTAT		cur_stat;
 	do
 	{
 		// first get status from comm port : Useful to get coherent Readfile  behaviour
-		ClearCommError(serialdevice.hfile, &cur_error,&cur_stat);
+		if( ClearCommError(serialdevice.hfile, &cur_error,&cur_stat) == FALSE)
+		 {
+			 ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
+			 
+			 Tango::Except::throw_exception(
+				 (const char *)"INTERNAL_ERROR",
+				 (const char*) "ClearCommError : error reading serialline stats",
+				 (const char *)"Serial::line_read_string");
+			 
+		 }
 		nb_char_available= cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING; 
 
-                if (nb_char_available <= 0) Sleep(1);
-
-		/*
+    if (nb_char_available <= 0) 
+    {
+			 ERROR_STREAM << "nchar_read_string: error reading serialline stats : " << nb_char_available << " char(s)" << endl;
+      Tango::Except::throw_exception(
+				 (const char *)"INTERNAL_ERROR",
+				 (const char*) "No data available on the serial input queue !",
+				 (const char *)"Serial::line_read_string");
+         }
+   /*
 		* Read one char from the serialline with timeout watchdog 
 		*/
 		if (nb_char_available > 0)
@@ -777,7 +792,7 @@ COMSTAT		cur_stat;
 			DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << endl;
 			DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << endl;
                 	printable_char = (int) one_char;
-                	DEBUG_STREAM << "serial_linereadstring: printable char: " << printable_char << endl;
+                  INFO_STREAM << "serial_linereadstring: printable char: " << std::fixed << one_char << endl;
 
                 	this->serialdevice.buffer[(this->serialdevice.ncharread)] = one_char;
                 /*
