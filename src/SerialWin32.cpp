@@ -356,7 +356,7 @@ void Serial::open_desc()
 	* Open the serialline (communication device for Windows)
 	*/
 	serialdevice.hfile = CreateFile(
-		  port_to_open.c_str(),
+		  (LPCWSTR)port_to_open.c_str(),
 		  GENERIC_READ | GENERIC_WRITE,
 		  0,                     // no sharing
 		  NULL,                  // no security attrs
@@ -845,7 +845,8 @@ COMSTAT		cur_stat;
 	}
 
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
-	for(int i=0 ; i< this->serialdevice.ncharread ; i++)
+	int i;
+	for(i=0 ; i< this->serialdevice.ncharread ; i++)
 		argout[i] = this->serialdevice.buffer[i];
 
 	// Add string ending char, used only by ser_read_string()
@@ -999,6 +1000,7 @@ OVERLAPPED	osRead = {0};
 	}
 	 
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
+	int i;
 	for(i=0 ; i<this->serialdevice.ncharread ; i++)
 	argout[i] = this->serialdevice.buffer[i];
 
