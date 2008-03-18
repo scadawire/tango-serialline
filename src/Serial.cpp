@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.7 2007-08-06 15:57:47 jensmeyer Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.8 2008-03-18 08:05:37 taurel Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,11 +11,16 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: jensmeyer $
+// $Author: taurel $
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2007/08/06 15:57:47  jensmeyer
+// Regenerated the sources with Pogo to add default values and
+// descriptions to the properties.
+// No the Serial class can be used with the set-up wizard.
+//
 // Revision 1.6  2005/05/31 08:03:40  xavela
 // xavier : DevSerReadNBinData command added
 //
@@ -1462,6 +1467,8 @@ Tango::DevVarCharArray *Serial::dev_ser_read_nbin_data(Tango::DevLong argin)
 	argout->length(n);
 	for(int i = 0; i < argout->length(); i++)
 		(*argout)[i] = str[i];
+
+	delete [] str;
 
 	return argout;
 }
