@@ -737,11 +737,11 @@ DWORD		cur_error;
 COMSTAT		cur_stat;
   
 
-	 //
-	 //first "empty" buffer by null terminating it
-	 //
-	 this->serialdevice.buffer[0] = 0;
-	 this->serialdevice.ncharread = 0;
+	//
+	//first "empty" buffer by null terminating it
+	//
+	this->serialdevice.buffer[0] = 0;
+	this->serialdevice.ncharread = 0;
 
 
 	/*
@@ -763,96 +763,100 @@ COMSTAT		cur_stat;
 	{
 		// first get status from comm port : Useful to get coherent Readfile  behaviour
 		if( ClearCommError(serialdevice.hfile, &cur_error,&cur_stat) == FALSE)
-		 {
-			 ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
-			 
-			 Tango::Except::throw_exception(
-				 (const char *)"INTERNAL_ERROR",
-				 (const char*) "ClearCommError : error reading serialline stats",
-				 (const char *)"Serial::line_read_string");
-			 
-		 }
+		{
+			ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
+			
+			Tango::Except::throw_exception(
+				(const char *)"INTERNAL_ERROR",
+				(const char*) "ClearCommError : error reading serialline stats",
+				(const char *)"Serial::line_read_string");
+			
+		}
 		nb_char_available= cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING; 
-
-    if (nb_char_available <= 0) 
-    {
-			 ERROR_STREAM << "nchar_read_string: error reading serialline stats : " << nb_char_available << " char(s)" << endl;
-      Tango::Except::throw_exception(
-				 (const char *)"INTERNAL_ERROR",
-				 (const char*) "No data available on the serial input queue !",
-				 (const char *)"Serial::line_read_string");
-         }
-   /*
+                
+		//- sleep a little bit ...
+		if (nb_char_available <= 0) Sleep(1);
+		
+		//- ... if no response -> throw
+		if (nb_char_available <= 0) 
+		{
+			ERROR_STREAM << "nchar_read_string: error reading serialline stats : " << nb_char_available << " char(s)" << endl;
+			Tango::Except::throw_exception(
+				(const char *)"INTERNAL_ERROR",
+				(const char*) "No data available on the serial input queue !",
+				(const char *)"Serial::line_read_string");
+		}
+		/*
 		* Read one char from the serialline with timeout watchdog 
 		*/
 		if (nb_char_available > 0)
 		{
 			result=ReadFile(serialdevice.hfile,&one_char,bytes_to_read, (DWORD *)&one_byte_read, &osRead) ;
-
+			
 			DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << endl;
 			DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << endl;
-                	printable_char = (int) one_char;
-                  INFO_STREAM << "serial_linereadstring: printable char: " << std::fixed << one_char << endl;
-
-                	this->serialdevice.buffer[(this->serialdevice.ncharread)] = one_char;
-                /*
-                 * VERY STRANGE - for Paragon motor I sometimes read the character 0 which then
-                 * terminates the string - andy.gotz@esrf.fr
-                 */
-                	if (printable_char != 0) this->serialdevice.ncharread++;
+			printable_char = (int) one_char;
+			INFO_STREAM << "serial_linereadstring: printable char: " << std::fixed << one_char << endl;
+			
+			this->serialdevice.buffer[(this->serialdevice.ncharread)] = one_char;
+			/*
+			* VERY STRANGE - for Paragon motor I sometimes read the character 0 which then
+			* terminates the string - andy.gotz@esrf.fr
+			*/
+			if (printable_char != 0) this->serialdevice.ncharread++;
 		}
 		ellapsed = GetTickCount() - starttime;
 		
 		if(ellapsed < 0)
-		  ellapsed += UINT_MAX;
-
+			ellapsed += UINT_MAX;
+		
 		if (ellapsed > timeout_ms)  
 		{
-		  ERROR_STREAM << "Sortie sur Timeout " << endl;
-		  TIMEOUT = true;
+			ERROR_STREAM << "Sortie sur Timeout " << endl;
+			TIMEOUT = true;
 		}
-
+		
 	}
 	while((one_char != eol_char) &&  !TIMEOUT);
-  
+
 	if(TIMEOUT)
 	{
-	  Tango::Except::throw_exception(
-		  (const char *)"Serial::error_timeend",
-		  (const char *) "timeout waiting for the ended character ",
-		  (const char *)"Serial::line_read_string");
+		Tango::Except::throw_exception(
+			(const char *)"Serial::error_timeend",
+			(const char *) "timeout waiting for the ended character ",
+			(const char *)"Serial::line_read_string");
 	}
 	/*
 	* Don't forget the string ending char
 	*/
 	this->serialdevice.buffer[this->serialdevice.ncharread] = 0;
-  
+
 	// Prepare return buffer (can not return "buffer" directly 
 	// because TANGO desallocate the memory return)
 	argout = new char[this->serialdevice.ncharread + 1];
-  
+
 	if(argout == 0)
 	{
-	  TangoSys_MemStream out_stream;
-	  out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << ends;
-  
-	  FATAL_STREAM << "Serial::line_read_string(): ";
-	  FATAL_STREAM << out_stream.str() << endl;
-	  Tango::Except::throw_exception(
-		  (const char *)"Serial::error_alloc",
-		  out_stream.str(),
-		  (const char *)"Serial::line_read_string");
+		TangoSys_MemStream out_stream;
+		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << ends;
+		
+		FATAL_STREAM << "Serial::line_read_string(): ";
+		FATAL_STREAM << out_stream.str() << endl;
+		Tango::Except::throw_exception(
+			(const char *)"Serial::error_alloc",
+			out_stream.str(),
+			(const char *)"Serial::line_read_string");
 	}
 
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
 	int i;
 	for(i=0 ; i< this->serialdevice.ncharread ; i++)
-		argout[i] = this->serialdevice.buffer[i];
+	argout[i] = this->serialdevice.buffer[i];
 
 	// Add string ending char, used only by ser_read_string()
 	argout[i]='\0';
 
-		//A RET !
+	//A RET !
 	DEBUG_STREAM << "Serial::line_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << endl;
 
 	return argout;
