@@ -356,7 +356,12 @@ void Serial::open_desc()
 	* Open the serialline (communication device for Windows)
 	*/
 	serialdevice.hfile = CreateFile(
+#if _MSC_VER >= 1400
 		  (LPCWSTR)port_to_open.c_str(),
+#else
+		  port_to_open.c_str(),
+#endif
+
 		  GENERIC_READ | GENERIC_WRITE,
 		  0,                     // no sharing
 		  NULL,                  // no security attrs
@@ -980,7 +985,7 @@ OVERLAPPED	osRead = {0};
 	 }
 	 
 	 
-	for (int i=0; i < nchar ; i++ )
+	for (unsigned int i=0; i < nchar ; i++ )
 		 DEBUG_STREAM<< "char=  "<< this->serialdevice.buffer[i] ;
 	/*
 	* Don't forget the string ending char
@@ -991,7 +996,7 @@ OVERLAPPED	osRead = {0};
 	// because TANGO desallocate the memory return)
 	argout = new char[this->serialdevice.ncharread + 1];
 	 
-	if(argout == 0)
+	if( !argout )
 	{
 		TangoSys_MemStream out_stream;
 		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << ends;
@@ -1004,12 +1009,12 @@ OVERLAPPED	osRead = {0};
 	}
 	 
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
-	int i;
-	for(i=0 ; i<this->serialdevice.ncharread ; i++)
-	argout[i] = this->serialdevice.buffer[i];
+	unsigned int j;
+	for(j=0 ; j<this->serialdevice.ncharread ; j++)
+	argout[j] = this->serialdevice.buffer[j];
 
 	// Add string ending char, used only by ser_read_string()
-	argout[i]=0;
+	argout[j]=0;
 	 
 	// A RET !
 	DEBUG_STREAM << "Serial::nchar_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << endl;
