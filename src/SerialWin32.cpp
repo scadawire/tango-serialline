@@ -767,30 +767,11 @@ COMSTAT		cur_stat;
 	do
 	{
 		// first get status from comm port : Useful to get coherent Readfile  behaviour
-		if( ClearCommError(serialdevice.hfile, &cur_error,&cur_stat) == FALSE)
-		{
-			ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
-			
-			Tango::Except::throw_exception(
-				(const char *)"INTERNAL_ERROR",
-				(const char*) "ClearCommError : error reading serialline stats",
-				(const char *)"Serial::line_read_string");
-			
-		}
+		ClearCommError(serialdevice.hfile, &cur_error,&cur_stat);
 		nb_char_available= cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING; 
-                
-		//- sleep a little bit ...
-		if (nb_char_available <= 0) Sleep(1);
-		
-		//- ... if no response -> throw
-		if (nb_char_available <= 0) 
-		{
-			ERROR_STREAM << "nchar_read_string: error reading serialline stats : " << nb_char_available << " char(s)" << endl;
-			Tango::Except::throw_exception(
-				(const char *)"INTERNAL_ERROR",
-				(const char*) "No data available on the serial input queue !",
-				(const char *)"Serial::line_read_string");
-		}
+
+                if (nb_char_available <= 0) Sleep(1);
+
 		/*
 		* Read one char from the serialline with timeout watchdog 
 		*/
