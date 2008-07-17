@@ -11,6 +11,11 @@
 #include <Tango.h>
 #include <time.h>
 
+#if _MSC_VER >= 1400
+#include <TCHAR.H>
+#include <stdlib.h>
+#endif
+
 // extract from "serialdsP.h" (TACO file)
 // Needed because different from old SL_NONE etc
 
@@ -350,29 +355,38 @@ void Serial::open_desc()
 	//- Check the following url for more advice : http://support.microsoft.com/kb/q115831/
 
 	//- The following syntax permits to open more than 9 serial ports
-	strcat((char*)port_to_open.c_str(), serialdevice.serialline);
+	port_to_open.append(serialdevice.serialline);
+
 
 	/*
 	* Open the serialline (communication device for Windows)
 	*/
-	serialdevice.hfile = CreateFile(
 #if _MSC_VER >= 1400
-		  (LPCWSTR)port_to_open.c_str(),
+#define MAX_PCCOMMPORT 30
+	TCHAR pcCommPort[MAX_PCCOMMPORT];
+	int   i;
+	int   c_len = strlen(port_to_open.c_str());
+	for(i=0;(i<c_len) && (i<(MAX_PCCOMMPORT-1));i++)
+		pcCommPort[i] = (wchar_t)((port_to_open.c_str())[i]);
+	pcCommPort[i] = (wchar_t)(NULL);
+
+	serialdevice.hfile = CreateFile(
+		  pcCommPort,
 #else
+	serialdevice.hfile = CreateFile(
 		  port_to_open.c_str(),
 #endif
-
 		  GENERIC_READ | GENERIC_WRITE,
 		  0,                     // no sharing
 		  NULL,                  // no security attrs
 		  OPEN_EXISTING,
-		  NULL, 
-		  NULL);				// overlapped not used now	
-  
+		  0,					// not overlapped I/O
+		  NULL					// hTemplate must be NULL for comm devices
+		  );
+
 	if (serialdevice.hfile == INVALID_HANDLE_VALUE)
 	{
-  
-	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << endl ;
+	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << " Error =" << GetLastError() << endl ;
 	  Tango::Except::throw_exception(
 		  (const char *) "Serial",
 		  (const char *) "Error opening descriptor file",
