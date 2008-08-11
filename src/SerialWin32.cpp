@@ -70,18 +70,15 @@ char			temp[256];
 	/*
 	* Get device parameters passed
 	*/
-	for(int i=0;i<argin->length();i+=2)
+	for(unsigned int i=0;i<argin->length();i+=2)
 	{
 		switch ((*argin)[i])
 		{
 		case SL_TIMEOUT:
-			
 			// Record new value
 			serialdevice.timeout = (short)(*argin)[i+1];
 			DEBUG_STREAM << "dev_ser_set_parameter: new timeout: " << serialdevice.timeout;
 			break;
-			
-			
 		case SL_PARITY:
 			// Minimum check on value passed
 			switch((*argin)[i+1])
@@ -96,15 +93,12 @@ char			temp[256];
 				serialdevice.parity = EVENPARITY;
 				break;
 			}
-			
 			// Record new value
 			sprintf(temp, "dev_ser_set_parameter: new parity: %d (%d=none %d=odd %d=even)",
 				serialdevice.parity,NOPARITY, ODDPARITY, EVENPARITY);
 
 			DEBUG_STREAM << string(temp) <<  endl;
 			break;
-			
-			
 		case SL_CHARLENGTH:
 			// Minimum check on value passed
 			switch((*argin)[i+1])
@@ -126,13 +120,11 @@ char			temp[256];
 					(const char *)"Serial. Setting SL_CHARLENGTH",
 					(const char*) "bad number of data bits",
 					(const char *)"Serial::dev_ser_set_parameter");
-				
 			}
-			
+
 			// Record new value
 			DEBUG_STREAM << "dev_ser_set_parameter: new charlength: " << serialdevice.charlength;
 			break;
-				
 		case SL_STOPBITS:
 			// Minimum check on value passed
 			switch((*argin)[i+1])
@@ -159,8 +151,6 @@ char			temp[256];
 				ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS);
 			DEBUG_STREAM << string(temp) <<  endl;
 			break;
-					
-					
 		case SL_BAUDRATE:
 			// Minimum check on value passed
 			switch((*argin)[i+1])
@@ -206,14 +196,11 @@ char			temp[256];
 			serialdevice.baudrate = (*argin)[i+1];
 			DEBUG_STREAM << "dev_ser_set_parameter: new baudrate= " <<   serialdevice.baudrate;
 			break;
-						
-		
 		case SL_NEWLINE:
 			// Record new value
 			serialdevice.newline = (short)((*argin)[i+1]);
 			DEBUG_STREAM << "dev_ser_set_parameter: new newline= " <<   serialdevice.newline;
 			break;
-			
 		default:
 			DEBUG_STREAM << "non handled parameter !"<<endl ;
 			break;
@@ -228,37 +215,29 @@ char			temp[256];
 		serial_setparameter( );
 	}
 	catch (Tango::DevFailed &  )
-		
 	{
 		// Restore the last valid set of parameters
-
 		ERROR_STREAM << "Serial::dev_ser_set_parameter_win32 : Error setting new values ==> Restore the last valid set of parameters" << endl;
-		
+
 		serialdevice.timeout    = oldserialline.timeout;
 		serialdevice.parity     = oldserialline.parity;
 		serialdevice.charlength = oldserialline.charlength;
 		serialdevice.stopbits   = oldserialline.stopbits;
 		serialdevice.baudrate   = oldserialline.baudrate;
-		
 	}
-
 }
-
-
 
 /*======================================================================
 Function:      serial_setparameter()
-
 Description:i  setup the serial line
 
 Arg(s) In:     void
-
 Arg(s) Out:	 void
 =======================================================================*/
 void Serial::serial_setparameter()
 {
 DCB		comm_prop;
-  
+
 	/*
 	* Get properties of the serialline (communication device for Windows)
 	*/
@@ -270,8 +249,7 @@ DCB		comm_prop;
 		  (const char *)"Error getting serialline props",
 		  (const char *)"Serial::serial_setparameter");
 	}
-  
-  
+
 	/*
 	* Set serial line configuration 
 	*/
@@ -281,7 +259,6 @@ DCB		comm_prop;
 	comm_prop.Parity   = serialdevice.parity;      // 0-4=no,odd,even,mark,space
 	comm_prop.EofChar  = serialdevice.newline;     // signal the end of data
   
-
 	/*
 	* Set properties of the serialline (communication device for Windows)
 	*/
@@ -298,7 +275,7 @@ DCB		comm_prop;
 	}
 
 	INFO_STREAM << "Serial::serial_setparameter(): parameters well set" << endl;
-  
+
 	/*  Old TACO stuff : no more used since we use our own Timeout
 	// ==> TO BE deleted in the future
 	* Set timeout values (in milliseconds) for future serialline 
@@ -326,7 +303,7 @@ COMMTIMEOUTS	comm_timeouts;
   
 	return ;
 }
-	  
+  
 //+------------------------------------------------------------------
 /**
 *      method: Serial::open_desc
@@ -337,7 +314,6 @@ COMMTIMEOUTS	comm_timeouts;
 //+------------------------------------------------------------------
 void Serial::open_desc()
 {
-
 	std::string port_to_open;
 
 	//- Init the string port_to_open
@@ -353,10 +329,8 @@ void Serial::open_desc()
 	//-		Open COM14 will look like this in code: serial.Open(_T("\\\\.\\COM14"),0,0,false);
 	//- This is described in more detail in the Microsoft Knowledge Base in article Q115831 
 	//- Check the following url for more advice : http://support.microsoft.com/kb/q115831/
-
 	//- The following syntax permits to open more than 9 serial ports
 	port_to_open.append(serialdevice.serialline);
-
 
 	/*
 	* Open the serialline (communication device for Windows)
@@ -391,12 +365,11 @@ void Serial::open_desc()
 		  (const char *) "Serial",
 		  (const char *) "Error opening descriptor file",
 		  (const char *) "Serial::open_desc_win32");
-  
 	}
+
 	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened = " << serialdevice.serialline << endl ;
-  
 }
-	  
+
 //+------------------------------------------------------------------
 /**
 *      method: Serial::close_handle_win32
@@ -408,14 +381,14 @@ void Serial::open_desc()
 void Serial::close_handle_win32()
 {
 	INFO_STREAM << "Serial::close_handle_win32 . serial line closed" << endl ;
+
 	CloseHandle( serialdevice.hfile );
 }
-	  
+
 /*======================================================================
 Function:    static long serial_writestring()
 
 Description: write a string to the serialline device
-
 Arg(s) In:   Serial ds - serial info structure
 char *str - string to write
 
@@ -438,7 +411,6 @@ OVERLAPPED	osWrite = {0};
 	{
 	  ERROR_STREAM << " String NOT written = " << str << endl;
 	  return -1;
-  
 	}
 	else
 	{	
@@ -446,6 +418,7 @@ OVERLAPPED	osWrite = {0};
 	  return bytes_written;
 	}
 }
+
 /*======================================================================
 Function:    long Serial::write_win32_bin_char_array()
 {
@@ -471,7 +444,7 @@ OVERLAPPED	osWrite = {0};
 	tmp = new char[str_len+1];
 	::memset(tmp,'\0',(str_len+1));
 
-	for(int i=0;i<str_len;i++)
+	for(unsigned int i=0;i<str_len;i++)
 		tmp[i] = (*dvca)[i];
 
 	if (WriteFile(serialdevice.hfile, tmp, str_len,(DWORD *)&bytes_written, &osWrite) == false)
@@ -479,7 +452,6 @@ OVERLAPPED	osWrite = {0};
 	  ERROR_STREAM << " DevVarCharArray NOT written " << endl;
 	  if(tmp) delete tmp;
 	  return -1;
-  
 	}
 	else
 	{	
@@ -535,7 +507,6 @@ char *Serial::retry_read_string(long nretry)
 				(const char *)"Serial::retry_read_string");
 			
 		}
-		memset
 		// number of bytes available
 		bytes_available = cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING;
 		
@@ -572,23 +543,17 @@ char *Serial::retry_read_string(long nretry)
 */
 		
 		starttime = clock();
-		
 		argout = raw_read_string();
-
-		
+	
 		// store the last read
 		if(this->serialdevice.ncharread > 0)
 			::strcpy((argout+nchar), (const char *) this->serialdevice.buffer);
 
-
-
 		nchar = this->serialdevice.ncharread;
-
 		finish = clock();
+
 		double duration = (double)(finish - starttime) / CLOCKS_PER_SEC;
 
-
-		
 		if(duration > (double)this->serialdevice.timeout)
 		{
 			if(retrycnt < nretry)
@@ -597,9 +562,7 @@ char *Serial::retry_read_string(long nretry)
 			if(!this->serialdevice.ncharread)
 				break;
 		}
-
 		retrycnt++;	
-		
 	}
 	while( retrycnt < nretry && !TIMEOUT);
 
@@ -611,24 +574,19 @@ char *Serial::retry_read_string(long nretry)
 		  (const char *)"Serial::retry_read_string");
 	}
 
-		DEBUG_STREAM << "**** \n\n ARGOUT NRETRY = " << argout << endl;
-		
-		
+	DEBUG_STREAM << "**** \n\n ARGOUT NRETRY = " << argout << endl;
+
 	return argout;		
-		
 }
 
-	  
 /*======================================================================
 Function:    char * raw_read_string()
 
 Description: read a string from the serialline device in mode raw (no end
 of string expected, just empty the entire serialline
 receiving buffer).
-
   Arg(s) In:   void
-  
-	Arg(s) Out:  char *argout - pointer to the string read updated (return
+  Arg(s) Out:  char *argout - pointer to the string read updated (return
 	a pointer to the internal static buffer)
 =======================================================================*/
 char *Serial::raw_read_string(void)
@@ -755,13 +713,11 @@ OVERLAPPED	osRead = { 0 };
 DWORD		cur_error;
 COMSTAT		cur_stat;
   
-
 	//
 	//first "empty" buffer by null terminating it
 	//
 	this->serialdevice.buffer[0] = 0;
 	this->serialdevice.ncharread = 0;
-
 
 	/*
 	* Get the End Of Line characters setup
@@ -784,7 +740,7 @@ COMSTAT		cur_stat;
 		ClearCommError(serialdevice.hfile, &cur_error,&cur_stat);
 		nb_char_available= cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING; 
 
-                if (nb_char_available <= 0) Sleep(1);
+		if (nb_char_available <= 0) Sleep(1);
 
 		/*
 		* Read one char from the serialline with timeout watchdog 
@@ -851,7 +807,7 @@ COMSTAT		cur_stat;
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
 	int i;
 	for(i=0 ; i< this->serialdevice.ncharread ; i++)
-	argout[i] = this->serialdevice.buffer[i];
+		argout[i] = this->serialdevice.buffer[i];
 
 	// Add string ending char, used only by ser_read_string()
 	argout[i]='\0';
@@ -861,7 +817,7 @@ COMSTAT		cur_stat;
 
 	return argout;
 }
-	 	 
+		 
 //+------------------------------------------------------------------
 /**
 *	method:	Serial::nchar_read_string
@@ -876,7 +832,6 @@ COMSTAT		cur_stat;
 //+------------------------------------------------------------------
 char * Serial::nchar_read_string( long nchar )
 {
- 
 char		*argout;
 int			bytes_available;
 long		ellapsed;
@@ -980,7 +935,7 @@ OVERLAPPED	osRead = {0};
 	 }
 	 
 	 
-	for (unsigned int i=0; i < nchar ; i++ )
+	for(long i=0; i < nchar ; i++ )
 		 DEBUG_STREAM<< "char=  "<< this->serialdevice.buffer[i] ;
 	/*
 	* Don't forget the string ending char
@@ -1004,9 +959,8 @@ OVERLAPPED	osRead = {0};
 	}
 	 
 	// Do not use strncpy() as raw_read_string() is used by xxx_read_char()
-	unsigned int j;
-	for(j=0 ; j<this->serialdevice.ncharread ; j++)
-	argout[j] = this->serialdevice.buffer[j];
+	for(int j=0 ; j<this->serialdevice.ncharread ; j++)
+		argout[j] = this->serialdevice.buffer[j];
 
 	// Add string ending char, used only by ser_read_string()
 	argout[j]=0;
@@ -1043,10 +997,10 @@ Tango::ConstDevString argout;
 	{
 		ERROR_STREAM <<"serial_ncharreadstring:Error getting serialline props"<<endl; 
 
-	  Tango::Except::throw_exception(
-		  (const char *)"Serial::GetCommState",
-		  (const char*) "Error getting serialline props : GetCommState",
-		  (const char *)"Serial::dev_status");
+		Tango::Except::throw_exception(
+			  (const char *)"Serial::GetCommState",
+			  (const char*) "Error getting serialline props : GetCommState",
+			  (const char *)"Serial::dev_status");
 	}
 
 	if (GetCommTimeouts(serialdevice.hfile, &comm_timeouts) == FALSE)
@@ -1054,11 +1008,10 @@ Tango::ConstDevString argout;
 		ERROR_STREAM <<"serial_ncharreadstring:Error getting timeouts : GetCommTimeouts"<<endl; 
 
 		Tango::Except::throw_exception(
-		  (const char *)"Serial::GetCommTimeouts",
-		  (const char*) "Error getting timeouts : GetCommTimeouts",
-		  (const char *)"Serial::dev_status");
+			  (const char *)"Serial::GetCommTimeouts",
+			  (const char*) "Error getting timeouts : GetCommTimeouts",
+			  (const char *)"Serial::dev_status");
 	}
-  
   
 	strcpy(str,"Current parameters of the serial line:\n");
 	sprintf(str, "%s   serialline       : %s\n", 
@@ -1073,7 +1026,6 @@ Tango::ConstDevString argout;
 	  str,comm_prop.Parity);
 	sprintf(str, "%s   reading timeout  : %d (mS)\n", 
 	  str,comm_timeouts.ReadTotalTimeoutConstant);
-
 	sprintf(str, "%s   fOutxCtsFlow     : %d\n", 
 	  str,comm_prop.fOutxCtsFlow);
 	sprintf(str, "%s   fOutxDsrFlow     : %d\n", 
@@ -1097,7 +1049,6 @@ Tango::ConstDevString argout;
 	  RTS_CONTROL_ENABLE,
 	  RTS_CONTROL_HANDSHAKE);
   
-  
 	/*
 	* Add internal parameter values
 	*/
@@ -1118,7 +1069,5 @@ Tango::ConstDevString argout;
 	argout = str;
 
 	INFO_STREAM << "dev_status: end" << endl;
-
 	return argout;
-  
 }

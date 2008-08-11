@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.8 2008-03-18 08:05:37 taurel Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.9 2008-08-11 08:38:13 xavela Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,11 +11,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: taurel $
+// $Author: xavela $
 //
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2008/03/18 08:05:37  taurel
+// - Fix memory leak in the DevSerReadNBinData command
+//
 // Revision 1.7  2007/08/06 15:57:47  jensmeyer
 // Regenerated the sources with Pogo to add default values and
 // descriptions to the properties.
@@ -570,7 +573,7 @@ Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 Tango::DevLong Serial::dev_ser_write_char(const Tango::DevVarCharArray *argin)
 {
  int            nchar;
- int            i;
+ unsigned int   i;
  Tango::DevLong	argout ;
  char           tab[]="Serial::dev_ser_write_char(): ";
  INFO_STREAM << tab << "entering... !" << endl;
@@ -1465,7 +1468,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_nbin_data(Tango::DevLong argin)
 
 	//- copy data
 	argout->length(n);
-	for(int i = 0; i < argout->length(); i++)
+	for(unsigned int i = 0; i < argout->length(); i++)
 		(*argout)[i] = str[i];
 
 	delete [] str;
