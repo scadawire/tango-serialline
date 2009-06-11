@@ -24,6 +24,8 @@
       </plugin>
     </plugins>
   </build>
+    <dependencies>
+    </dependencies>
   <scm>
     <connection>${scm.connection.cvs.tango-ds}:Communication/SerialLine</connection>
     <developerConnection>${scm.developerConnection.cvs.tango-ds}:Communication/SerialLine</developerConnection>
