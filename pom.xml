@@ -6,13 +6,15 @@
         <artifactId>super-pom-C-CPP-device</artifactId>
         <version>RELEASE</version>
     </parent>
+
     <groupId>fr.soleil.device</groupId>
     <artifactId>Serial-${aol}-${mode}</artifactId>
     <version>1.2.6-SNAPSHOT</version>
+
     <packaging>nar</packaging>
-    <name>Serial</name>
-<!-- use for the name of executable -->
+    <name>Serial</name> <!-- use for the name of executable -->
     <description>Serial device</description>
+
     <build>
         <plugins>
             <plugin>
@@ -23,19 +25,20 @@
                     <cpp>
                         <excludes>
                             <exclude>**/*Linux*.cpp</exclude>
+                            <exclude>**/*Win32*.cpp</exclude> <!-- ALREADY include by Serial.cpp !!! -->
                         </excludes>
                     </cpp>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-    </dependencies>
+
     <scm>
         <connection>${scm.connection.cvs.tango-ds}:Communication/SerialLine</connection>
         <developerConnection>${scm.developerConnection.cvs.tango-ds}:Communication/SerialLine</developerConnection>
         <url>${scm.url.cvs.tango-ds}/Communication/SerialLine</url>
     </scm>
+
     <developers>
         <developer>
             <id>elattaoui</id>
