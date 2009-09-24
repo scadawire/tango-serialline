@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.10 2009-09-24 10:08:20 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.11 2009-09-24 14:51:36 xavela Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -13,9 +13,12 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // $Author: xavela $
 //
-// $Revision: 1.10 $
+// $Revision: 1.11 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2009/09/24 10:08:20  xavela
+// States CLOSE and OPEN added
+//
 // Revision 1.9  2008/08/11 08:38:13  xavela
 // VC8 compilation
 //
@@ -334,7 +337,16 @@ char           tab[]="Serial::init_device(): ";
 	if (this->serialdevice.serialline != NULL)
 	{
 		// Open the serial line
-		open_desc();
+    try
+    {
+		  open_desc();
+    }
+    catch(Tango::DevFailed& df)
+    {
+      FATAL_STREAM << "Serial::init_device -> DevFailed caught :\n" << df << std::endl;
+      set_state(Tango::FAULT);
+      set_status("Cannot open COM port defined in the device property.");
+    }
 
 		// Setup input serial line with device's default values
 		argin_array.length(12);

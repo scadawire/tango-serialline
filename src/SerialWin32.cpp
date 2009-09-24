@@ -994,7 +994,7 @@ Tango::ConstDevString argout;
 	INFO_STREAM << "dev_status: begin" << endl;
   if ( !_success )
   {
-    set_state(Tango::CLOSE);
+    set_state(Tango::FAULT);
     return "Failed to open serial com port.";
   }
   else

@@ -540,7 +540,7 @@ Tango::ConstDevString Serial::dev_status()
 	//	Add your own code to control device here
   if ( !_success )
   {
-    set_state(Tango::CLOSE);
+    set_state(Tango::FAULT);
     return "Failed to open serial com port.";
   }
   else
