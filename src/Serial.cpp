@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.9 2008-08-11 08:38:13 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.10 2009-09-24 10:08:20 xavela Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -13,9 +13,12 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // $Author: xavela $
 //
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2008/08/11 08:38:13  xavela
+// VC8 compilation
+//
 // Revision 1.8  2008/03/18 08:05:37  taurel
 // - Fix memory leak in the DevSerReadNBinData command
 //
@@ -181,7 +184,7 @@ char           tab[]="Serial::init_device(): ";
 	
 	// Initialise variables to default values
 	//--------------------------------------------
-	
+	_success = false;
 	// Initialise variables to default values
 	//
 	serialdevice.serialline    = NULL;

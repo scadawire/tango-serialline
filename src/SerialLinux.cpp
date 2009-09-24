@@ -34,6 +34,8 @@ void Serial::open_desc ( void )
  desc = open(dd_name,O_RDONLY | O_NOCTTY);
  if (desc < 0)
  {
+  _success = false;
+
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
              << " in O_RDONLY, errno=" << errno
@@ -53,6 +55,7 @@ void Serial::open_desc ( void )
  desc = open(dd_name,O_WRONLY | O_NOCTTY);
  if (desc < 0)
  {
+  _success = false;
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
              << "in O_WRONLY, errno=" << errno
@@ -65,6 +68,8 @@ void Serial::open_desc ( void )
         (const char *)tab);
  }
  this->serialdevice.serialout = desc;
+
+ _success = true;
 
  return;
 }
@@ -533,104 +538,113 @@ Tango::ConstDevString Serial::dev_status()
 	INFO_STREAM << "Serial::dev_status(): entering... !" << endl;
 	
 	//	Add your own code to control device here
+  if ( !_success )
+  {
+    set_state(Tango::CLOSE);
+    return "Failed to open serial com port.";
+  }
+  else
+  {
 	
-	// Compose string to return with serial configuration parameters
-	sprintf(mess,"The serial line has following configuration : %c%c", eol, eol);
-	
-	if (this->serialdevice.serialline != NULL)
-	{
-		sprintf(append,"descriptor=%s%c",this->serialdevice.serialline, eol);
-	}
-	else
-	{
-		sprintf(append,"descriptor=none%c", eol);
-	}
-	strcat(mess,append);
-	
-	// Current parameters defined in the internal structure
-	sprintf(append,"%cParameters defined internally:%c", eol, eol);
-	strcat(mess,append);
-	
-	sprintf(append,"timeout=%d%c",this->serialdevice.timeout, eol);
-	strcat(mess,append);
-	
-	sprintf(append,"baudrate=%d%c",this->serialdevice.baudrate, eol);
-	strcat(mess,append);
+	  // Compose string to return with serial configuration parameters
+	  sprintf(mess,"The serial line has following configuration : %c%c", eol, eol);
+  	
+	  if (this->serialdevice.serialline != NULL)
+	  {
+		  sprintf(append,"descriptor=%s%c",this->serialdevice.serialline, eol);
+	  }
+	  else
+	  {
+		  sprintf(append,"descriptor=none%c", eol);
+	  }
+	  strcat(mess,append);
+  	
+	  // Current parameters defined in the internal structure
+	  sprintf(append,"%cParameters defined internally:%c", eol, eol);
+	  strcat(mess,append);
+  	
+	  sprintf(append,"timeout=%d%c",this->serialdevice.timeout, eol);
+	  strcat(mess,append);
+  	
+	  sprintf(append,"baudrate=%d%c",this->serialdevice.baudrate, eol);
+	  strcat(mess,append);
 
-	switch(this->serialdevice.parity)
-	{
-		case SL_EVEN: str = "even"; break;
-		case SL_ODD : str = "odd";  break;
-		case SL_NONE: str = "none"; break;
-		default     : str = "????"; break;
-	}
-	sprintf(append,"parity=%s%c", str, eol);
-	strcat(mess,append);
-	
-	switch(this->serialdevice.charlength)
-	{
-		case SL_DATA5: str = "5"; break;
-		case SL_DATA6: str = "6"; break;
-		case SL_DATA7: str = "7"; break;
-		case SL_DATA8: str = "8"; break;
-		default      : str = "?"; break;
-	}
-	sprintf(append,"charlength=%s%c",str, eol);
-	strcat(mess,append);
-	
-	switch(this->serialdevice.stopbits)
-	{
-		case SL_STOP1: str = "1"; break;
-		case SL_STOP2: str = "2"; break;
-		default      : str = "?"; break;
-	}
-	sprintf(append,"stopbits=%s%c",str, eol);
-	strcat(mess,append);
-	
-	sprintf(append,"newline=%d%c",this->serialdevice.newline, eol);
-	strcat(mess,append);
+	  switch(this->serialdevice.parity)
+	  {
+		  case SL_EVEN: str = "even"; break;
+		  case SL_ODD : str = "odd";  break;
+		  case SL_NONE: str = "none"; break;
+		  default     : str = "????"; break;
+	  }
+	  sprintf(append,"parity=%s%c", str, eol);
+	  strcat(mess,append);
+  	
+	  switch(this->serialdevice.charlength)
+	  {
+		  case SL_DATA5: str = "5"; break;
+		  case SL_DATA6: str = "6"; break;
+		  case SL_DATA7: str = "7"; break;
+		  case SL_DATA8: str = "8"; break;
+		  default      : str = "?"; break;
+	  }
+	  sprintf(append,"charlength=%s%c",str, eol);
+	  strcat(mess,append);
+  	
+	  switch(this->serialdevice.stopbits)
+	  {
+		  case SL_STOP1: str = "1"; break;
+		  case SL_STOP2: str = "2"; break;
+		  default      : str = "?"; break;
+	  }
+	  sprintf(append,"stopbits=%s%c",str, eol);
+	  strcat(mess,append);
+  	
+	  sprintf(append,"newline=%d%c",this->serialdevice.newline, eol);
+	  strcat(mess,append);
 
-	// Current parameters of the input terminal
-	// (see file /usr/include/asm/termbits.h for values decoding)
-	sprintf(append,"%cParameters of the input terminal:%c", eol, eol);
-	strcat(mess,append);
-	
-	// TODO : the same for win32 !
-	if (tcgetattr(this->serialdevice.serialin, &termin) < 0)
-	{
-		TangoSys_MemStream out_stream;
-		out_stream << "tcsetattr() error on in line, errno: " << errno
-			<< ends;
-		
-		INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
-		INFO_STREAM << out_stream.str() << endl;
-		Tango::Except::throw_exception(
-			(const char *)"Serial::error_tcgetattr",
-			out_stream.str(),
-			(const char *)"Serial::dev_status");
-	}
-	strcat(mess,decode_parameters(termin, eol));
-	
-	// Current parameters of the output terminal
-	// (see file /usr/include/asm/termbits.h for values decoding)
-	sprintf(append,"%cParameters of the output terminal:%c", eol, eol);
-	strcat(mess,append);
-	
-	if (tcgetattr(this->serialdevice.serialin, &termout) < 0)
-	{
-		TangoSys_MemStream out_stream;
-		out_stream << "tcsetattr() error on out line, errno: " << errno
-			<< ends;
-		
-		INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
-		INFO_STREAM << out_stream.str() << endl;
-		Tango::Except::throw_exception(
-			(const char *)"Serial::error_tcgetattr",
-			out_stream.str(),
-			(const char *)"Serial::dev_status");
-	}
-	strcat(mess,decode_parameters(termout, eol));
-	
+	  // Current parameters of the input terminal
+	  // (see file /usr/include/asm/termbits.h for values decoding)
+	  sprintf(append,"%cParameters of the input terminal:%c", eol, eol);
+	  strcat(mess,append);
+  	
+	  // TODO : the same for win32 !
+	  if (tcgetattr(this->serialdevice.serialin, &termin) < 0)
+	  {
+		  TangoSys_MemStream out_stream;
+		  out_stream << "tcsetattr() error on in line, errno: " << errno
+			  << ends;
+  		
+		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
+		  INFO_STREAM << out_stream.str() << endl;
+		  Tango::Except::throw_exception(
+			  (const char *)"Serial::error_tcgetattr",
+			  out_stream.str(),
+			  (const char *)"Serial::dev_status");
+	  }
+	  strcat(mess,decode_parameters(termin, eol));
+  	
+	  // Current parameters of the output terminal
+	  // (see file /usr/include/asm/termbits.h for values decoding)
+	  sprintf(append,"%cParameters of the output terminal:%c", eol, eol);
+	  strcat(mess,append);
+  	
+	  if (tcgetattr(this->serialdevice.serialin, &termout) < 0)
+	  {
+		  TangoSys_MemStream out_stream;
+		  out_stream << "tcsetattr() error on out line, errno: " << errno
+			  << ends;
+  		
+		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
+		  INFO_STREAM << out_stream.str() << endl;
+		  Tango::Except::throw_exception(
+			  (const char *)"Serial::error_tcgetattr",
+			  out_stream.str(),
+			  (const char *)"Serial::dev_status");
+	  }
+	  strcat(mess,decode_parameters(termout, eol));
+
+    set_state(Tango::OPEN);
+  }
 	// Return the string
 	Tango::DevString argout = mess;
 	return argout;

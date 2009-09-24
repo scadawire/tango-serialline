@@ -360,6 +360,7 @@ void Serial::open_desc()
 
 	if (serialdevice.hfile == INVALID_HANDLE_VALUE)
 	{
+    _success = false;
 	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << " Error =" << GetLastError() << endl ;
 	  Tango::Except::throw_exception(
 		  (const char *) "Serial",
@@ -368,6 +369,8 @@ void Serial::open_desc()
 	}
 
 	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened = " << serialdevice.serialline << endl ;
+
+  _success = true;
 }
 
 //+------------------------------------------------------------------
@@ -989,84 +992,94 @@ static  char	str[4096];
 Tango::ConstDevString argout;
   
 	INFO_STREAM << "dev_status: begin" << endl;
+  if ( !_success )
+  {
+    set_state(Tango::CLOSE);
+    return "Failed to open serial com port.";
+  }
+  else
+  {
   
-	/*
-	* Get properties of the serialline (communication device for Windows)
-	*/
-	if(GetCommState(serialdevice.hfile, &comm_prop) == FALSE)
-	{
-		ERROR_STREAM <<"serial_ncharreadstring:Error getting serialline props"<<endl; 
+	  /*
+	  * Get properties of the serialline (communication device for Windows)
+	  */
+	  if(GetCommState(serialdevice.hfile, &comm_prop) == FALSE)
+	  {
+		  ERROR_STREAM <<"serial_ncharreadstring:Error getting serialline props"<<endl; 
 
-		Tango::Except::throw_exception(
-			  (const char *)"Serial::GetCommState",
-			  (const char*) "Error getting serialline props : GetCommState",
-			  (const char *)"Serial::dev_status");
-	}
+		  Tango::Except::throw_exception(
+			    (const char *)"Serial::GetCommState",
+			    (const char*) "Error getting serialline props : GetCommState",
+			    (const char *)"Serial::dev_status");
+	  }
 
-	if (GetCommTimeouts(serialdevice.hfile, &comm_timeouts) == FALSE)
-	{
-		ERROR_STREAM <<"serial_ncharreadstring:Error getting timeouts : GetCommTimeouts"<<endl; 
+	  if (GetCommTimeouts(serialdevice.hfile, &comm_timeouts) == FALSE)
+	  {
+		  ERROR_STREAM <<"serial_ncharreadstring:Error getting timeouts : GetCommTimeouts"<<endl; 
 
-		Tango::Except::throw_exception(
-			  (const char *)"Serial::GetCommTimeouts",
-			  (const char*) "Error getting timeouts : GetCommTimeouts",
-			  (const char *)"Serial::dev_status");
-	}
-  
-	strcpy(str,"Current parameters of the serial line:\n");
-	sprintf(str, "%s   serialline       : %s\n", 
-	  str, serialdevice.serialline);
-	sprintf(str, "%s   baudrate         : %d\n", 
-	  str,comm_prop.BaudRate);
-	sprintf(str, "%s   byte size        : %d\n", 
-	  str,comm_prop.ByteSize); 
-	sprintf(str, "%s   stop bits        : %d (0-2=1,1.5,2bit)\n", 
-	  str,comm_prop.StopBits);
-	sprintf(str, "%s   parity           : %d (0-4=no,odd,even,mark,space)\n", 
-	  str,comm_prop.Parity);
-	sprintf(str, "%s   reading timeout  : %d (mS)\n", 
-	  str,comm_timeouts.ReadTotalTimeoutConstant);
-	sprintf(str, "%s   fOutxCtsFlow     : %d\n", 
-	  str,comm_prop.fOutxCtsFlow);
-	sprintf(str, "%s   fOutxDsrFlow     : %d\n", 
-	  str,comm_prop.fOutxDsrFlow);
-	sprintf(str, "%s   fDtrControl      : %d (%d=dis %d=ena %d=hand)\n", 
-	  str,comm_prop.fDtrControl,
-	  DTR_CONTROL_DISABLE,
-	  DTR_CONTROL_ENABLE,
-	  DTR_CONTROL_HANDSHAKE);
-	sprintf(str, "%s   fDsrSensitivity  : %d\n", 
-	  str,comm_prop.fDsrSensitivity);
-	sprintf(str, "%s   fTXContinueOnXoff: %d\n", 
-	  str,comm_prop.fTXContinueOnXoff);
-	sprintf(str, "%s   fOutX            : %d\n", 
-	  str,comm_prop.fOutX);
-	sprintf(str, "%s   fInX             : %d\n", 
-	  str,comm_prop.fInX);
-	sprintf(str, "%s   fRtsControl      : %d (%d=dis %d=ena %d=hand)\n", 
-	  str,comm_prop.fRtsControl,
-	  RTS_CONTROL_DISABLE,
-	  RTS_CONTROL_ENABLE,
-	  RTS_CONTROL_HANDSHAKE);
-  
-	/*
-	* Add internal parameter values
-	*/
-	sprintf(str,"%s\nCurrent parameters of the device server:\n", str);
-	sprintf(str, "%s   serialline       : %s\n", str, serialdevice.serialline);
-	sprintf(str, "%s   timeout          : %d \n", 
-	  str, serialdevice.timeout);
-	sprintf(str, "%s   parity           : %d (%d=none %d=odd %d=even)\n", 
-	  str, serialdevice.parity, NOPARITY, ODDPARITY, EVENPARITY);
-	sprintf(str, "%s   charlength       : %d\n", str, serialdevice.charlength);
-	sprintf(str, "%s   stopbits         : %d (%d=1bit %d=1.5bits %d=2bits)\n", 
-	  str, serialdevice.stopbits, SL_STOP1, SL_STOP15, SL_STOP2);
-	sprintf(str, "%s   baudrate         : %d\n", str, serialdevice.baudrate);
-	sprintf(str, "%s   newline          : %d\n", str, serialdevice.newline);
-	/*
-	* Return string
-	*/
-	argout = str;
+		  Tango::Except::throw_exception(
+			    (const char *)"Serial::GetCommTimeouts",
+			    (const char*) "Error getting timeouts : GetCommTimeouts",
+			    (const char *)"Serial::dev_status");
+	  }
+    
+	  strcpy(str,"Current parameters of the serial line:\n");
+	  sprintf(str, "%s   serialline       : %s\n", 
+	    str, serialdevice.serialline);
+	  sprintf(str, "%s   baudrate         : %d\n", 
+	    str,comm_prop.BaudRate);
+	  sprintf(str, "%s   byte size        : %d\n", 
+	    str,comm_prop.ByteSize); 
+	  sprintf(str, "%s   stop bits        : %d (0-2=1,1.5,2bit)\n", 
+	    str,comm_prop.StopBits);
+	  sprintf(str, "%s   parity           : %d (0-4=no,odd,even,mark,space)\n", 
+	    str,comm_prop.Parity);
+	  sprintf(str, "%s   reading timeout  : %d (mS)\n", 
+	    str,comm_timeouts.ReadTotalTimeoutConstant);
+	  sprintf(str, "%s   fOutxCtsFlow     : %d\n", 
+	    str,comm_prop.fOutxCtsFlow);
+	  sprintf(str, "%s   fOutxDsrFlow     : %d\n", 
+	    str,comm_prop.fOutxDsrFlow);
+	  sprintf(str, "%s   fDtrControl      : %d (%d=dis %d=ena %d=hand)\n", 
+	    str,comm_prop.fDtrControl,
+	    DTR_CONTROL_DISABLE,
+	    DTR_CONTROL_ENABLE,
+	    DTR_CONTROL_HANDSHAKE);
+	  sprintf(str, "%s   fDsrSensitivity  : %d\n", 
+	    str,comm_prop.fDsrSensitivity);
+	  sprintf(str, "%s   fTXContinueOnXoff: %d\n", 
+	    str,comm_prop.fTXContinueOnXoff);
+	  sprintf(str, "%s   fOutX            : %d\n", 
+	    str,comm_prop.fOutX);
+	  sprintf(str, "%s   fInX             : %d\n", 
+	    str,comm_prop.fInX);
+	  sprintf(str, "%s   fRtsControl      : %d (%d=dis %d=ena %d=hand)\n", 
+	    str,comm_prop.fRtsControl,
+	    RTS_CONTROL_DISABLE,
+	    RTS_CONTROL_ENABLE,
+	    RTS_CONTROL_HANDSHAKE);
+    
+	  /*
+	  * Add internal parameter values
+	  */
+	  sprintf(str,"%s\nCurrent parameters of the device server:\n", str);
+	  sprintf(str, "%s   serialline       : %s\n", str, serialdevice.serialline);
+	  sprintf(str, "%s   timeout          : %d \n", 
+	    str, serialdevice.timeout);
+	  sprintf(str, "%s   parity           : %d (%d=none %d=odd %d=even)\n", 
+	    str, serialdevice.parity, NOPARITY, ODDPARITY, EVENPARITY);
+	  sprintf(str, "%s   charlength       : %d\n", str, serialdevice.charlength);
+	  sprintf(str, "%s   stopbits         : %d (%d=1bit %d=1.5bits %d=2bits)\n", 
+	    str, serialdevice.stopbits, SL_STOP1, SL_STOP15, SL_STOP2);
+	  sprintf(str, "%s   baudrate         : %d\n", str, serialdevice.baudrate);
+	  sprintf(str, "%s   newline          : %d\n", str, serialdevice.newline);
+	  /*
+	  * Return string
+	  */
+	  argout = str;
+
+    set_state(Tango::OPEN);
+  }
 
 	INFO_STREAM << "dev_status: end" << endl;
 	return argout;
