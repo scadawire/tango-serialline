@@ -1,14 +1,8 @@
-
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.8 2007-08-06 15:57:47 jensmeyer Exp $";
-
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.9 2009-10-01 12:31:22 pascal_verdier Exp $";
 static const char *TagName = "$Name: not supported by cvs2svn $";
-
 static const char *FileName= "$Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v $"; 
-
 static const char *HttpServer= "http://controle/DeviceServer/doc/";
-
 static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $"; 
-
 //+=============================================================================
 //
 // file :        SerialClass.cpp
@@ -20,11 +14,16 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 //
 // project :     TANGO Device Server
 //
-// $Author: jensmeyer $
+// $Author: pascal_verdier $
 //
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2007/08/06 15:57:47  jensmeyer
+// Regenerated the sources with Pogo to add default values and
+// descriptions to the properties.
+// No the Serial class can be used with the set-up wizard.
+//
 // Revision 1.7  2005/05/31 08:03:40  xavela
 // xavier : DevSerReadNBinData command added
 //
@@ -1033,7 +1032,7 @@ void SerialClass::write_class_property()
 	//  Put inheritance
 	Tango::DbDatum	inher_datum("InheritedFrom");
 	vector<string> inheritance;
-	inheritance.push_back("Device_3Impl");
+	inheritance.push_back("Device_4Impl");
 	inher_datum << inheritance;
 	data.push_back(inher_datum);
 

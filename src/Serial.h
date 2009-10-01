@@ -6,11 +6,14 @@
 //
 // project :	TANGO Device Server
 //
-// $Author: xavela $
+// $Author: pascal_verdier $
 //
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2009/09/24 10:08:20  xavela
+// States CLOSE and OPEN added
+//
 // Revision 1.7  2007/08/06 15:57:47  jensmeyer
 // Regenerated the sources with Pogo to add default values and
 // descriptions to the properties.
@@ -78,8 +81,8 @@
 //using namespace Tango;
 
 /**
- * @author	$Author: xavela $
- * @version	$Revision: 1.8 $ $
+ * @author	$Author: pascal_verdier $
+ * @version	$Revision: 1.9 $ $
  */
 
 
@@ -179,7 +182,7 @@ namespace Serial_ns
  */
 
 
-class Serial: public Tango::Device_3Impl
+class Serial: public Tango::Device_4Impl
 {
 public :
 	//	Add your own data members here

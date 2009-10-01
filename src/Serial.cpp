@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.11 2009-09-24 14:51:36 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v 1.12 2009-10-01 12:31:22 pascal_verdier Exp $";
 //+=============================================================================
 //
 // file :         Serial.cpp
@@ -11,11 +11,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: xavela $
+// $Author: pascal_verdier $
 //
-// $Revision: 1.11 $
+// $Revision: 1.12 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2009/09/24 14:51:36  xavela
+// States CLOSE changed to FAULT
+//
 // Revision 1.10  2009/09/24 10:08:20  xavela
 // States CLOSE and OPEN added
 //
@@ -161,18 +164,18 @@ namespace Serial_ns
 //      - s : Device name 
 //
 //-----------------------------------------------------------------------------
-Serial::Serial(Tango::DeviceClass *cl,string &s):Tango::Device_3Impl(cl,s.c_str())
+Serial::Serial(Tango::DeviceClass *cl,string &s):Tango::Device_4Impl(cl,s.c_str())
 {
 	init_device();
 }
 
-Serial::Serial(Tango::DeviceClass *cl,const char *s):Tango::Device_3Impl(cl,s)
+Serial::Serial(Tango::DeviceClass *cl,const char *s):Tango::Device_4Impl(cl,s)
 {
 	init_device();
 }
 
 Serial::Serial(Tango::DeviceClass *cl,const char *s,const char *d)
-	:Tango::Device_3Impl(cl,s,d)
+	:Tango::Device_4Impl(cl,s,d)
 {
 	init_device();
 }

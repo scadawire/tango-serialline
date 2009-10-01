@@ -6,11 +6,16 @@
 #
 # project :     Makefile to generate a Tango server
 #
-# $Author: taurel $
+# $Author: pascal_verdier $
 #
-# $Revision: 1.5 $
+# $Revision: 1.6 $
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.5  2005/03/22 08:02:30  taurel
+# - Ported to Tango V5
+# - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+#   some management of 0 character)
+#
 # Revision 1.1.1.1  2004/10/14 13:10:39  penel
 # Initial Import
 #
@@ -50,14 +55,14 @@ AR = ar
 BIN_DIR=$(shell /csadmin/common/scripts/get_os)
 endif
 
-TANGO_HOME   =  /segfs/tango
+TANGO_HOME   =  /segfs/tango/release
 CLASSES_HOME = $(TANGO_HOME)/cppserver
 INCLUDE_DIRS =  -I. \
-		-I$(TANGO_HOME)/include/$(BIN_DIR)\
+		-I$(TANGO_HOME)/$(BIN_DIR)/include\
 		-I$(CLASSES_HOME)/include
 		
-LIB_DIRS     =  -L $(TANGO_HOME)/lib/$(BIN_DIR) \
-		-L $(CLASSES_HOME)/lib/$(BIN_DIR)
+LIB_DIRS     =  -L $(TANGO_HOME)/$(BIN_DIR)/lib \
+		-L $(CLASSES_HOME)/$(BIN_DIR)/lib
 
 TARGET_LIB = $(TANGO_HOME)/cppserver/lib/$(BIN_DIR)/libtgclasses.a
 
