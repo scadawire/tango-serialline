@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.9 2009-10-01 12:31:22 pascal_verdier Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.10 2009-12-11 06:53:04 pascal_verdier Exp $";
 static const char *TagName = "$Name: not supported by cvs2svn $";
 static const char *FileName= "$Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v $"; 
 static const char *HttpServer= "http://controle/DeviceServer/doc/";
@@ -16,9 +16,12 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 //
 // $Author: pascal_verdier $
 //
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2009/10/01 12:31:22  pascal_verdier
+// Inheritance from Device_4Impl added.
+//
 // Revision 1.8  2007/08/06 15:57:47  jensmeyer
 // Regenerated the sources with Pogo to add default values and
 // descriptions to the properties.
