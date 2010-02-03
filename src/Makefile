@@ -8,9 +8,12 @@
 #
 # $Author: pascal_verdier $
 #
-# $Revision: 1.7 $
+# $Revision: 1.8 $
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.7  2009/12/11 06:53:04  pascal_verdier
+# Makefile updated.
+#
 # Revision 1.6  2009/10/01 12:31:21  pascal_verdier
 # Inheritance from Device_4Impl added.
 #
@@ -48,7 +51,7 @@
 
 CLASS      = Serial
 MAJOR_VERS = 1
-MINOR_VERS = 5
+MINOR_VERS = 6
 RELEASE    = Release_$(MAJOR_VERS)_$(MINOR_VERS)
 OS         = $(shell /csadmin/common/scripts/get_os)
 PROCESSOR  = $(shell uname -p)

@@ -1,3 +1,21 @@
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.7 2010-02-03 13:25:23 pascal_verdier Exp $";
+//+=============================================================================
+//
+// file :         SerialLinux.cpp
+//
+// description : THIS FILE CONTAINS ALL THE METHODS FOR
+//
+//						LINUX PLATFORM
+//
+// project :      TANGO Device Server
+//
+// $Author: pascal_verdier $
+//
+// $Revision: 1.7 $
+//
+// $Log: not supported by cvs2svn $
+//
+//-=============================================================================
 //=====================================================
 //
 //			THIS FILE CONTAINS ALL THE METHODS FOR
@@ -35,6 +53,7 @@ void Serial::open_desc ( void )
  if (desc < 0)
  {
   _success = false;
+  set_state(Tango::FAULT);
 
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
@@ -56,6 +75,7 @@ void Serial::open_desc ( void )
  if (desc < 0)
  {
   _success = false;
+  set_state(Tango::FAULT);
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
              << "in O_WRONLY, errno=" << errno
@@ -70,7 +90,7 @@ void Serial::open_desc ( void )
  this->serialdevice.serialout = desc;
 
  _success = true;
-
+ set_state(Tango::OPEN);
  return;
 }
 
