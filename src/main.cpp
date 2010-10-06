@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/main.cpp,v 1.4 2004-11-02 11:40:23 xavela Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/main.cpp,v 1.5 2010-10-06 21:42:30 vince_soleil Exp $";
 
 //+=============================================================================
 
@@ -22,15 +22,21 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //
 
-// $Author: xavela $
+// $Author: vince_soleil $
 
 //
 
-// $Revision: 1.4 $ $
+// $Revision: 1.5 $ $
 
 //
 
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2004/11/02 11:40:23  xavela
+// xavier :
+// in Serial.cpp :
+// add a delete to avoid memory leaks in Serial::Dev_Ser_Read_Char method.
+// add, in Serial::Dev_Ser_Flush, | PURGE_RXABORT and | PURGE_TXABORT for the Win32 part.
+//
 // Revision 1.3  2004/10/22 14:17:01  xavela
 // xavier : only in win32 part, possibility to open a port COM higher than 9.
 // changed TANGO_ROOT_WIN32 by SOLEIL_ROOT in the makefile.vc.
@@ -95,17 +101,23 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 #include <tango.h>
 
+#if defined(ENABLE_CRASH_REPORT)
+# include <crashreporting/crash_report.h>
+#else
+# define DECLARE_CRASH_HANDLER
+# define INSTALL_CRASH_HANDLER
+#endif
 
+DECLARE_CRASH_HANDLER;
 
-
-
-int main(int argc,char *argv[])
-
+int main(int argc, char *argv[])
 {
+  INSTALL_CRASH_HANDLER;
 
 
 
-	Tango::Util *tg;
+
+	Tango::Util *tg = 0;
 
 	try
 
