@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.10 2009-12-11 06:53:04 pascal_verdier Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v 1.11 2010-11-03 14:46:35 cpenel Exp $";
 static const char *TagName = "$Name: not supported by cvs2svn $";
 static const char *FileName= "$Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v $"; 
 static const char *HttpServer= "http://controle/DeviceServer/doc/";
@@ -14,11 +14,14 @@ static const char *RCSfile = "$RCSfile: SerialClass.cpp,v $";
 //
 // project :     TANGO Device Server
 //
-// $Author: pascal_verdier $
+// $Author: cpenel $
 //
-// $Revision: 1.10 $
+// $Revision: 1.11 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2009/12/11 06:53:04  pascal_verdier
+// Makefile updated.
+//
 // Revision 1.9  2009/10/01 12:31:22  pascal_verdier
 // Inheritance from Device_4Impl added.
 //
