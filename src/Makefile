@@ -1,3 +1,4 @@
+#PROTECTED REGION ID(SerialMakefile) ENABLED START#
 #=============================================================================
 #
 # file :        Makefile
@@ -8,9 +9,12 @@
 #
 # $Author: pascal_verdier $
 #
-# $Revision: 1.8 $
+# $Revision: 1.9 $
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.8  2010/02/03 13:26:29  pascal_verdier
+# State management added for linux.
+#
 # Revision 1.7  2009/12/11 06:53:04  pascal_verdier
 # Makefile updated.
 #
@@ -100,7 +104,7 @@ INCLUDE_DIRS =  -I$(TANGO_HOME)/$(BIN_DIR)/include	-I.	\
 OBJS_DIR    = obj/$(BIN_DIR)
 LIB_DIRS    = -L $(TANGO_HOME)/$(BIN_DIR)/lib
 
-TARGET_LIB = $(CPP_SERVERS)/lib/$(BIN_DIR)/libtgclasses.a
+TARGET_LIB = $(TANGO_HOME)/$(BIN_DIR)/lib/libtgclasses.a
 
 
 #-----------------------------------------
@@ -208,12 +212,12 @@ install:
 #	 Update class library and header files
 #	recompile without debug mode.
 #-----------------------------------------
-lib: clean
+lib:
 	@make no_debug=1
-	cp *.h $(CPP_SERVERS)/include
-	ar ruv $(TARGET_LIB) $(CLASS).o
-	ar ruv $(TARGET_LIB) $(CLASS)Class.o
-	ar ruv $(TARGET_LIB) $(CLASS)StateMachine.o
+	cp *.h $(TANGO_HOME)/$(BIN_DIR)/include
+	ar ruv $(TARGET_LIB) $(OBJS_DIR)/$(CLASS).o
+	ar ruv $(TARGET_LIB) $(OBJS_DIR)/$(CLASS)Class.o
+	ar ruv $(TARGET_LIB) $(OBJS_DIR)/$(CLASS)StateMachine.o
 	ident  $(TARGET_LIB) | grep $(CLASS)
 
 #----------------------------------------------------
@@ -226,3 +230,4 @@ tag:
 
 show_tag:
 	@cvstag -d 
+#PROTECTED REGION END#

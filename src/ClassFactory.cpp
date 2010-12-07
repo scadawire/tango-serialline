@@ -1,4 +1,5 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.5 2005-03-22 08:02:30 taurel Exp $";
+/*----- PROTECTED REGION ID(ClassFactory.cpp) ENABLED START -----*/
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.6 2010-12-07 09:08:49 pascal_verdier Exp $";
 
 //+=============================================================================
 
@@ -22,15 +23,20 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //
 
-// $Author: taurel $
+// $Author: pascal_verdier $
 
 //
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 //
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2005/03/22 08:02:30  taurel
+// - Ported to Tango V5
+// - Added small changed from AG in the Windows part (One Sleep to calm down thing and
+//   some management of 0 character)
+//
 // Revision 1.4  2004/11/02 11:40:23  xavela
 // xavier :
 // in Serial.cpp :
@@ -113,9 +119,9 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
  *
 
- * @author	$Author: taurel $
+ * @author	$Author: pascal_verdier $
 
- * @version	$Revision: 1.5 $ $
+ * @version	$Revision: 1.6 $ $
 
  */
 
@@ -133,3 +139,4 @@ void Tango::DServer::class_factory()
 
 }
 
+/*----- PROTECTED REGION END -----*/

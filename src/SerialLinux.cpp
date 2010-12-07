@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.7 2010-02-03 13:25:23 pascal_verdier Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.8 2010-12-07 09:08:49 pascal_verdier Exp $";
 //+=============================================================================
 //
 // file :         SerialLinux.cpp
@@ -11,9 +11,12 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // $Author: pascal_verdier $
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2010/02/03 13:25:23  pascal_verdier
+// State management added for linux.
+//
 //
 //-=============================================================================
 //=====================================================
@@ -1340,6 +1343,7 @@ char *Serial::line_read_string(void)
    timeout.tv_usec += 1000000;
    timeout.tv_sec  -= 1;
   }
+	int to = (1000000*timeout.tv_sec + timeout.tv_usec/1000);
 
   // Block until characters become available on the file descriptor
   // listed in the set.
@@ -1363,8 +1367,8 @@ char *Serial::line_read_string(void)
   if (readyfd == 0)
   {
    TangoSys_MemStream out_stream;
-   out_stream << "timeout waiting for char to be read"
-              << ends;
+   out_stream << "timeout waiting for char to be read (>="
+              << to <<" ms)" << ends;
 
    ERROR_STREAM << tab << out_stream.str() << endl;
    Tango::Except::throw_exception(
