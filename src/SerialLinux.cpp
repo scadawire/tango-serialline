@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.8 2010-12-07 09:08:49 pascal_verdier Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.9 2010-12-07 10:07:55 pascal_verdier Exp $";
 //+=============================================================================
 //
 // file :         SerialLinux.cpp
@@ -11,9 +11,12 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // $Author: pascal_verdier $
 //
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2010/12/07 09:08:49  pascal_verdier
+// Moved to Pogo-7 code generator.
+//
 // Revision 1.7  2010/02/03 13:25:23  pascal_verdier
 // State management added for linux.
 //
@@ -112,7 +115,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 {
  struct termios         termin;
  struct termios         termout;
- int                    i;
+ unsigned int           i;
 
  short                  timeout;
  float                  timeoutl;
@@ -131,7 +134,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
  INFO_STREAM << tab << "entering... !" << endl;
 
  INFO_STREAM << "   " << "param = new value" << endl;
- for(int i=0; i<argin->length(); i+=2)
+ for(i=0; i<argin->length(); i+=2)
   INFO_STREAM << "   " << std::ios::dec << (*argin)[i] << " = " 
         << std::ios::dec << (*argin)[i+1] << endl;
 
