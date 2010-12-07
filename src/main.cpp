@@ -1,5 +1,5 @@
 /*PROTECTED REGION ID(Serial::main.cpp) ENABLED START*/
-static const char *RcsId = "$Id: main.cpp,v 1.6 2010-12-07 09:10:09 pascal_verdier Exp $";
+static const char *RcsId = "$Id: main.cpp,v 1.7 2010-12-07 09:12:53 pascal_verdier Exp $";
 //=============================================================================
 //
 // file :        main.cpp
@@ -13,8 +13,8 @@ static const char *RcsId = "$Id: main.cpp,v 1.6 2010-12-07 09:10:09 pascal_verdi
 //
 // $Author: pascal_verdier $
 //
-// $Revision: 1.6 $
-// $Date: 2010-12-07 09:10:09 $
+// $Revision: 1.7 $
+// $Date: 2010-12-07 09:12:53 $
 //
 // SVN only:
 // $HeadURL:  $
@@ -22,6 +22,9 @@ static const char *RcsId = "$Id: main.cpp,v 1.6 2010-12-07 09:10:09 pascal_verdi
 // CVS only:
 // $Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/main.cpp,v $
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2010/12/07 09:10:09  pascal_verdier
+// Moved to Pogo-7 code generator.
+//
 // Revision 1.5  2010/10/06 21:42:30  vince_soleil
 // Breakpad Migration
 //
@@ -78,64 +81,33 @@ int main(int argc,char *argv[])
 	try
 
 	{
-
 		// Initialise the device server
-
 		//----------------------------------------
-
 		tg = Tango::Util::init(argc,argv);
 
-
-
 		// Create the device server singleton 
-
 		//	which will create everything
-
 		//----------------------------------------
-
 		tg->server_init(false);
 
-
-
 		// Run the endless loop
-
 		//----------------------------------------
-
 		cout << "Ready to accept request" << endl;
-
 		tg->server_run();
-
 	}
-
 	catch (bad_alloc)
-
 	{
-
 		cout << "Can't allocate memory to store device object !!!" << endl;
-
 		cout << "Exiting" << endl;
-
 	}
-
 	catch (CORBA::Exception &e)
-
 	{
-
 		Tango::Except::print_exception(e);
-
-		
-
 		cout << "Received a CORBA_Exception" << endl;
-
 		cout << "Exiting" << endl;
-
 	}
-
 	return(0);
-
 }
-
-
 
 /*PROTECTED REGION END*/
 //========================================================
