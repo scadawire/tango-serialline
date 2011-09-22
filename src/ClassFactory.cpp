@@ -1,5 +1,5 @@
-/*----- PROTECTED REGION ID(ClassFactory.cpp) ENABLED START -----*/
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.6 2010-12-07 09:08:49 pascal_verdier Exp $";
+/*----- PROTECTED REGION ID(Serial::ClassFactory.cpp) ENABLED START -----*/
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/ClassFactory.cpp,v 1.7 2011-09-22 06:11:43 pascal_verdier Exp $";
 
 //+=============================================================================
 
@@ -27,11 +27,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 //
 
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 
 //
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2010/12/07 09:08:49  pascal_verdier
+// Moved to Pogo-7 code generator.
+//
 // Revision 1.5  2005/03/22 08:02:30  taurel
 // - Ported to Tango V5
 // - Added small changed from AG in the Windows part (One Sleep to calm down thing and
@@ -121,7 +124,7 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
  * @author	$Author: pascal_verdier $
 
- * @version	$Revision: 1.6 $ $
+ * @version	$Revision: 1.7 $ $
 
  */
 

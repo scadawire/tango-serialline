@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ASCII"?>
 <pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
-  <classes name="Serial">
-    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/mntdirect/_segfs/tango/cppserver/protocols/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files" hasAbstractCommand="false" hasAbstractAttribute="false">
+  <classes name="Serial" institute="ESRF">
+    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/mntdirect/_segfs/tango/tools/pogo/test/cpp/test_oaw-1/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files" hasAbstractCommand="false" hasAbstractAttribute="false">
       <inheritances classname="Device_4Impl" sourcePath=""/>
       <identification contact="at esrf.fr - accelerator-control" author="accelerator-control" emailDomain="esrf.fr" classFamily="Communication" siteSpecific="" platform="All Platforms" bus="Serial Line" manufacturer="none" reference=""/>
-      <comments htmlInheritance="" commandsTable="//================================================================&#xA;//&#xA;//  The following table gives the correspondence&#xA;//  between command and method names.&#xA;//&#xA;//  Command name         |  Method name&#xA;//----------------------------------------------------------------&#xA;//  State                |  dev_state&#xA;//  Status               |  dev_status&#xA;//  DevSerWriteString    |  dev_ser_write_string&#xA;//  DevSerWriteChar      |  dev_ser_write_char&#xA;//  DevSerReadString     |  dev_ser_read_string&#xA;//  DevSerReadChar       |  dev_ser_read_char&#xA;//  WriteRead            |  write_read&#xA;//  DevSerGetNChar       |  dev_ser_get_nchar&#xA;//  DevSerReadNChar      |  dev_ser_read_nchar&#xA;//  DevSerReadRaw        |  dev_ser_read_raw&#xA;//  DevSerReadLine       |  dev_ser_read_line&#xA;//  DevSerFlush          |  dev_ser_flush&#xA;//  DevSerSetParameter   |  dev_ser_set_parameter&#xA;//  DevSerSetTimeout     |  dev_ser_set_timeout&#xA;//  DevSerSetParity      |  dev_ser_set_parity&#xA;//  DevSerSetCharLength  |  dev_ser_set_char_length&#xA;//  DevSerSetStopbit     |  dev_ser_set_stopbit&#xA;//  DevSerSetBaudrate    |  dev_ser_set_baudrate&#xA;//  DevSerSetNewline     |  dev_ser_set_newline&#xA;//  DevSerReadRetry      |  dev_ser_read_retry&#xA;//  DevSerReadNBinData   |  dev_ser_read_nbin_data&#xA;//================================================================"/>
+      <comments commandsTable="//================================================================&#xA;//&#xA;//  The following table gives the correspondence&#xA;//  between command and method names.&#xA;//&#xA;//  Command name         |  Method name&#xA;//----------------------------------------------------------------&#xA;//  State                |  Inherited (no method)&#xA;//  Status               |  Inherited (no method)&#xA;//  DevSerWriteString    |  dev_ser_write_string&#xA;//  DevSerWriteChar      |  dev_ser_write_char&#xA;//  DevSerReadString     |  dev_ser_read_string&#xA;//  DevSerReadChar       |  dev_ser_read_char&#xA;//  WriteRead            |  write_read&#xA;//  DevSerGetNChar       |  dev_ser_get_nchar&#xA;//  DevSerReadNChar      |  dev_ser_read_nchar&#xA;//  DevSerReadRaw        |  dev_ser_read_raw&#xA;//  DevSerReadLine       |  dev_ser_read_line&#xA;//  DevSerFlush          |  dev_ser_flush&#xA;//  DevSerSetParameter   |  dev_ser_set_parameter&#xA;//  DevSerSetTimeout     |  dev_ser_set_timeout&#xA;//  DevSerSetParity      |  dev_ser_set_parity&#xA;//  DevSerSetCharLength  |  dev_ser_set_char_length&#xA;//  DevSerSetStopbit     |  dev_ser_set_stopbit&#xA;//  DevSerSetBaudrate    |  dev_ser_set_baudrate&#xA;//  DevSerSetNewline     |  dev_ser_set_newline&#xA;//  DevSerReadRetry      |  dev_ser_read_retry&#xA;//  DevSerReadNBinData   |  dev_ser_read_nbin_data&#xA;//================================================================"/>
     </description>
     <deviceProperties name="Serialline" description="The path and name of the serial line device to be used.">
       <type xsi:type="pogoDsl:StringType"/>
@@ -57,7 +57,7 @@
       <argout description="Status description">
         <type xsi:type="pogoDsl:ConstStringType"/>
       </argout>
-      <status abstract="true" inherited="true" concrete="true" concreteHere="true"/>
+      <status abstract="true" inherited="true" concrete="true" concreteHere="false"/>
     </commands>
     <commands name="DevSerWriteString" description="Write a string of characters to a serial line and return&#xA;the number of characters written." execMethod="dev_ser_write_string" displayLevel="OPERATOR">
       <argin description="String to write">
@@ -150,7 +150,9 @@
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
     </commands>
     <commands name="DevSerSetParameter" description="Set serial line parameters" execMethod="dev_ser_set_parameter" displayLevel="OPERATOR">
-      <argin description="device parameters in pair"/>
+      <argin description="device parameters in pair">
+        <type xsi:type="pogoDsl:IntArrayType"/>
+      </argin>
       <argout description="no argout">
         <type xsi:type="pogoDsl:VoidType"/>
       </argout>
@@ -193,7 +195,9 @@
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
     </commands>
     <commands name="DevSerSetBaudrate" description="Sets the new baudrateof the serial line ( up to 4 Mega).&#xA;Default is 9600." execMethod="dev_ser_set_baudrate" displayLevel="OPERATOR">
-      <argin description="The new baudrate to set"/>
+      <argin description="The new baudrate to set">
+        <type xsi:type="pogoDsl:UIntType"/>
+      </argin>
       <argout description="no argout">
         <type xsi:type="pogoDsl:VoidType"/>
       </argout>

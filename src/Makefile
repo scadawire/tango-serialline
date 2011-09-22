@@ -9,9 +9,12 @@
 #
 # $Author: pascal_verdier $
 #
-# $Revision: 1.9 $
+# $Revision: 1.10 $
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.9  2010/12/07 09:08:49  pascal_verdier
+# Moved to Pogo-7 code generator.
+#
 # Revision 1.8  2010/02/03 13:26:29  pascal_verdier
 # State management added for linux.
 #
@@ -54,8 +57,8 @@
 
 
 CLASS      = Serial
-MAJOR_VERS = 1
-MINOR_VERS = 6
+MAJOR_VERS = 2
+MINOR_VERS = 1
 RELEASE    = Release_$(MAJOR_VERS)_$(MINOR_VERS)
 OS         = $(shell /csadmin/common/scripts/get_os)
 PROCESSOR  = $(shell uname -p)
