@@ -7,10 +7,10 @@
 //
 // project :     TANGO Device Server.
 //
-// $Author: pascal_verdier $
+// $Author: xavela $
 //
-// $Revision: 1.11 $
-// $Date: 2011-09-22 06:11:43 $
+// $Revision: 1.12 $
+// $Date: 2012-01-12 12:41:09 $
 //
 // SVN only:
 // $HeadURL:  $
@@ -18,6 +18,9 @@
 // CVS only:
 // $Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.h,v $
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2011/09/22 06:11:43  pascal_verdier
+// Problem in DevSerSetBaudrate and DevSerSetParameter fixed.
+//
 // Revision 1.10  2010/12/07 09:08:49  pascal_verdier
 // Moved to Pogo-7 code generator.
 //
@@ -33,7 +36,6 @@
 
 
 #include <tango.h>
-#include <termios.h>
 
 
 #ifdef __linux

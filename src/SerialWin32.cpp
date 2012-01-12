@@ -453,15 +453,12 @@ OVERLAPPED	osWrite = {0};
 	if (WriteFile(serialdevice.hfile, tmp, str_len,(DWORD *)&bytes_written, &osWrite) == false)
 	{
 	  ERROR_STREAM << " DevVarCharArray NOT written " << endl;
-	  if(tmp) delete tmp;
-	  return -1;
+	  bytes_written = -1;
 	}
-	else
-	{	
-	  DEBUG_STREAM << " DevVarCharArray written on serial port " << endl;
-	  if(tmp) delete[] tmp;
-	  return bytes_written;
-	}
+
+	if(tmp) delete [] tmp;
+
+	return bytes_written;
 }
 
 //+------------------------------------------------------------------
@@ -988,8 +985,8 @@ Tango::ConstDevString Serial::dev_status()
 {
 DCB				comm_prop;
 COMMTIMEOUTS	comm_timeouts;
-static  char	str[4096];
-Tango::ConstDevString argout;
+static char	append[4096];
+static char mess[4096];
   
 	INFO_STREAM << "dev_status: begin" << endl;
   if ( !_success )
@@ -1023,63 +1020,95 @@ Tango::ConstDevString argout;
 			    (const char *)"Serial::dev_status");
 	  }
     
-	  strcpy(str,"Current parameters of the serial line:\n");
-	  sprintf(str, "%s   serialline       : %s\n", 
-	    str, serialdevice.serialline);
-	  sprintf(str, "%s   baudrate         : %d\n", 
-	    str,comm_prop.BaudRate);
-	  sprintf(str, "%s   byte size        : %d\n", 
-	    str,comm_prop.ByteSize); 
-	  sprintf(str, "%s   stop bits        : %d (0-2=1,1.5,2bit)\n", 
-	    str,comm_prop.StopBits);
-	  sprintf(str, "%s   parity           : %d (0-4=no,odd,even,mark,space)\n", 
-	    str,comm_prop.Parity);
-	  sprintf(str, "%s   reading timeout  : %d (mS)\n", 
-	    str,comm_timeouts.ReadTotalTimeoutConstant);
-	  sprintf(str, "%s   fOutxCtsFlow     : %d\n", 
-	    str,comm_prop.fOutxCtsFlow);
-	  sprintf(str, "%s   fOutxDsrFlow     : %d\n", 
-	    str,comm_prop.fOutxDsrFlow);
-	  sprintf(str, "%s   fDtrControl      : %d (%d=dis %d=ena %d=hand)\n", 
-	    str,comm_prop.fDtrControl,
+	  strcpy(mess,"Current parameters of the serial line:\n");
+	  sprintf(append, "serialline       : %s\n", serialdevice.serialline);
+	  strcat(mess,append);
+	  
+		sprintf(append, "baudrate         : %d\n", comm_prop.BaudRate);
+	  strcat(mess,append);
+	  
+		sprintf(append, "byte size        : %d\n", comm_prop.ByteSize); 
+	  strcat(mess,append);
+	  
+		sprintf(append, "stop bits        : %d (0-2=1,1.5,2bit)\n", comm_prop.StopBits);
+	  strcat(mess,append);
+	  
+		sprintf(append, "parity           : %d (0-4=no,odd,even,mark,space)\n", comm_prop.Parity);
+	  strcat(mess,append);
+	  
+		sprintf(append, "reading timeout  : %d (mS)\n", comm_timeouts.ReadTotalTimeoutConstant);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fOutxCtsFlow     : %d\n", comm_prop.fOutxCtsFlow);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fOutxDsrFlow     : %d\n", comm_prop.fOutxDsrFlow);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fDtrControl      : %d (%d=dis %d=ena %d=hand)\n", comm_prop.fDtrControl,
 	    DTR_CONTROL_DISABLE,
 	    DTR_CONTROL_ENABLE,
 	    DTR_CONTROL_HANDSHAKE);
-	  sprintf(str, "%s   fDsrSensitivity  : %d\n", 
-	    str,comm_prop.fDsrSensitivity);
-	  sprintf(str, "%s   fTXContinueOnXoff: %d\n", 
-	    str,comm_prop.fTXContinueOnXoff);
-	  sprintf(str, "%s   fOutX            : %d\n", 
-	    str,comm_prop.fOutX);
-	  sprintf(str, "%s   fInX             : %d\n", 
-	    str,comm_prop.fInX);
-	  sprintf(str, "%s   fRtsControl      : %d (%d=dis %d=ena %d=hand)\n", 
-	    str,comm_prop.fRtsControl,
+	  strcat(mess,append);
+	  
+		sprintf(append, "fDsrSensitivity  : %d\n", comm_prop.fDsrSensitivity);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fTXContinueOnXoff: %d\n", comm_prop.fTXContinueOnXoff);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fOutX            : %d\n", comm_prop.fOutX);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fInX             : %d\n", comm_prop.fInX);
+	  strcat(mess,append);
+	  
+		sprintf(append, "fRtsControl      : %d (%d=dis %d=ena %d=hand)\n", comm_prop.fRtsControl,
 	    RTS_CONTROL_DISABLE,
 	    RTS_CONTROL_ENABLE,
 	    RTS_CONTROL_HANDSHAKE);
+	  strcat(mess,append);
     
 	  /*
 	  * Add internal parameter values
 	  */
-	  sprintf(str,"%s\nCurrent parameters of the device server:\n", str);
-	  sprintf(str, "%s   serialline       : %s\n", str, serialdevice.serialline);
-	  sprintf(str, "%s   timeout          : %d \n", 
-	    str, serialdevice.timeout);
-	  sprintf(str, "%s   parity           : %d (%d=none %d=odd %d=even)\n", 
-	    str, serialdevice.parity, NOPARITY, ODDPARITY, EVENPARITY);
-	  sprintf(str, "%s   charlength       : %d\n", str, serialdevice.charlength);
-	  sprintf(str, "%s   stopbits         : %d (%d=1bit %d=1.5bits %d=2bits)\n", 
-	    str, serialdevice.stopbits, SL_STOP1, SL_STOP15, SL_STOP2);
-	  sprintf(str, "%s   baudrate         : %d\n", str, serialdevice.baudrate);
-	  sprintf(str, "%s   newline          : %d\n", str, serialdevice.newline);
-	  /*
-	  * Return string
-	  */
-	  argout = str;
+	  sprintf(append,"\nCurrent parameters of the device server:\n");
+	  strcat(mess,append);
+	  
+		sprintf(append, "serialline       : %s\n", serialdevice.serialline);
+	  strcat(mess,append);
+	  
+		sprintf(append, "timeout          : %d \n",serialdevice.timeout);
+	  strcat(mess,append);
+	  
+		sprintf(append, "parity           : %d (%d=none %d=odd %d=even)\n", serialdevice.parity, 
+			NOPARITY, 
+			ODDPARITY, 
+			EVENPARITY);
+	  strcat(mess,append);
+	  
+		sprintf(append, "charlength       : %d\n", serialdevice.charlength);
+	  strcat(mess,append);
+	  
+		sprintf(append, "stopbits         : %d (%d=1bit %d=1.5bits %d=2bits)\n", serialdevice.stopbits, 
+			SL_STOP1, 
+			SL_STOP15, 
+			SL_STOP2);
+	  strcat(mess,append);
+	  
+		sprintf(append, "baudrate         : %d\n", serialdevice.baudrate);
+	  strcat(mess,append);
+	  
+		sprintf(append, "newline          : %d\n", serialdevice.newline);
+	  strcat(mess,append);
 
     set_state(Tango::OPEN);
   }
+	
+	/*
+	* Return string
+	*/
+	Tango::DevString argout = mess;
 
 	INFO_STREAM << "dev_status: end" << endl;
 	return argout;
