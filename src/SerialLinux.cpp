@@ -1,4 +1,4 @@
-static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.9 2010-12-07 10:07:55 pascal_verdier Exp $";
+static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialLinux.cpp,v 1.10 2013-04-03 09:27:29 jensmeyer Exp $";
 //+=============================================================================
 //
 // file :         SerialLinux.cpp
@@ -9,11 +9,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 //
 // project :      TANGO Device Server
 //
-// $Author: pascal_verdier $
+// $Author: jensmeyer $
 //
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2010/12/07 10:07:55  pascal_verdier
+// Replace int by unsigned int to remove warnings.
+//
 // Revision 1.8  2010/12/07 09:08:49  pascal_verdier
 // Moved to Pogo-7 code generator.
 //
@@ -1473,8 +1476,10 @@ char *Serial::line_read_string(void)
  // Do not use strncpy() as raw_read_string() is used by xxx_read_char()
  int i;
  for(i=0 ; i<this->serialdevice.ncharread ; i++)
-  argout[i] = this->serialdevice.buffer[i];
-
+ {
+  	argout[i] = this->serialdevice.buffer[i];
+  	INFO_STREAM << "[" << i << "] " << this->serialdevice.buffer[i] << " hex : " << hex << (unsigned short)this->serialdevice.buffer[i] << endl;
+ }
  // Add string ending char, used only by ser_read_string()
  argout[i]=0;
 

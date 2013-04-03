@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(Serial.cpp) ENABLED START -----*/
-static const char *RcsId = "$Id: Serial.cpp,v 1.14 2011-09-22 06:11:43 pascal_verdier Exp $";
+static const char *RcsId = "$Id: Serial.cpp,v 1.15 2013-04-03 09:27:29 jensmeyer Exp $";
 //=============================================================================
 //
 // file :        Serial.cpp
@@ -12,10 +12,10 @@ static const char *RcsId = "$Id: Serial.cpp,v 1.14 2011-09-22 06:11:43 pascal_ve
 //
 // project :     TANGO Device Server.
 //
-// $Author: pascal_verdier $
+// $Author: jensmeyer $
 //
-// $Revision: 1.14 $
-// $Date: 2011-09-22 06:11:43 $
+// $Revision: 1.15 $
+// $Date: 2013-04-03 09:27:29 $
 //
 // SVN only:
 // $HeadURL:  $
@@ -23,6 +23,9 @@ static const char *RcsId = "$Id: Serial.cpp,v 1.14 2011-09-22 06:11:43 pascal_ve
 // CVS only:
 // $Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/Serial.cpp,v $
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2011/09/22 06:11:43  pascal_verdier
+// Problem in DevSerSetBaudrate and DevSerSetParameter fixed.
+//
 // Revision 1.13  2010/12/07 09:08:49  pascal_verdier
 // Moved to Pogo-7 code generator.
 //
@@ -540,6 +543,8 @@ Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 
 	long            nchar;	
 	//	Add your own code to control device here
+	
+	INFO_STREAM << "Serial::DevSerWriteString() : " << argin << endl;
 	
 #ifdef __linux
 	nchar = write(
