@@ -34,9 +34,9 @@
     </build>
 
     <scm>
-        <connection>${scm.connection.cvs.tango-ds}:Communication/SerialLine</connection>
-        <developerConnection>${scm.developerConnection.cvs.tango-ds}:Communication/SerialLine</developerConnection>
-        <url>${scm.url.cvs.tango-ds}/Communication/SerialLine</url>
+        <connection>${scm.connection.svn.tango-ds}/DeviceClasses/Communication/SerialLine/trunk/</connection>
+        <developerConnection>${scm.connection.svn.tango-ds}/DeviceClasses/Communication/SerialLine/trunk/</developerConnection>
+        <url>${scm.connection.svn.tango-ds}/DeviceClasses/Communication/SerialLine/trunk/</url>
     </scm>
 
     <developers>
