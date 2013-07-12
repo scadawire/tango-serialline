@@ -138,7 +138,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 
  INFO_STREAM << "   " << "param = new value" << endl;
  for(i=0; i<argin->length(); i+=2)
-  INFO_STREAM << "   " << std::ios::dec << (*argin)[i] << " = " 
+  INFO_STREAM << "   " << std::ios::dec << (*argin)[i] << " = "
         << std::ios::dec << (*argin)[i+1] << endl;
 
  //
@@ -453,7 +453,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
          case 75    : speed =    B75; break;
          case 50    : speed =    B50; break;
 
-         default    : 
+         default    :
             TangoSys_MemStream out_stream;
             out_stream << "invalid baudrate" << ends;
 
@@ -550,12 +550,12 @@ Tango::ConstDevString Serial::dev_status()
 	static char    append[128];
 	static char    mess[4096];
 	static char    **status;
-	char 		*str;
+	const char 		*str;
 	//TODO: TEMPORARY MODIFICATION FOR DEBUG
 	//char         eol = '\r';     // end of line used for returned message
 	char           eol = '\n';     // end of line used for returned message
-	
-	
+
+
 	//	POGO has generated a method core with argout allocation.
 	//	If you would like to use a static reference without copying,
 	//	See "TANGO Device Server Programmer's Manual"
@@ -565,7 +565,7 @@ Tango::ConstDevString Serial::dev_status()
 	Tango::DevString	argout = Tango::DeviceImpl::dev_status();
 	*/
 	INFO_STREAM << "Serial::dev_status(): entering... !" << endl;
-	
+
 	//	Add your own code to control device here
   if ( !_success )
   {
@@ -574,10 +574,10 @@ Tango::ConstDevString Serial::dev_status()
   }
   else
   {
-	
+
 	  // Compose string to return with serial configuration parameters
 	  sprintf(mess,"The serial line has following configuration : %c%c", eol, eol);
-  	
+
 	  if (this->serialdevice.serialline != NULL)
 	  {
 		  sprintf(append,"descriptor=%s%c",this->serialdevice.serialline, eol);
@@ -587,15 +587,15 @@ Tango::ConstDevString Serial::dev_status()
 		  sprintf(append,"descriptor=none%c", eol);
 	  }
 	  strcat(mess,append);
-  	
+
 	  // Current parameters defined in the internal structure
 	  sprintf(append,"%cParameters defined internally:%c", eol, eol);
 	  strcat(mess,append);
-  	
+
 	  sprintf(append,"timeout=%d%c",this->serialdevice.timeout, eol);
 	  strcat(mess,append);
-  	
-	  sprintf(append,"baudrate=%d%c",this->serialdevice.baudrate, eol);
+
+	  sprintf(append,"baudrate=%ld%c",this->serialdevice.baudrate, eol);
 	  strcat(mess,append);
 
 	  switch(this->serialdevice.parity)
@@ -607,7 +607,7 @@ Tango::ConstDevString Serial::dev_status()
 	  }
 	  sprintf(append,"parity=%s%c", str, eol);
 	  strcat(mess,append);
-  	
+
 	  switch(this->serialdevice.charlength)
 	  {
 		  case SL_DATA5: str = "5"; break;
@@ -618,7 +618,7 @@ Tango::ConstDevString Serial::dev_status()
 	  }
 	  sprintf(append,"charlength=%s%c",str, eol);
 	  strcat(mess,append);
-  	
+
 	  switch(this->serialdevice.stopbits)
 	  {
 		  case SL_STOP1: str = "1"; break;
@@ -627,7 +627,7 @@ Tango::ConstDevString Serial::dev_status()
 	  }
 	  sprintf(append,"stopbits=%s%c",str, eol);
 	  strcat(mess,append);
-  	
+
 	  sprintf(append,"newline=%d%c",this->serialdevice.newline, eol);
 	  strcat(mess,append);
 
@@ -635,14 +635,14 @@ Tango::ConstDevString Serial::dev_status()
 	  // (see file /usr/include/asm/termbits.h for values decoding)
 	  sprintf(append,"%cParameters of the input terminal:%c", eol, eol);
 	  strcat(mess,append);
-  	
+
 	  // TODO : the same for win32 !
 	  if (tcgetattr(this->serialdevice.serialin, &termin) < 0)
 	  {
 		  TangoSys_MemStream out_stream;
 		  out_stream << "tcsetattr() error on in line, errno: " << errno
 			  << ends;
-  		
+
 		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
 		  INFO_STREAM << out_stream.str() << endl;
 		  Tango::Except::throw_exception(
@@ -651,18 +651,18 @@ Tango::ConstDevString Serial::dev_status()
 			  (const char *)"Serial::dev_status");
 	  }
 	  strcat(mess,decode_parameters(termin, eol));
-  	
+
 	  // Current parameters of the output terminal
 	  // (see file /usr/include/asm/termbits.h for values decoding)
 	  sprintf(append,"%cParameters of the output terminal:%c", eol, eol);
 	  strcat(mess,append);
-  	
+
 	  if (tcgetattr(this->serialdevice.serialin, &termout) < 0)
 	  {
 		  TangoSys_MemStream out_stream;
 		  out_stream << "tcsetattr() error on out line, errno: " << errno
 			  << ends;
-  		
+
 		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
 		  INFO_STREAM << out_stream.str() << endl;
 		  Tango::Except::throw_exception(
@@ -683,11 +683,11 @@ Tango::ConstDevString Serial::dev_status()
 /**
 *      method: Serial::retry_read_string
 *
-*      description:    
+*      description:
 *	     read a string from the serialline device in mode raw,
-*			 if first reading attempt successfull, retry to read "nretry" 
+*			 if first reading attempt successfull, retry to read "nretry"
 *      times; if no more data found exit on timeout without error.
-*	     Useful in case of long strings with no fixed lenght ( > 64 bytes) 
+*	     Useful in case of long strings with no fixed lenght ( > 64 bytes)
 *			 Very unlucky case!!!
 *      The maximum number of characters that can be read is
 *      SL_MAXSTRING.
@@ -729,25 +729,25 @@ char *Serial::retry_read_string(long nretry)
  //
  // Add to the set the file descriptor to watch at
  //
- FD_SET(this->serialdevice.serialin, &watchset); 
+ FD_SET(this->serialdevice.serialin, &watchset);
 
  // set retry counter to 0
  retrycnt = 0;
  nchar = SL_MAXSTRING;
  //
  // Initialize the timeout (calculate when the timeout should expire)
- // 
+ //
  timeout_s = ((float)this->serialdevice.timeout) / 1000.0; // seconds
 
  gettimeofday(&timeend,&tz);
  timeend.tv_usec += (int)((timeout_s - (int)timeout_s) * 1000000.0);
- timeend.tv_sec  += (int)(timeout_s); 
+ timeend.tv_sec  += (int)(timeout_s);
  if(timeend.tv_usec > 1000000)
  {
   timeend.tv_usec -= 1000000;
   timeend.tv_sec  += 1;
  }
- 
+
  //
  // Wait until the receiving buffer contains the requested number of characters
  //
@@ -776,7 +776,7 @@ char *Serial::retry_read_string(long nretry)
    timeout.tv_usec += 1000000;
    timeout.tv_sec  -= 1;
   }
-  
+
 	//
   // Check if the timeout occured
   // With reasonnable values this should not happen, but on overloaded
@@ -800,11 +800,11 @@ char *Serial::retry_read_string(long nretry)
   // listed in the set.
   //
   readyfd = select(maxfd, &inset, NULL, NULL, &timeout);
-  
-	// don't return error if something has been read from serial line 
-	if ((readyfd <= 0) && (retrycnt > 0)) 
+
+	// don't return error if something has been read from serial line
+	if ((readyfd <= 0) && (retrycnt > 0))
 		break;
-	
+
 	//
   // Check if an error occured
   //
@@ -817,7 +817,7 @@ char *Serial::retry_read_string(long nretry)
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
-        (const char *)tab);					
+        (const char *)tab);
   }
 
   //
@@ -827,12 +827,12 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read"
-              << ends;						
+              << ends;
    ERROR_STREAM << tab << out_stream.str() << endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
-        (const char *)tab);	
+        (const char *)tab);
   }
 
   //
@@ -859,7 +859,7 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "error reading no. of char, errno=" << errno
-              << ends;					
+              << ends;
    ERROR_STREAM << tab << out_stream.str() << endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_ioctl",
@@ -877,10 +877,10 @@ char *Serial::retry_read_string(long nretry)
   ncharin = read(
 	this->serialdevice.serialin,
 	this->serialdevice.buffer + this->serialdevice.ncharread,
-	(ncharin > (nchar - this->serialdevice.ncharread) ? 
+	(ncharin > (nchar - this->serialdevice.ncharread) ?
             (nchar - this->serialdevice.ncharread) : ncharin));
 
-	
+
 	if (ncharin < 0)
   {
    TangoSys_MemStream out_stream;
@@ -894,17 +894,17 @@ char *Serial::retry_read_string(long nretry)
         (const char *)tab);
   }
   this->serialdevice.ncharread += ncharin;
-	retrycnt++;	
+	retrycnt++;
  }
- while(nretry >= retrycnt);	
+ while(nretry >= retrycnt);
 
  //
  // At this point the number of characters requested have been read.
  //
  this->serialdevice.buffer[this->serialdevice.ncharread] = 0;
-      
+
  //
- // Prepare return buffer (can not return "buffer" directly 
+ // Prepare return buffer (can not return "buffer" directly
  // because TANGO desallocate the memory return)
  //
  argout = new char[this->serialdevice.ncharread+1];
@@ -929,7 +929,7 @@ char *Serial::retry_read_string(long nretry)
  argout[i]=0;
 
  return argout;}
- 
+
 //+------------------------------------------------------------------
 /**
 *      method: Serial::raw_read_string
@@ -1076,7 +1076,7 @@ char *Serial::nchar_read_string(long  nchar)
  //
  // Add to the set the file descriptor to watch at
  //
- FD_SET(this->serialdevice.serialin, &watchset); 
+ FD_SET(this->serialdevice.serialin, &watchset);
 
  //
  // Initialize the timeout (calculate when the timeout should expire)
@@ -1085,7 +1085,7 @@ char *Serial::nchar_read_string(long  nchar)
 
  gettimeofday(&timeend,&tz);
  timeend.tv_usec += (int)((timeout_s - (int)timeout_s) * 1000000.0);
- timeend.tv_sec  += (int)(timeout_s); 
+ timeend.tv_sec  += (int)(timeout_s);
  if(timeend.tv_usec > 1000000)
  {
   timeend.tv_usec -= 1000000;
@@ -1221,7 +1221,7 @@ char *Serial::nchar_read_string(long  nchar)
   ncharin = read(
 	this->serialdevice.serialin,
 	this->serialdevice.buffer + this->serialdevice.ncharread,
-	(ncharin > (nchar - this->serialdevice.ncharread) ? 
+	(ncharin > (nchar - this->serialdevice.ncharread) ?
             (nchar - this->serialdevice.ncharread) : ncharin));
   if (ncharin < 0)
   {
@@ -1245,9 +1245,9 @@ char *Serial::nchar_read_string(long  nchar)
  // At this point the number of characters requested have been read.
  //
  this->serialdevice.buffer[this->serialdevice.ncharread] = 0;
-      
+
  //
- // Prepare return buffer (can not return "buffer" directly 
+ // Prepare return buffer (can not return "buffer" directly
  // because TANGO desallocate the memory return)
  //
  argout = new char[this->serialdevice.ncharread+1];
@@ -1315,14 +1315,14 @@ char *Serial::line_read_string(void)
  FD_ZERO(&watchset);
 
  // Add to the set the file descriptor to watch at
- FD_SET(this->serialdevice.serialin, &watchset); 
+ FD_SET(this->serialdevice.serialin, &watchset);
 
  // Initialize the timeout (calculate when the timeout should expire)
  timeout_s = ((float)this->serialdevice.timeout) / 1000.0; // seconds
 
  gettimeofday(&timeend,&tz);
  timeend.tv_usec += (int)((timeout_s - (int)timeout_s) * 1000000.0);
- timeend.tv_sec  += (int)(timeout_s); 
+ timeend.tv_sec  += (int)(timeout_s);
  if(timeend.tv_usec > 1000000)
  {
   timeend.tv_usec -= 1000000;
@@ -1419,7 +1419,7 @@ char *Serial::line_read_string(void)
 
   // Read the receiving buffer, character per character, looking for
   // the end of line predefined.
-  //   	
+  //
   // TODO: implement in more efficient way (using double
   // buffering or fgets() ??) to do less system calls.
   do
@@ -1427,7 +1427,7 @@ char *Serial::line_read_string(void)
    // Empty the receiving buffer (if not done, the next call to select() will
    // immediately return that this serialline has to be read, therefore
    // the waiting loop would be very system consuming)
-   if (read(this->serialdevice.serialin, 
+   if (read(this->serialdevice.serialin,
             this->serialdevice.buffer + this->serialdevice.ncharread, 1) < 0)
    {
     TangoSys_MemStream out_stream;
@@ -1457,7 +1457,7 @@ char *Serial::line_read_string(void)
  // At this point the newline has been read.
  this->serialdevice.buffer[this->serialdevice.ncharread] = 0;
 
- // Prepare return buffer (can not return "buffer" directly 
+ // Prepare return buffer (can not return "buffer" directly
  // because TANGO desallocate the memory return)
  argout = new char[this->serialdevice.ncharread+1];
  if(argout == 0)
@@ -1491,7 +1491,7 @@ char *Serial::line_read_string(void)
 /**
 *      method: Serial::decode_parameters
 *
-*      description: Return a string with the serial line configuration 
+*      description: Return a string with the serial line configuration
 *      parameter decoded from the termio structure passed.
 *
 *      @param  term structure to decode
@@ -1503,7 +1503,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 {
 	static char            mess[4096];
 	static char            append[128];
-	char			*str;
+	const char			*str;
 	//
 	mess[0] = 0;
 	sprintf(append,"c_cc=0%o%c", term.c_cc,    eol);
@@ -1516,7 +1516,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 	strcat(mess,append);
 	sprintf(append,"c_oflag=0%o%c", term.c_oflag, eol);
 	strcat(mess,append);
-	
+
 	sprintf(append,"%c", eol);
 	strcat(mess,append);
 
@@ -1552,7 +1552,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 		case B110     : str =     "110"; break;
 		case B75      : str =      "75"; break;
 		case B50      : str =      "50"; break;
-			
+
 		default       : str = "???????"; break;
 	}
 	sprintf(append,"baudrate=%s%c",str, eol);
@@ -1566,7 +1566,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 			str = "even";
 		else
 			str = "odd";
-		
+
 	sprintf(append,"parity=%s%c",str, eol);
 	strcat(mess,append);
 	//
@@ -1576,7 +1576,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 		case CS6      : str = "6"; break;
 		case CS7      : str = "7"; break;
 		case CS8      : str = "8"; break;
-			
+
 		default       : str = "?"; break;
 	}
 	sprintf(append,"charlength=%s%c",str, eol);
@@ -1588,7 +1588,7 @@ char *Serial::decode_parameters(struct termios term, char eol )
 		str = "1";
 	sprintf(append,"stopbits=%s%c",str, eol);
 	strcat(mess,append);
-	
+
 	return mess;
 }
 
