@@ -142,4 +142,4 @@ void Tango::DServer::class_factory()
 
 }
 
-/*----- PROTECTED REGION END -----*/
+/*----- PROTECTED REGION END -----*/	//	Serial::ClassFactory.cpp

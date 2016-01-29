@@ -38,23 +38,14 @@
 #include <tango.h>
 #include <Serial.h>
 
-/*----- PROTECTED REGION END -----*/
+/*----- PROTECTED REGION END -----*/	//	SerialClass.h
+
 
 namespace Serial_ns
 {
-	/*----- PROTECTED REGION ID(Serial::classes for dynamic creation) ENABLED START -----*/
+/*----- PROTECTED REGION ID(SerialClass::classes for dynamic creation) ENABLED START -----*/
 
-	/*----- PROTECTED REGION END -----*/	//	Serial::classes for dynamic creation
-
-
-
-//=========================================
-//	Define classes for attributes
-//=========================================
-
-
-
-
+	/*----- PROTECTED REGION END -----*/	//	SerialClass::classes for dynamic creation
 
 //=========================================
 //	Define classes for commands
@@ -496,64 +487,127 @@ public:
 	{return (static_cast<Serial *>(dev))->is_DevSerReadNBinData_allowed(any);}
 };
 
+//	Command DevSerWaitChar class definition
+class DevSerWaitCharClass : public Tango::Command
+{
+public:
+	DevSerWaitCharClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
 
+	DevSerWaitCharClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~DevSerWaitCharClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerWaitChar_allowed(any);}
+};
 
+//	Command DevSerSetParameterCompat class definition
+class DevSerSetParameterCompatClass : public Tango::Command
+{
+public:
+	DevSerSetParameterCompatClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerSetParameterCompatClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~DevSerSetParameterCompatClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerSetParameterCompat_allowed(any);}
+};
+
+//	Command DevSerFlushCompat class definition
+class DevSerFlushCompatClass : public Tango::Command
+{
+public:
+	DevSerFlushCompatClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	DevSerFlushCompatClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~DevSerFlushCompatClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Serial *>(dev))->is_DevSerFlushCompat_allowed(any);}
+};
 
 
 /**
- *	The TemplateDevServClass singleton definition
+ *	The SerialClass singleton definition
  */
 
-class
 #ifdef _TG_WINDOWS_
-	__declspec(dllexport)
+class __declspec(dllexport)  SerialClass : public Tango::DeviceClass
+#else
+class SerialClass : public Tango::DeviceClass
 #endif
-	SerialClass : public Tango::DeviceClass
 {
-	/*----- PROTECTED REGION ID(Serial::Additionnal DServer data members) ENABLED START -----*/
+	/*----- PROTECTED REGION ID(SerialClass::Additionnal DServer data members) ENABLED START -----*/
 
 public:
 	
 
-	/*----- PROTECTED REGION END -----*/	//	Serial::Additionnal DServer data members
+	/*----- PROTECTED REGION END -----*/	//	SerialClass::Additionnal DServer data members
 
-
-
-public:
-//	write class properties data members
-	Tango::DbData	cl_prop;
-	Tango::DbData	cl_def_prop;
-	Tango::DbData	dev_def_prop;
-
-//	Method prototypes
-	static SerialClass *init(const char *);
-	static SerialClass *instance();
-	~SerialClass();
-	Tango::DbDatum	get_class_property(string &);
-	Tango::DbDatum	get_default_device_property(string &);
-	Tango::DbDatum	get_default_class_property(string &);
+	public:
+		//	write class properties data members
+		Tango::DbData	cl_prop;
+		Tango::DbData	cl_def_prop;
+		Tango::DbData	dev_def_prop;
 	
-protected:
-	SerialClass(string &);
-	static SerialClass *_instance;
-	void command_factory();
-	void attribute_factory(vector<Tango::Attr *> &);
-	void write_class_property();
-	void set_default_property();
-	void get_class_property();
-	string get_cvstag();
-	string get_cvsroot();
-
-private:
-	void device_factory(const Tango::DevVarStringArray *);
-	void create_static_attribute_list(vector<Tango::Attr *> &);
-	void erase_dynamic_attributes(const Tango::DevVarStringArray *,vector<Tango::Attr *> &);
-	vector<string>	defaultAttList;
-
-
+		//	Method prototypes
+		static SerialClass *init(const char *);
+		static SerialClass *instance();
+		~SerialClass();
+		Tango::DbDatum	get_class_property(string &);
+		Tango::DbDatum	get_default_device_property(string &);
+		Tango::DbDatum	get_default_class_property(string &);
+	
+	protected:
+		SerialClass(string &);
+		static SerialClass *_instance;
+		void command_factory();
+		void attribute_factory(vector<Tango::Attr *> &);
+		void pipe_factory();
+		void write_class_property();
+		void set_default_property();
+		void get_class_property();
+		string get_cvstag();
+		string get_cvsroot();
+	
+	private:
+		void device_factory(const Tango::DevVarStringArray *);
+		void create_static_attribute_list(vector<Tango::Attr *> &);
+		void erase_dynamic_attributes(const Tango::DevVarStringArray *,vector<Tango::Attr *> &);
+		vector<string>	defaultAttList;
+		Tango::Attr *get_attr_object_by_name(vector<Tango::Attr *> &att_list, string attname);
 };
 
-}	//	namespace
+}	//	End of namespace
 
-#endif	//	SERIALCLASS_H
-
+#endif   //	Serial_H

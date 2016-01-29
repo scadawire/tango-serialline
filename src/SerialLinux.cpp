@@ -1593,4 +1593,233 @@ char *Serial::decode_parameters(struct termios term, char eol )
 }
 
 
+//--------------------------------------------------------
+/**
+ *	Command DevSerWaitChar related method
+ *	Description: Command blocks until a char is available or the timeout expired.
+ *               If the timeout value is 0 then the command returns immediately 
+ *               with the number of chars available if any or timeout error if no char available
+ *
+ *	@returns Number of charcters in reading buffer
+ */
+//--------------------------------------------------------
+Tango::DevLong Serial::dev_ser_wait_char_linux(void)
+{
+	Tango::DevLong argout;
+    
+    fd_set		watchset;	// file descriptor set
+    fd_set		inset;		// file descriptor set updated by select()
+    int		maxfd;		    // maximum file descriptor used
+    struct timeval	timeend;	// current time + timeout
+    struct timeval	timeout;	// timeout value
+    float		timeout_s;	// timeout value in seconds
+    struct timezone tz;		// not used
+    int		readyfd;	    // number of file descriptors ready to be read
+    int		ncharin; 	    // number of characters in the receiving buffer
 
+    char	tab[]="Serial::dev_ser_wait_char(): ";
+ //
+ // Initialize the set, no file descriptors contained
+ //
+    FD_ZERO(&watchset);
+
+
+ //
+ // Add to the set the file descriptor to watch at
+ //
+    FD_SET(this->serialdevice.serialin, &watchset);
+
+
+ //
+ // Initialize the timeout (calculate when the timeout should expire)
+ //
+    timeout_s = ((float)this->serialdevice.timeout) / 1000; // seconds
+
+
+ //
+ // If timeout is 0 then return immediately with the number of characters
+ // available or timeout error if no char available
+ //
+    if(timeout_s <= 0)
+    {
+        if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
+        {
+            TangoSys_MemStream out_stream;
+            out_stream << "error reading number of char in receiving buffer (errno = " << errno << ")" << endl;
+
+            ERROR_STREAM << tab << out_stream.str() << endl;
+
+            Tango::Except::throw_exception(
+                (const char *)"Read Error",
+                 out_stream.str(),
+                (const char *)tab);
+        }
+
+        INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << endl;
+
+        // Return timeout error if no chars available
+
+        if(ncharin <= 0)
+        {
+            TangoSys_MemStream out_stream;
+            out_stream << "The timeout is 0 and no characters are available!" << endl;
+
+            ERROR_STREAM << tab << out_stream.str() << endl;
+
+            Tango::Except::throw_exception(
+                (const char *)"Timeout Error",
+                 out_stream.str(),
+                (const char *)tab);
+        }
+
+        argout = ncharin;
+        return argout;
+    }
+
+
+
+ //
+ // Wait until the receiving buffer contains the requested number of characters
+ //
+    gettimeofday(&timeend,&tz);
+    timeend.tv_usec += (int)((timeout_s - (int)timeout_s) * 1000000.0);
+    timeend.tv_sec  += (int)(timeout_s);
+    if(timeend.tv_usec > 1000000)
+    {
+        timeend.tv_usec -= 1000000;
+        timeend.tv_sec  += 1;
+    }
+
+ //
+ // Set the timeout value
+ //
+    gettimeofday(&timeout,&tz);
+    timeout.tv_usec = timeend.tv_usec - timeout.tv_usec;
+    timeout.tv_sec  = timeend.tv_sec  - timeout.tv_sec;
+    if(timeout.tv_usec < 0)
+    {
+        timeout.tv_usec += 1000000;
+        timeout.tv_sec  -= 1;
+    }
+
+ //
+ // Check if the timeout occured
+ // With reasonnable values this should not happen, but on overloaded
+ // systems with a short timeout value it may happens that the timeout
+ // expired at this point before the call to select()
+ //
+    if(timeout.tv_sec < 0)
+    {
+        TangoSys_MemStream out_stream;
+        out_stream << "timeout waiting for char to be read (sched)" << endl;
+        out_stream << "timeout.tv_usec = " << timeout.tv_usec << endl;
+        out_stream << "timeout.tv_sec = " << timeout.tv_sec << endl;
+        out_stream << "timeend.tv_usec = " << timeend.tv_usec << endl;
+        out_stream << "timeend.tv_sec = " << timeend.tv_sec << endl;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+
+        Tango::Except::throw_exception(
+            (const char *)"Timeout Error",
+             out_stream.str(),
+            (const char *)tab);
+ }
+
+
+ //
+ // Set the maximum file descriptor used, this avoid the system to look
+ // through all the file descriptors that a Linux process can have (up to 1024)
+ //
+    maxfd = this->serialdevice.serialin + 1;
+
+
+ //
+ // As select() will update will update the set, make a copy of it
+ //
+    inset = watchset;
+
+
+
+
+ //
+ // Block until characters become available on the file descriptor
+ // listed in the set.
+ //
+    readyfd = select(maxfd, &inset, NULL, NULL, &timeout);
+
+
+ //
+ // Check if an error occured
+ //
+    if (readyfd < 0)
+    {
+        TangoSys_MemStream out_stream;
+        out_stream << "Error when waiting for characters to read. (errno = " << errno << ")" << endl;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+
+        Tango::Except::throw_exception(
+            (const char *)"Timeout Error",
+             out_stream.str(),
+            (const char *)tab);
+    }
+
+
+ //
+ // Check if the timeout occured
+ //
+    if (readyfd == 0)
+    {
+        TangoSys_MemStream out_stream;
+        out_stream << "Timeout when waiting for characters to read!" << endl;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+
+        Tango::Except::throw_exception(
+            (const char *)"Timeout Error",
+              out_stream.str(),
+            (const char *)tab);
+    }
+
+
+ //
+ // Check if it's our file descriptor which is ready to be read (Should be, as
+ // it was the only watched one out).
+ //
+    if (!FD_ISSET(this->serialdevice.serialin, &inset))
+    {
+        TangoSys_MemStream out_stream;
+        out_stream << "fd_isset() is wrong, who whoke me up?" << endl;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+
+        Tango::Except::throw_exception(
+            (const char *)"Read Error",
+              out_stream.str(),
+            (const char *)tab);
+    }
+
+ //
+ // Number of characters in the receiving buffer?
+ //
+    if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
+    {
+        TangoSys_MemStream out_stream;
+        out_stream << "Error reading the number of characters to be read. (errno = " << errno << ")" << endl;
+
+        ERROR_STREAM << tab << out_stream.str() << endl;
+
+        Tango::Except::throw_exception(
+            (const char *)"Read Error",
+             out_stream.str(),
+            (const char *)tab);
+    }
+
+    INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << endl;
+
+    //
+    // Normal end
+    //
+    argout = ncharin;
+	return argout;
+}
