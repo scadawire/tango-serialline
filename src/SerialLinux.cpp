@@ -1349,7 +1349,7 @@ char *Serial::line_read_string(void)
    timeout.tv_usec += 1000000;
    timeout.tv_sec  -= 1;
   }
-	int to = (1000000*timeout.tv_sec + timeout.tv_usec/1000);
+	int to = (1000*timeout.tv_sec + timeout.tv_usec/1000);
 
   // Block until characters become available on the file descriptor
   // listed in the set.
