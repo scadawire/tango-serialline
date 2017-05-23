@@ -176,12 +176,10 @@ void Serial::init_device()
 	/*----- PROTECTED REGION ID(Serial::init_device_before) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
-char           tab[]="Serial::init_device(): ";
+	char tab[]="Serial::init_device(): ";
 
 
 	INFO_STREAM << "Serial::Serial() create device " << device_name << endl;
-
-
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::init_device_before
 	
@@ -190,6 +188,10 @@ char           tab[]="Serial::init_device(): ";
 	get_device_property();
 	
 	/*----- PROTECTED REGION ID(Serial::init_device) ENABLED START -----*/
+    if (simulated) {
+        cout << "=========== Device is simulated ==========" << endl;
+        return;
+    }
 
 
 	DEBUG_STREAM << tab << "serialline:"   << serialline   << endl;
@@ -373,6 +375,7 @@ void Serial::get_device_property()
 	dev_prop.push_back(Tango::DbDatum("Stopbits"));
 	dev_prop.push_back(Tango::DbDatum("Baudrate"));
 	dev_prop.push_back(Tango::DbDatum("Newline"));
+	dev_prop.push_back(Tango::DbDatum("Simulated"));
 
 	//	is there at least one property to be read ?
 	if (dev_prop.size()>0)
@@ -464,6 +467,17 @@ void Serial::get_device_property()
 		//	And try to extract Newline value from database
 		if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  newline;
 
+		//	Try to initialize Simulated from class property
+		cl_prop = ds_class->get_class_property(dev_prop[++i].name);
+		if (cl_prop.is_empty()==false)	cl_prop  >>  simulated;
+		else {
+			//	Try to initialize Simulated from default device value
+			def_prop = ds_class->get_default_device_property(dev_prop[i].name);
+			if (def_prop.is_empty()==false)	def_prop  >>  simulated;
+		}
+		//	And try to extract Simulated value from database
+		if (dev_prop[i].is_empty()==false)	dev_prop[i]  >>  simulated;
+
 	}
 
 	/*----- PROTECTED REGION ID(Serial::get_device_property_after) ENABLED START -----*/
@@ -485,7 +499,11 @@ void Serial::always_executed_hook()
 	/*----- PROTECTED REGION ID(Serial::always_executed_hook) ENABLED START -----*/
 
 	//	code always executed before all requests
-
+	if (simulated)
+		Tango::Except::throw_exception(
+				"DeviceSimulated",
+				"This device is simulated by another one.",
+				"Serial::always_executed_hook()");
 	/*----- PROTECTED REGION END -----*/	//	Serial::always_executed_hook
 }
 

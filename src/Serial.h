@@ -165,6 +165,9 @@ public:
 	//	Newline:	End of message Character used in particular by the DevSerReadLine command
 	//  Default = 13
 	Tango::DevShort	newline;
+	//	Simulated:	If this property is true, do not connect to the serial port.
+	//  It is used when another device simulated this one.
+	Tango::DevBoolean	simulated;
 
 
 //	Constructors and destructors

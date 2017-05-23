@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="ASCII"?>
 <pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
-  <classes name="Serial" pogoRevision="9.1">
-    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/mntdirect/_segfs/tango/tmp/jm/tango_dev/cppserver/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files,Protected Regions" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
+  <classes name="Serial" pogoRevision="9.4">
+    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/mntdirect/_segfs/tango/cppserver/protocols/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files,Protected Regions" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
       <inheritances classname="Device_4Impl" sourcePath=""/>
       <identification contact="at esrf.fr - accelerator-control" author="accelerator-control" emailDomain="esrf.fr" classFamily="Communication" siteSpecific="" platform="All Platforms" bus="Serial Line" manufacturer="none" reference=""/>
     </description>
+    <classProperties name="Simulated" description="If this property is true, do not connect to the serial port.&#xA;It is used when another device simulated this one.">
+      <type xsi:type="pogoDsl:BooleanType"/>
+      <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
+      <DefaultPropValue>false</DefaultPropValue>
+    </classProperties>
     <deviceProperties name="Serialline" description="The path and name of the serial line device to be used.">
       <type xsi:type="pogoDsl:StringType"/>
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
@@ -39,6 +44,11 @@
       <type xsi:type="pogoDsl:ShortType"/>
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
       <DefaultPropValue>13</DefaultPropValue>
+    </deviceProperties>
+    <deviceProperties name="Simulated" description="If this property is true, do not connect to the serial port.&#xA;It is used when another device simulated this one.">
+      <type xsi:type="pogoDsl:BooleanType"/>
+      <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
+      <DefaultPropValue>false</DefaultPropValue>
     </deviceProperties>
     <commands name="State" description="This command gets the device state (stored in its &lt;i>device_state&lt;/i> data member) and returns it to the caller." execMethod="dev_state" displayLevel="OPERATOR" polledPeriod="0">
       <argin description="none.">

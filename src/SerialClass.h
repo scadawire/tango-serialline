@@ -574,6 +574,11 @@ public:
 
 	/*----- PROTECTED REGION END -----*/	//	SerialClass::Additionnal DServer data members
 
+	//	Class properties data members
+	public:
+		//	Simulated:	If this property is true, do not connect to the serial port.
+		//  It is used when another device simulated this one.
+		Tango::DevBoolean	simulated;
 	public:
 		//	write class properties data members
 		Tango::DbData	cl_prop;
