@@ -188,8 +188,8 @@ void Serial::init_device()
 	get_device_property();
 	
 	/*----- PROTECTED REGION ID(Serial::init_device) ENABLED START -----*/
-    if (simulated) {
-        cout << "=========== Device is simulated ==========" << endl;
+   if (simulated) {
+        cout << "=========== Device " << device_name << " is simulated ==========" << endl;
         return;
     }
 
@@ -482,7 +482,17 @@ void Serial::get_device_property()
 
 	/*----- PROTECTED REGION ID(Serial::get_device_property_after) ENABLED START -----*/
 
-	//	Check device property data members init
+	//	If device is inherited from this class, the class property is not taken in account
+    //  Get Simulated class property only if not yet true.
+    if (!simulated) {
+        string className("Serial");
+        Tango::DbData	class_prop;
+        class_prop.push_back(Tango::DbDatum("Simulated"));
+
+        Tango::Util::instance()->get_database()->get_class_property(className, class_prop);
+        if (class_prop[0].is_empty()==false)
+            class_prop[0] >> simulated;
+    }
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::get_device_property_after
 }
@@ -1376,6 +1386,10 @@ void Serial::dev_ser_set_newline(Tango::DevShort argin)
 {
 	DEBUG_STREAM << "Serial::DevSerSetNewline()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_newline) ENABLED START -----*/
+
+    //  Check if simulated (could be called by a class inherited from this one)
+    if (simulated)
+        return;
 
 	Tango::DevVarLongArray argin_array;
 
