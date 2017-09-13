@@ -512,7 +512,7 @@ void Serial::always_executed_hook()
 	if (simulated)
 		Tango::Except::throw_exception(
 				"DeviceSimulated",
-				"This device is simulated by another one.",
+				"This device is simulated by another one.\nCheck device or Serial class property",
 				"Serial::always_executed_hook()");
 	/*----- PROTECTED REGION END -----*/	//	Serial::always_executed_hook
 }
