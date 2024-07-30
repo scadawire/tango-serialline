@@ -35,7 +35,7 @@
 #define SERIAL_H
 
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 #ifdef __linux
@@ -120,10 +120,21 @@ unsigned long  baudrate;    /* baud rate */
 
 /*----- PROTECTED REGION END -----*/	//	Serial.h
 
+#ifdef TANGO_LOG
+	// cppTango after c934adea (Merge branch 'remove-cout-definition' into 'main', 2022-05-23)
+	// nothing to do
+#else
+	// cppTango 9.3-backports and older
+	#define TANGO_LOG       cout
+	#define TANGO_LOG_INFO  cout2
+	#define TANGO_LOG_DEBUG cout3
+#endif // TANGO_LOG
+
 /**
  *  Serial class description:
  *    C++ source for the SerialClass
  */
+
 
 namespace Serial_ns
 {
@@ -147,13 +158,13 @@ public:
 //	Device property data members
 public:
 	//	Serialline:	The path and name of the serial line device to be used.
-	string	serialline;
+	std::string	serialline;
 	//	Timeout:	The timout value im ms for for answers of requests send to the serial line.
 	//  This value should be lower than the Tango client server timout value.
 	Tango::DevShort	timeout;
 	//	Parity:	The parity used with the serial line protocol.
 	//  The possibilities are none, even or odd.
-	string	parity;
+	std::string	parity;
 	//	Charlength:	The character length used with the serial line protocol.
 	//  The possibilities are 8, 7, 6 or 5 bits per character.
 	Tango::DevShort	charlength;
@@ -178,7 +189,7 @@ public:
 	 *	@param cl	Class.
 	 *	@param s 	Device Name
 	 */
-	Serial(Tango::DeviceClass *cl,string &s);
+	Serial(Tango::DeviceClass *cl,std::string &s);
 	/**
 	 * Constructs a newly device object.
 	 *
@@ -197,7 +208,7 @@ public:
 	/**
 	 * The device object destructor.
 	 */
-	~Serial() {delete_device();};
+	~Serial();
 
 
 //	Miscellaneous methods
@@ -224,17 +235,17 @@ public:
 public:
 	//--------------------------------------------------------
 	/*
-	 *	Method      : Serial::read_attr_hardware()
-	 *	Description : Hardware acquisition for attributes.
+	 *	Method     : Serial::read_attr_hardware()
+	 *	Description: Hardware acquisition for attributes.
 	 */
 	//--------------------------------------------------------
-	virtual void read_attr_hardware(vector<long> &attr_list);
+	virtual void read_attr_hardware(std::vector<long> &attr_list);
 
 
 	//--------------------------------------------------------
 	/**
-	 *	Method      : Serial::add_dynamic_attributes()
-	 *	Description : Add dynamic attributes if any.
+	 *	Method     : Serial::add_dynamic_attributes()
+	 *	Description: Add dynamic attributes if any.
 	 */
 	//--------------------------------------------------------
 	void add_dynamic_attributes();
@@ -468,8 +479,8 @@ public:
 
 	//--------------------------------------------------------
 	/**
-	 *	Method      : Serial::add_dynamic_commands()
-	 *	Description : Add dynamic commands if any.
+	 *	Method     : Serial::add_dynamic_commands()
+	 *	Description: Add dynamic commands if any.
 	 */
 	//--------------------------------------------------------
 	void add_dynamic_commands();

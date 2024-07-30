@@ -36,7 +36,7 @@ static const char *RcsId = "$Id: Serial.cpp,v 1.15 2013-04-03 09:27:29 jensmeyer
 //=============================================================================
 
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <Serial.h>
 #include <SerialClass.h>
 #include <stdio.h>
@@ -97,26 +97,16 @@ namespace Serial_ns
 {
 /*----- PROTECTED REGION ID(Serial::namespace_starting) ENABLED START -----*/
 
-#ifdef WIN32
-	// all methods containing WIN32 API calls
-#include "SerialWin32.cpp"
-#endif
-
-#ifdef __linux
-	// all methods containing Linux API calls
-#include "SerialLinux.cpp"
-#endif
-
-	/*----- PROTECTED REGION END -----*/	//	Serial::namespace_starting
+/*----- PROTECTED REGION END -----*/	//	Serial::namespace_starting
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::Serial()
- *	Description : Constructors for a Tango device
+ *	Method     : Serial::Serial()
+ *	Description: Constructors for a Tango device
  *                implementing the classSerial
  */
 //--------------------------------------------------------
-Serial::Serial(Tango::DeviceClass *cl, string &s)
+Serial::Serial(Tango::DeviceClass *cl, std::string &s)
  : TANGO_BASE_CLASS(cl, s.c_str())
 {
 	/*----- PROTECTED REGION ID(Serial::constructor_1) ENABLED START -----*/
@@ -145,16 +135,21 @@ Serial::Serial(Tango::DeviceClass *cl, const char *s, const char *d)
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::constructor_3
 }
+//--------------------------------------------------------
+Serial::~Serial()
+{
+	delete_device();
+}
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::delete_device()
- *	Description : will be called at device destruction or at init command
+ *	Method     : Serial::delete_device()
+ *	Description: will be called at device destruction or at init command
  */
 //--------------------------------------------------------
 void Serial::delete_device()
 {
-	DEBUG_STREAM << "Serial::delete_device() " << device_name << endl;
+	DEBUG_STREAM << "Serial::delete_device() " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::delete_device) ENABLED START -----*/
 
 #ifdef WIN32
@@ -166,50 +161,50 @@ void Serial::delete_device()
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::init_device()
- *	Description : will be called at device initialization.
+ *	Method     : Serial::init_device()
+ *	Description: will be called at device initialization.
  */
 //--------------------------------------------------------
 void Serial::init_device()
 {
-	DEBUG_STREAM << "Serial::init_device() create device " << device_name << endl;
+	DEBUG_STREAM << "Serial::init_device() create device " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::init_device_before) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
 	char tab[]="Serial::init_device(): ";
 
 
-	INFO_STREAM << "Serial::Serial() create device " << device_name << endl;
+	INFO_STREAM << "Serial::Serial() create device " << device_name << std::endl;
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::init_device_before
-	
+
 
 	//	Get the device properties from database
 	get_device_property();
-	
+
 	/*----- PROTECTED REGION ID(Serial::init_device) ENABLED START -----*/
    if (simulated) {
-        cout << "=========== Device " << device_name << " is simulated ==========" << endl;
+       std::cout << "=========== Device " << device_name << " is simulated ==========" << std::endl;
         return;
     }
 
 
-	DEBUG_STREAM << tab << "serialline:"   << serialline   << endl;
-	DEBUG_STREAM << tab << "timeout:"      << timeout      << endl;
-	DEBUG_STREAM << tab << "parity:"       << parity       << endl;
-	DEBUG_STREAM << tab << "charlength:"   << charlength   << endl;
-	DEBUG_STREAM << tab << "stopbits:"     << stopbits     << endl;
-	DEBUG_STREAM << tab << "baudrate:"     << baudrate     << endl;
-	DEBUG_STREAM << tab << "newline:"      << newline      << endl;
+	DEBUG_STREAM << tab << "serialline:"   << serialline   << std::endl;
+	DEBUG_STREAM << tab << "timeout:"      << timeout      << std::endl;
+	DEBUG_STREAM << tab << "parity:"       << parity       << std::endl;
+	DEBUG_STREAM << tab << "charlength:"   << charlength   << std::endl;
+	DEBUG_STREAM << tab << "stopbits:"     << stopbits     << std::endl;
+	DEBUG_STREAM << tab << "baudrate:"     << baudrate     << std::endl;
+	DEBUG_STREAM << tab << "newline:"      << newline      << std::endl;
 
 
 	// Mandatory properties
 	if(serialline == "")
 	{
 		TangoSys_MemStream out_stream;
-		out_stream << "serialline property not defined in the database" << ends;
+		out_stream << "serialline property not defined in the database" << std::ends;
 
-		ERROR_STREAM << tab << out_stream.str() << endl;
+		ERROR_STREAM << tab << out_stream.str() << std::endl;
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_resources",
 			out_stream.str(),
@@ -222,7 +217,7 @@ void Serial::init_device()
 	{
 		serialdevice.timeout = timeout;
 		DEBUG_STREAM << tab << "timeout set to: "
-			<< serialdevice.timeout << "(mS)" << endl;
+			<< serialdevice.timeout << "(mS)" << std::endl;
 	}
 
 	// If parity specified then convert it to an integer
@@ -231,19 +226,19 @@ void Serial::init_device()
 		if (parity == "even")
 		{
 			this->serialdevice.parity = SL_EVEN;
-			DEBUG_STREAM << tab << "parity set to: SL_EVEN" << endl;
+			DEBUG_STREAM << tab << "parity set to: SL_EVEN" << std::endl;
 		}
 		else
 		{
 			if (parity == "odd")
 			{
 				this->serialdevice.parity = SL_ODD;
-				DEBUG_STREAM << tab << "parity set to: SL_ODD" << endl;
+				DEBUG_STREAM << tab << "parity set to: SL_ODD" << std::endl;
 			}
 			else
 			{
 				this->serialdevice.parity = SL_NONE;
-				DEBUG_STREAM << tab << "parity set to: SL_NONE" << endl;
+				DEBUG_STREAM << tab << "parity set to: SL_NONE" << std::endl;
 			}
 		}
 	}
@@ -253,19 +248,19 @@ void Serial::init_device()
 	{
 	case 5:
 		this->serialdevice.charlength = SL_DATA5;
-		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA5" << endl;
+		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA5" << std::endl;
 		break;
 	case 6:
 		this->serialdevice.charlength = SL_DATA6;
-		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA6" << endl;
+		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA6" << std::endl;
 		break;
 	case 7:
 		this->serialdevice.charlength = SL_DATA7;
-		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA7" << endl;
+		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA7" << std::endl;
 		break;
 	case 8:
 		this->serialdevice.charlength = SL_DATA8;
-		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA8" << endl;
+		DEBUG_STREAM << "Serial::init_device()::charlength set to: SL_DATA8" << std::endl;
 		break;
 	default:
 		break;
@@ -277,11 +272,11 @@ void Serial::init_device()
 	{
 	case 1:
 		this->serialdevice.stopbits = SL_STOP1;
-		DEBUG_STREAM << "Serial::init_device()::stopbits set to: SL_STOP1" << endl;
+		DEBUG_STREAM << "Serial::init_device()::stopbits set to: SL_STOP1" << std::endl;
 		break;
 	case 2:
 		this->serialdevice.stopbits = SL_STOP2;
-		DEBUG_STREAM << "Serial::init_device()::stopbits set to: SL_STOP2" << endl;
+		DEBUG_STREAM << "Serial::init_device()::stopbits set to: SL_STOP2" << std::endl;
 		break;
 	default:
 		break;
@@ -292,7 +287,7 @@ void Serial::init_device()
 	{
 		serialdevice.baudrate = baudrate;
 		DEBUG_STREAM << "Serial::init_device()::baudrate set to:"
-			<< serialdevice.baudrate     << endl;
+			<< serialdevice.baudrate     << std::endl;
 	}
 
 	// If timeout specified update the object
@@ -300,7 +295,7 @@ void Serial::init_device()
 	{
 		serialdevice.newline = newline;
 		DEBUG_STREAM << "Serial::init_device()::newline set to:"
-			<< serialdevice.newline     << endl;
+			<< serialdevice.newline     << std::endl;
 	}
 
 	// Configure the serial line if there were defined in the database
@@ -345,7 +340,7 @@ void Serial::init_device()
 	else
 	{
 		// This can not happen because the test on serialline took place earlier
-		FATAL_STREAM << "Serial::Serial():no serial line to initialise !" << endl;
+		FATAL_STREAM << "Serial::Serial():no serial line to initialise !" << std::endl;
 	}
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::init_device
@@ -353,8 +348,8 @@ void Serial::init_device()
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::get_device_property()
- *	Description : Read database to initialize property data members.
+ *	Method     : Serial::get_device_property()
+ *	Description: Read database to initialize property data members.
  */
 //--------------------------------------------------------
 void Serial::get_device_property()
@@ -383,7 +378,7 @@ void Serial::get_device_property()
 		//	Call database and extract values
 		if (Tango::Util::instance()->_UseDb==true)
 			get_db_device()->get_property(dev_prop);
-	
+
 		//	get instance on SerialClass to get class property
 		Tango::DbDatum	def_prop, cl_prop;
 		SerialClass	*ds_class =
@@ -485,7 +480,7 @@ void Serial::get_device_property()
 	//	If device is inherited from this class, the class property is not taken in account
     //  Get Simulated class property only if not yet true.
     if (!simulated) {
-        string className("Serial");
+        std::string className("Serial");
         Tango::DbData	class_prop;
         class_prop.push_back(Tango::DbDatum("Simulated"));
 
@@ -499,13 +494,13 @@ void Serial::get_device_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::always_executed_hook()
- *	Description : method always executed before any command is executed
+ *	Method     : Serial::always_executed_hook()
+ *	Description: method always executed before any command is executed
  */
 //--------------------------------------------------------
 void Serial::always_executed_hook()
 {
-	DEBUG_STREAM << "Serial::always_executed_hook()  " << device_name << endl;
+	DEBUG_STREAM << "Serial::always_executed_hook()  " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::always_executed_hook) ENABLED START -----*/
 
 	//	code always executed before all requests
@@ -519,13 +514,13 @@ void Serial::always_executed_hook()
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::read_attr_hardware()
- *	Description : Hardware acquisition for attributes
+ *	Method     : Serial::read_attr_hardware()
+ *	Description: Hardware acquisition for attributes
  */
 //--------------------------------------------------------
-void Serial::read_attr_hardware(TANGO_UNUSED(vector<long> &attr_list))
+void Serial::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_list))
 {
-	DEBUG_STREAM << "Serial::read_attr_hardware(vector<long> &attr_list) entering... " << endl;
+	DEBUG_STREAM << "Serial::read_attr_hardware(std::vector<long> &attr_list) entering... " << std::endl;
 	/*----- PROTECTED REGION ID(Serial::read_attr_hardware) ENABLED START -----*/
 	
 	//	Add your own code
@@ -536,8 +531,8 @@ void Serial::read_attr_hardware(TANGO_UNUSED(vector<long> &attr_list))
 
 //--------------------------------------------------------
 /**
- *	Method      : Serial::add_dynamic_attributes()
- *	Description : Create the dynamic attributes if any
+ *	Method     : Serial::add_dynamic_attributes()
+ *	Description: Create the dynamic attributes if any
  *                for specified device.
  */
 //--------------------------------------------------------
@@ -563,13 +558,13 @@ void Serial::add_dynamic_attributes()
 Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 {
 	Tango::DevLong argout;
-	DEBUG_STREAM << "Serial::DevSerWriteString()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerWriteString()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_write_string) ENABLED START -----*/
 
 	long            nchar;
 	//	Add your own code to control device here
 
-	INFO_STREAM << "Serial::DevSerWriteString() : " << argin << endl;
+	INFO_STREAM << "Serial::DevSerWriteString() : " << argin << std::endl;
 
 #ifdef __linux
 	nchar = write(
@@ -591,15 +586,15 @@ Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 		out_stream << "error writing to device, errno: " << errno;
 		if(errno == ETIMEDOUT)
 			out_stream << " (timeout)";
-		out_stream << ends;
-		cerr << out_stream.str() << endl;
+		out_stream << std::ends;
+                std::cerr << out_stream.str() << std::endl;
 #endif
 #ifdef WIN32
 		DWORD LastError = GetLastError();
-		out_stream << "error writing to device( number :" << LastError << ")" << ends;
+		out_stream << "error writing to device( number :" << LastError << ")" << std::ends;
 #endif
 
-		ERROR_STREAM << "Serial::dev_ser_write_string(): " << out_stream.str() << endl;
+		ERROR_STREAM << "Serial::dev_ser_write_string(): " << out_stream.str() << std::endl;
 
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_write",
@@ -625,13 +620,13 @@ Tango::DevLong Serial::dev_ser_write_string(Tango::DevString argin)
 Tango::DevLong Serial::dev_ser_write_char(const Tango::DevVarCharArray *argin)
 {
 	Tango::DevLong argout;
-	DEBUG_STREAM << "Serial::DevSerWriteChar()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerWriteChar()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_write_char) ENABLED START -----*/
 
 	int            nchar;
  unsigned int   i;
  char           tab[]="Serial::dev_ser_write_char(): ";
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  INFO_STREAM << tab << "char to write:";
  char tab2[]="    ";
@@ -645,9 +640,9 @@ Tango::DevLong Serial::dev_ser_write_char(const Tango::DevVarCharArray *argin)
   else
    os << tab2 << "' '";
 
-  os << " 0x" << std::hex << (int)((*argin)[i]) << ends;
+  os << " 0x" << std::hex << (int)((*argin)[i]) << std::ends;
 
-  INFO_STREAM << os.str() << endl;
+  INFO_STREAM << os.str() << std::endl;
 
   os.seekp(0);
   os.seekg(0);
@@ -676,15 +671,15 @@ Tango::DevLong Serial::dev_ser_write_char(const Tango::DevVarCharArray *argin)
 		if(errno == ETIMEDOUT)
 			out_stream << " (timeout)";
 
-		out_stream << ends;
+		out_stream << std::ends;
 #endif
 #ifdef WIN32
-		out_stream << "error writing to device" << ends;
+		out_stream << "error writing to device" << std::ends;
 #endif
 
-		ERROR_STREAM << "Serial::dev_ser_write_char(): " << out_stream.str() << endl;
+		ERROR_STREAM << "Serial::dev_ser_write_char(): " << out_stream.str() << std::endl;
 
-		ERROR_STREAM << tab << out_stream.str() << endl;
+		ERROR_STREAM << tab << out_stream.str() << std::endl;
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_write",
 			out_stream.str(),
@@ -710,7 +705,7 @@ Tango::DevLong Serial::dev_ser_write_char(const Tango::DevVarCharArray *argin)
 Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::DevSerReadString()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadString()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_string) ENABLED START -----*/
 
 	long              read_type;
@@ -719,27 +714,27 @@ Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
  char              tab[]="Serial::dev_ser_read_string(): ";
 
 
-	INFO_STREAM << tab << "entering... !" << endl;
+	INFO_STREAM << tab << "entering... !" << std::endl;
 	read_type = argin & 0x000f;
 
 	switch (read_type)
 	{
 		case SL_RAW :
-			INFO_STREAM << tab << "SL_RAW" << endl;
+			INFO_STREAM << tab << "SL_RAW" << std::endl;
 			argout = raw_read_string();
 			break;
 		case SL_NCHAR :
 			nchar = argin >> 8;
-			INFO_STREAM << tab << "SL_NCHAR nchar="<< nchar << endl;
+			INFO_STREAM << tab << "SL_NCHAR nchar="<< nchar << std::endl;
 			argout = nchar_read_string(nchar);
 			break;
 		case SL_LINE :
-			INFO_STREAM << tab << "SL_LINE" << endl;
+			INFO_STREAM << tab << "SL_LINE" << std::endl;
 			argout = line_read_string();
 			break;
 		case SL_RETRY :
 			retry = argin >> 8;
-			INFO_STREAM << tab << "SL_RETRY" << endl;
+			INFO_STREAM << tab << "SL_RETRY" << std::endl;
 			argout = retry_read_string(retry);
 			break;
 
@@ -747,16 +742,16 @@ Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
 		default :
 			TangoSys_MemStream out_stream;
 			out_stream << "unknown type of read, must be SL_RAW, SL_NCHAR, SL_LINE"
-					   << ends;
+					   << std::ends;
 
-			ERROR_STREAM << tab << out_stream.str() << endl;
+			ERROR_STREAM << tab << out_stream.str() << std::endl;
 			Tango::Except::throw_exception(
 				   (const char *)"Serial::error_argin",
 				   out_stream.str(),
 				   (const char *)tab);
 	}
 
-	INFO_STREAM << tab << "returning: " << argout << endl;
+	INFO_STREAM << tab << "returning: " << argout << std::endl;
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::dev_ser_read_string
 	return argout;
@@ -775,7 +770,7 @@ Tango::DevString Serial::dev_ser_read_string(Tango::DevLong argin)
 Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
 {
 	Tango::DevVarCharArray *argout;
-	DEBUG_STREAM << "Serial::DevSerReadChar()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadChar()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_char) ENABLED START -----*/
 
 	// SOLEIL Copy and allocation mechanism has been changed between DevString and DevVarCharArray
@@ -787,7 +782,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
  long				retry;
  char				tab[]="Serial::dev_ser_read_char(): ";
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  read_type = argin & 0x000f;
 
@@ -795,29 +790,29 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
  switch (read_type)
  {
   case SL_RAW :
-        INFO_STREAM << tab << "SL_RAW" << endl;
+        INFO_STREAM << tab << "SL_RAW" << std::endl;
         string_argout = raw_read_string();
         break;
   case SL_NCHAR :
 		nchar = argin >> 8;
-        INFO_STREAM << tab << "SL_NCHAR nchar = " << nchar << endl;
+        INFO_STREAM << tab << "SL_NCHAR nchar = " << nchar << std::endl;
         string_argout = nchar_read_string(nchar);
         break;
   case SL_LINE :
-        INFO_STREAM << tab << "SL_LINE" << endl;
+        INFO_STREAM << tab << "SL_LINE" << std::endl;
         string_argout = line_read_string();
         break;
   case SL_RETRY :
 		retry = argin >> 8;
-        INFO_STREAM << tab << "SL_RETRY retry = " << retry << endl;
+        INFO_STREAM << tab << "SL_RETRY retry = " << retry << std::endl;
         string_argout = retry_read_string(retry);
         break;
   default :
         TangoSys_MemStream out_stream;
         out_stream << "unknown type of read, must be SL_RAW, SL_NCHAR, SL_LINE, SL_RETRY"
-                   << ends;
+                   << std::ends;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
         Tango::Except::throw_exception(
                (const char *)"Serial::error_argin",
                out_stream.str(),
@@ -835,9 +830,9 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
  if ( !buf )
  {
 	TangoSys_MemStream out_stream;
-	out_stream << "Tango::DevVarCharArray::allocbuf(len) : out of memory" << ends;
+	out_stream << "Tango::DevVarCharArray::allocbuf(len) : out of memory" << std::ends;
 
-	ERROR_STREAM << tab << out_stream.str() << endl;
+	ERROR_STREAM << tab << out_stream.str() << std::endl;
 	Tango::Except::throw_exception(
 		   (const char *)"Serial::memory not allocated",
 		   out_stream.str(),
@@ -854,9 +849,9 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
  if ( !argout )
  {
 	TangoSys_MemStream out_stream;
-	out_stream << "out of memory" << ends;
+	out_stream << "out of memory" << std::ends;
 
-	ERROR_STREAM << tab << out_stream.str() << endl;
+	ERROR_STREAM << tab << out_stream.str() << std::endl;
 	Tango::Except::throw_exception(
 		   (const char *)"Serial::memory not allocated",
 		   out_stream.str(),
@@ -865,7 +860,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
 
 
  // Print the read string
- INFO_STREAM << tab << this->serialdevice.ncharread << " char read" << endl;
+ INFO_STREAM << tab << this->serialdevice.ncharread << " char read" << std::endl;
  char tab2[]="    ";
  TangoSys_MemStream os;
  for(int i=0; i<this->serialdevice.ncharread;i++)
@@ -877,9 +872,9 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
   else
    os << tab2 << "' '";
 
-  os << " 0x" << std::hex << (int)((*argout)[i]) << ends;
+  os << " 0x" << std::hex << (int)((*argout)[i]) << std::ends;
 
-  INFO_STREAM << os.str() << endl;
+  INFO_STREAM << os.str() << std::endl;
 
   os.seekp(0);
   os.seekg(0);
@@ -909,7 +904,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_char(Tango::DevLong argin)
 Tango::DevString Serial::write_read(const Tango::DevVarLongStringArray *argin)
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::WriteRead()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::WriteRead()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::write_read) ENABLED START -----*/
  long	read_type;
  long	nchar;
@@ -934,24 +929,24 @@ Tango::DevString Serial::write_read(const Tango::DevVarLongStringArray *argin)
  {
   case SL_NCHAR :
 		nchar = (*argin).lvalue[0] >> 8;
-        INFO_STREAM << tab << "SL_NCHAR nchar = " << nchar << endl;
+        INFO_STREAM << tab << "SL_NCHAR nchar = " << nchar << std::endl;
         argout = nchar_read_string(nchar);
         break;
   case SL_LINE :
-        INFO_STREAM << tab << "SL_LINE" << endl;
+        INFO_STREAM << tab << "SL_LINE" << std::endl;
         argout = line_read_string();
         break;
   case SL_RETRY :
 		retry = (*argin).lvalue[0] >> 8;
-        INFO_STREAM << tab << "SL_RETRY retry = " << retry << endl;
+        INFO_STREAM << tab << "SL_RETRY retry = " << retry << std::endl;
 				argout = retry_read_string(retry);
 				break;
   default :
         TangoSys_MemStream out_stream;
         out_stream << "unknown type of read, must be SL_NCHAR, SL_LINE, SL_RETRY"
-                   << ends;
+                   << std::ends;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
         Tango::Except::throw_exception(
                (const char *)"Serial::error_argin",
                out_stream.str(),
@@ -972,7 +967,7 @@ Tango::DevString Serial::write_read(const Tango::DevVarLongStringArray *argin)
 Tango::DevLong Serial::dev_ser_get_nchar()
 {
 	Tango::DevLong argout;
-	DEBUG_STREAM << "Serial::DevSerGetNChar()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerGetNChar()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_get_nchar) ENABLED START -----*/
 
  char	tab[]="Serial::dev_ser_get_nchar(): ";
@@ -990,9 +985,9 @@ if (ioctl(this->serialdevice.serialin, FIONREAD, &argout) < 0)
 
 	 {
 	  TangoSys_MemStream out_stream;
-	  out_stream << "error reading number of char in receiving buffer" << ends;
+	  out_stream << "error reading number of char in receiving buffer" << std::ends;
 
-	  ERROR_STREAM << tab << out_stream.str() << endl;
+	  ERROR_STREAM << tab << out_stream.str() << std::endl;
 
 	  Tango::Except::throw_exception(
 			 (const char *)"Serial::DevSerGetNChar",
@@ -1003,7 +998,7 @@ if (ioctl(this->serialdevice.serialin, FIONREAD, &argout) < 0)
  	// cur_stat structure now contains the number of bytes available in the buffer
 	argout = cur_stat.cbInQue<SL_MAXSTRING?cur_stat.cbInQue:SL_MAXSTRING;
 #endif
-	INFO_STREAM << tab << " nb char read =" << argout << endl;
+	INFO_STREAM << tab << " nb char read =" << argout << std::endl;
 
 	/*----- PROTECTED REGION END -----*/	//	Serial::dev_ser_get_nchar
 	return argout;
@@ -1021,7 +1016,7 @@ if (ioctl(this->serialdevice.serialin, FIONREAD, &argout) < 0)
 Tango::DevString Serial::dev_ser_read_nchar(Tango::DevLong argin)
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::DevSerReadNChar()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadNChar()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_nchar) ENABLED START -----*/
 
 	//	Add your own code to control device here
@@ -1042,7 +1037,7 @@ Tango::DevString Serial::dev_ser_read_nchar(Tango::DevLong argin)
 Tango::DevString Serial::dev_ser_read_raw()
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::DevSerReadRaw()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadRaw()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_raw) ENABLED START -----*/
 
 	//	Add your own code to control device here
@@ -1063,7 +1058,7 @@ Tango::DevString Serial::dev_ser_read_raw()
 Tango::DevString Serial::dev_ser_read_line()
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::DevSerReadLine()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadLine()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_line) ENABLED START -----*/
 
 	//	Add your own code to control device here
@@ -1083,12 +1078,12 @@ Tango::DevString Serial::dev_ser_read_line()
 //--------------------------------------------------------
 void Serial::dev_ser_flush(Tango::DevLong argin)
 {
-	DEBUG_STREAM << "Serial::DevSerFlush()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerFlush()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_flush) ENABLED START -----*/
 
 	char	tab[]="Serial::dev_ser_flush(): ";
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  INFO_STREAM << tab << "argin: " << argin;
 
@@ -1097,9 +1092,9 @@ void Serial::dev_ser_flush(Tango::DevLong argin)
  {
   TangoSys_MemStream out_stream;
   out_stream << "invalid flush action " << argin << " (0=input 1=output 2=both)"
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
          (const char *)"Serial::error_argin",
          out_stream.str(),
@@ -1141,7 +1136,7 @@ void Serial::dev_ser_flush(Tango::DevLong argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_parameter(const Tango::DevVarLongArray *argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetParameter()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetParameter()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_parameter) ENABLED START -----*/
 
 #ifdef __linux
@@ -1164,12 +1159,12 @@ void Serial::dev_ser_set_parameter(const Tango::DevVarLongArray *argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_timeout(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetTimeout()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetTimeout()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_timeout) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array ;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_timeout(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_timeout(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1185,7 +1180,7 @@ void Serial::dev_ser_set_timeout(Tango::DevShort argin)
 	catch (Tango::DevFailed & )
 
 	{
-		ERROR_STREAM << "dev_ser_set_timeout: error setting new timeout" << endl;
+		ERROR_STREAM << "dev_ser_set_timeout: error setting new timeout" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char*) "Error setting new timeout",
@@ -1208,12 +1203,12 @@ void Serial::dev_ser_set_timeout(Tango::DevShort argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_parity(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetParity()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetParity()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_parity) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_parity(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_parity(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1230,7 +1225,7 @@ void Serial::dev_ser_set_parity(Tango::DevShort argin)
 	catch (Tango::DevFailed & )
 
 	{
-		ERROR_STREAM << "dev_ser_set_parity: error setting new parity" << endl;
+		ERROR_STREAM << "dev_ser_set_parity: error setting new parity" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char *) "Error setting new parity",
@@ -1253,12 +1248,12 @@ void Serial::dev_ser_set_parity(Tango::DevShort argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_char_length(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetCharLength()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetCharLength()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_char_length) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_char_length(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_char_length(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1275,7 +1270,7 @@ void Serial::dev_ser_set_char_length(Tango::DevShort argin)
 	catch (Tango::DevFailed & )
 
 	{
-		ERROR_STREAM << "dev_ser_set_charlength: error setting new charlength" << endl;
+		ERROR_STREAM << "dev_ser_set_charlength: error setting new charlength" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char*) "Error setting new charlength",
@@ -1298,12 +1293,12 @@ void Serial::dev_ser_set_char_length(Tango::DevShort argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_stopbit(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetStopbit()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetStopbit()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_stopbit) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_stopbit(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_stopbit(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1320,7 +1315,7 @@ void Serial::dev_ser_set_stopbit(Tango::DevShort argin)
 	catch (Tango::DevFailed &  )
 
 	{
-		ERROR_STREAM << "dev_ser_set_stopbit: error setting new stopbit" << endl;
+		ERROR_STREAM << "dev_ser_set_stopbit: error setting new stopbit" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char *) "Error setting new stopbit",
@@ -1341,12 +1336,12 @@ void Serial::dev_ser_set_stopbit(Tango::DevShort argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_baudrate(Tango::DevULong argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetBaudrate()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetBaudrate()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_baudrate) ENABLED START -----*/
 
 	Tango::DevVarLongArray argin_array;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_baudrate(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_baudrate(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1363,7 +1358,7 @@ void Serial::dev_ser_set_baudrate(Tango::DevULong argin)
 	catch (Tango::DevFailed & )
 
 	{
-		ERROR_STREAM << "dev_ser_set_baudrate: error setting new baudrate" << endl;
+		ERROR_STREAM << "dev_ser_set_baudrate: error setting new baudrate" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char*) "Error setting new baudrate",
@@ -1384,7 +1379,7 @@ void Serial::dev_ser_set_baudrate(Tango::DevULong argin)
 //--------------------------------------------------------
 void Serial::dev_ser_set_newline(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetNewline()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetNewline()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_newline) ENABLED START -----*/
 
     //  Check if simulated (could be called by a class inherited from this one)
@@ -1393,7 +1388,7 @@ void Serial::dev_ser_set_newline(Tango::DevShort argin)
 
 	Tango::DevVarLongArray argin_array;
 
-	DEBUG_STREAM << "Serial::dev_ser_set_newline(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_newline(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 
@@ -1410,7 +1405,7 @@ void Serial::dev_ser_set_newline(Tango::DevShort argin)
 	catch (Tango::DevFailed & )
 
 	{
-		ERROR_STREAM << "dev_ser_set_newline: error setting new newline" << endl;
+		ERROR_STREAM << "dev_ser_set_newline: error setting new newline" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::dev_ser_set_parameter",
 				(const char *) "Error setting new newline",
@@ -1434,7 +1429,7 @@ void Serial::dev_ser_set_newline(Tango::DevShort argin)
 Tango::DevString Serial::dev_ser_read_retry(Tango::DevLong argin)
 {
 	Tango::DevString argout;
-	DEBUG_STREAM << "Serial::DevSerReadRetry()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadRetry()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_retry) ENABLED START -----*/
 
 	//	Add your own code to control device here
@@ -1458,7 +1453,7 @@ Tango::DevString Serial::dev_ser_read_retry(Tango::DevLong argin)
 Tango::DevVarCharArray *Serial::dev_ser_read_nbin_data(Tango::DevLong argin)
 {
 	Tango::DevVarCharArray *argout;
-	DEBUG_STREAM << "Serial::DevSerReadNBinData()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerReadNBinData()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_read_nbin_data) ENABLED START -----*/
 
 	//- get the number of chars in the buffer
@@ -1495,7 +1490,7 @@ Tango::DevVarCharArray *Serial::dev_ser_read_nbin_data(Tango::DevLong argin)
 Tango::DevLong Serial::dev_ser_wait_char()
 {
 	Tango::DevLong argout;
-	DEBUG_STREAM << "Serial::DevSerWaitChar()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerWaitChar()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_wait_char) ENABLED START -----*/
 	
 	//	Add your own code
@@ -1506,9 +1501,9 @@ Tango::DevLong Serial::dev_ser_wait_char()
 
 #ifdef WIN32
 	TangoSys_MemStream out_stream;
-    out_stream << "The command is not implemented for Windows!" << endl;
+    out_stream << "The command is not implemented for Windows!" << std::endl;
 
-    ERROR_STREAM << "Serial::DevSerWaitChar() - " << out_stream.str() << endl;
+    ERROR_STREAM << "Serial::DevSerWaitChar() - " << out_stream.str() << std::endl;
 
     Tango::Except::throw_exception(
                 (const char *)"Read Error",
@@ -1531,7 +1526,7 @@ Tango::DevLong Serial::dev_ser_wait_char()
 //--------------------------------------------------------
 void Serial::dev_ser_set_parameter_compat(const Tango::DevVarShortArray *argin)
 {
-	DEBUG_STREAM << "Serial::DevSerSetParameterCompat()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerSetParameterCompat()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_set_parameter_compat) ENABLED START -----*/
 	
 	//	Add your own code
@@ -1569,7 +1564,7 @@ void Serial::dev_ser_set_parameter_compat(const Tango::DevVarShortArray *argin)
 //--------------------------------------------------------
 void Serial::dev_ser_flush_compat(Tango::DevShort argin)
 {
-	DEBUG_STREAM << "Serial::DevSerFlushCompat()  - " << device_name << endl;
+	DEBUG_STREAM << "Serial::DevSerFlushCompat()  - " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(Serial::dev_ser_flush_compat) ENABLED START -----*/
 	
 	//	Add your own code
@@ -1583,8 +1578,8 @@ void Serial::dev_ser_flush_compat(Tango::DevShort argin)
 }
 //--------------------------------------------------------
 /**
- *	Method      : Serial::add_dynamic_commands()
- *	Description : Create the dynamic commands if any
+ *	Method     : Serial::add_dynamic_commands()
+ *	Description: Create the dynamic commands if any
  *                for specified device.
  */
 //--------------------------------------------------------

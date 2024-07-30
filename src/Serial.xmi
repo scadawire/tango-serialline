@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
-<pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
-  <classes name="Serial" pogoRevision="9.4">
-    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/mntdirect/_segfs/tango/cppserver/protocols/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files,Protected Regions" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
+<pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://tango.org/pogo/PogoDsl">
+  <classes name="Serial" pogoRevision="9.9">
+    <description description="C++ source for the SerialClass" title="TANGO Device Server" sourcePath="/home/esrf/dlacoste/workspace/SerialLine/src" language="Cpp" filestogenerate="XMI   file,Code files,Protected Regions" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
       <inheritances classname="Device_4Impl" sourcePath=""/>
       <identification contact="at esrf.fr - accelerator-control" author="accelerator-control" emailDomain="esrf.fr" classFamily="Communication" siteSpecific="" platform="All Platforms" bus="Serial Line" manufacturer="none" reference=""/>
     </description>
