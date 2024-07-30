@@ -1,9 +1,4 @@
 /*----- PROTECTED REGION ID(SerialClass.cpp) ENABLED START -----*/
-static const char *RcsId      = "$Id: SerialClass.cpp,v 1.13 2011-09-22 06:11:43 pascal_verdier Exp $";
-static const char *TagName    = "$Name: not supported by cvs2svn $";
-static const char *CvsPath    = "$Source: /users/chaize/newsvn/cvsroot/Communication/SerialLine/src/SerialClass.cpp,v $";
-static const char *SvnPath    = "$HeadURL:  $";
-static const char *HttpServer = "http://www.esrf.eu/computing/cs/tango/tango_doc/ds_doc/";
 //=============================================================================
 //
 // file :        SerialClass.cpp
@@ -36,7 +31,7 @@ static const char *HttpServer = "http://www.esrf.eu/computing/cs/tango/tango_doc
 //=============================================================================
 
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <Serial.h>
 #include <SerialClass.h>
 

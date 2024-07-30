@@ -35,7 +35,7 @@
 #ifndef SERIALCLASS_H
 #define SERIALCLASS_H
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <Serial.h>
 
 /*----- PROTECTED REGION END -----*/	//	SerialClass.h

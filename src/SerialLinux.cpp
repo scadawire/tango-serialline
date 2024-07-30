@@ -35,6 +35,14 @@ static const char *RcsId = "$Header: /users/chaize/newsvn/cvsroot/Communication/
 
 #include <Serial.h>
 
+#include <termios.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+
+namespace Serial_ns
+{
+
 //+------------------------------------------------------------------
 /**
 *      method: Serial::open_desc
@@ -53,7 +61,7 @@ void Serial::open_desc ( void )
  // create the associated device descriptor filename
  //
  dd_name = this->serialdevice.serialline;
- INFO_STREAM << tab << "serial line to be opened " << dd_name << endl;
+ INFO_STREAM << tab << "serial line to be opened " << dd_name << std::endl;
 
  //
  // open the serial line once for reading but not as a controlling tty
@@ -67,9 +75,9 @@ void Serial::open_desc ( void )
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
              << " in O_RDONLY, errno=" << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_open",
         out_stream.str(),
@@ -88,9 +96,9 @@ void Serial::open_desc ( void )
   TangoSys_MemStream out_stream;
   out_stream << "error opening " << dd_name
              << "in O_WRONLY, errno=" << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_open",
         out_stream.str(),
@@ -134,12 +142,12 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 
 
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
- INFO_STREAM << "   " << "param = new value" << endl;
+ INFO_STREAM << "   " << "param = new value" << std::endl;
  for(i=0; i<argin->length(); i+=2)
   INFO_STREAM << "   " << std::ios::dec << (*argin)[i] << " = "
-        << std::ios::dec << (*argin)[i+1] << endl;
+        << std::ios::dec << (*argin)[i+1] << std::endl;
 
  //
  // First get the existing serial line setup from the file descriptors opened
@@ -149,9 +157,9 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
  {
   TangoSys_MemStream out_stream;
   out_stream << "tcgetattr() error on in line, errno: " << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_tcgetattr",
         out_stream.str(),
@@ -163,9 +171,9 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
  {
   TangoSys_MemStream out_stream;
   out_stream << "tcgetattr() error on out line, errno: " << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_tcgetattr",
         out_stream.str(),
@@ -334,7 +342,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
          this->serialdevice.timeout = timeout;
          INFO_STREAM << "Serial::SerSetParameter(): timeout=" << timeout
                << "(mS) " << float (termin.c_cc[VTIME]) << "(1/10s)"
-               << endl;
+               << std::endl;
         }
         break;
 
@@ -362,7 +370,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
         INFO_STREAM << "Serial::SerSetParameter(): parity=" << parity
               << "(none=" << SL_NONE
               << " odd="  << SL_ODD
-              << " even=" << SL_EVEN << ") code=" << par << endl;
+              << " even=" << SL_EVEN << ") code=" << par << std::endl;
         break;
 
    case SL_CHARLENGTH :
@@ -390,7 +398,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
               << "(data8=" << SL_DATA8
               << " 7=" << SL_DATA7
               << " 6=" << SL_DATA6
-              << " 5=" << SL_DATA5 << ") code=" << cs << endl;
+              << " 5=" << SL_DATA5 << ") code=" << cs << std::endl;
         break;
 
    case SL_STOPBITS :
@@ -413,7 +421,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 
         INFO_STREAM << "Serial::SerSetParameter(): stopbits=" << stopbits
               << "(stop1=" << SL_STOP1
-              << " stop2=" << SL_STOP2 << ") code=" << stopb << endl;
+              << " stop2=" << SL_STOP2 << ") code=" << stopb << std::endl;
         break;
 
    case SL_BAUDRATE :
@@ -455,9 +463,9 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
 
          default    :
             TangoSys_MemStream out_stream;
-            out_stream << "invalid baudrate" << ends;
+            out_stream << "invalid baudrate" << std::ends;
 
-			ERROR_STREAM << tab << out_stream.str() << endl;
+			ERROR_STREAM << tab << out_stream.str() << std::endl;
             Tango::Except::throw_exception(
                (const char *)"Serial::error_argin",
                out_stream.str(),
@@ -471,7 +479,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
         termout.c_cflag |= speed;
 
         INFO_STREAM << "Serial::SerSetParameter(): baud rate=" << baudrate
-              << " code=" << speed << endl;
+              << " code=" << speed << std::endl;
         break;
 
    case SL_NEWLINE :
@@ -485,7 +493,7 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
         termout.c_cc[VEOL] = (char)(*argin)[i+1];
 
         INFO_STREAM << "Serial::SerSetParameter(): newline="
-              << int (termin.c_cc[VEOL]) << endl;
+              << int (termin.c_cc[VEOL]) << std::endl;
 
         // Update object current settings
         this->serialdevice.newline = (char)(*argin)[i+1];
@@ -505,9 +513,9 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
  {
   TangoSys_MemStream out_stream;
   out_stream << "tcsetattr() error on in line, errno: " << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_tcsetattr",
         out_stream.str(),
@@ -520,9 +528,9 @@ void Serial::dev_ser_set_parameter_linux(const Tango::DevVarLongArray *argin)
  {
   TangoSys_MemStream out_stream;
   out_stream << "tcsetattr() error on out line, errno: " << errno
-             << ends;
+             << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_tcsetattr",
         out_stream.str(),
@@ -564,7 +572,7 @@ Tango::ConstDevString Serial::dev_status()
 	/* TODO: why the code generated by POGO gives a compilation error
 	Tango::DevString	argout = Tango::DeviceImpl::dev_status();
 	*/
-	INFO_STREAM << "Serial::dev_status(): entering... !" << endl;
+	INFO_STREAM << "Serial::dev_status(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
   if ( !_success )
@@ -641,10 +649,10 @@ Tango::ConstDevString Serial::dev_status()
 	  {
 		  TangoSys_MemStream out_stream;
 		  out_stream << "tcsetattr() error on in line, errno: " << errno
-			  << ends;
+			  << std::ends;
 
 		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
-		  INFO_STREAM << out_stream.str() << endl;
+		  INFO_STREAM << out_stream.str() << std::endl;
 		  Tango::Except::throw_exception(
 			  (const char *)"Serial::error_tcgetattr",
 			  out_stream.str(),
@@ -661,10 +669,10 @@ Tango::ConstDevString Serial::dev_status()
 	  {
 		  TangoSys_MemStream out_stream;
 		  out_stream << "tcsetattr() error on out line, errno: " << errno
-			  << ends;
+			  << std::ends;
 
 		  INFO_STREAM << "Serial::dev_ser_set_parameter(): ";
-		  INFO_STREAM << out_stream.str() << endl;
+		  INFO_STREAM << out_stream.str() << std::endl;
 		  Tango::Except::throw_exception(
 			  (const char *)"Serial::error_tcgetattr",
 			  out_stream.str(),
@@ -713,7 +721,7 @@ char *Serial::retry_read_string(long nretry)
  char   tab[]="Serial::retry_read_string: ";
  int nchar;
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  //
  //first "empty" buffer by NULL terminating it
@@ -787,8 +795,8 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (sched)"
-              << ends;
-   ERROR_STREAM << tab << out_stream.str() << endl;
+              << std::ends;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_timeend",
         out_stream.str(),
@@ -812,8 +820,8 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (select() < 0)"
-              << ends;
-   ERROR_STREAM << tab << out_stream.str() << endl;
+              << std::ends;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -827,8 +835,8 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read"
-              << ends;
-   ERROR_STREAM << tab << out_stream.str() << endl;
+              << std::ends;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -843,9 +851,9 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "fd_isset() wrong, who whoke me up?"
-              << ends;
+              << std::ends;
 
-	 ERROR_STREAM << tab << out_stream.str() << endl;
+	 ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_FD_ISSET",
         out_stream.str(),
@@ -859,15 +867,15 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "error reading no. of char, errno=" << errno
-              << ends;
-   ERROR_STREAM << tab << out_stream.str() << endl;
+              << std::ends;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_ioctl",
         out_stream.str(),
         (const char *)tab);
   }
 
-  INFO_STREAM << tab << "ncharin=" << ncharin << endl;
+  INFO_STREAM << tab << "ncharin=" << ncharin << std::endl;
 
   //
   // Empty the receiving buffer (if not done, the next call to select() will
@@ -885,9 +893,9 @@ char *Serial::retry_read_string(long nretry)
   {
    TangoSys_MemStream out_stream;
    out_stream << "error reading from device, errno=" << errno
-              << ends;
+              << std::ends;
    ERROR_STREAM << tab;
-   ERROR_STREAM << out_stream.str() << endl;
+   ERROR_STREAM << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_read",
         out_stream.str(),
@@ -912,8 +920,8 @@ char *Serial::retry_read_string(long nretry)
  {
   TangoSys_MemStream out_stream;
   out_stream << "unable to allocate memory for the return buffer, need "
-             << this->serialdevice.ncharread << " bytes" << ends;
-  ERROR_STREAM << tab << out_stream.str() << endl;
+             << this->serialdevice.ncharread << " bytes" << std::ends;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_alloc",
         out_stream.str(),
@@ -950,7 +958,7 @@ char *Serial::raw_read_string(void)
  int    nchar;
  char   tab[]="Serial::raw_read_string(): ";
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  //
  //first "empty" buffer by null terminating it
@@ -973,9 +981,9 @@ char *Serial::raw_read_string(void)
   if(errno == ETIMEDOUT)
    out_stream << " (timeout)";
 
-  out_stream << ends;
+  out_stream << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_read",
         out_stream.str(),
@@ -995,9 +1003,9 @@ char *Serial::raw_read_string(void)
  {
   TangoSys_MemStream out_stream;
   out_stream << "unable to allocate memory for the return buffer, need "
-             << nchar << " bytes" << ends;
+             << nchar << " bytes" << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_alloc",
         out_stream.str(),
@@ -1044,7 +1052,7 @@ char *Serial::nchar_read_string(long  nchar)
  char           tab[]="Serial::nchar_read_string(): ";
 
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  //
  //first "empty" buffer by NULL terminating it
@@ -1059,9 +1067,9 @@ char *Serial::nchar_read_string(long  nchar)
  {
   TangoSys_MemStream out_stream;
   out_stream << "number of char requested " << nchar << " > " << SL_MAXSTRING
-              << ends;
+              << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_nchar",
         out_stream.str(),
@@ -1131,9 +1139,9 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (sched)"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_timeend",
         out_stream.str(),
@@ -1153,9 +1161,9 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (select() < 0)"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -1169,9 +1177,9 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -1186,9 +1194,9 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "fd_isset() wrong, who whoke me up?"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_FD_ISSET",
         out_stream.str(),
@@ -1202,16 +1210,16 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "error reading no. of char, errno=" << errno
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_ioctl",
         out_stream.str(),
         (const char *)tab);
   }
 
-  INFO_STREAM << tab << "ncharin=" << ncharin << endl;
+  INFO_STREAM << tab << "ncharin=" << ncharin << std::endl;
 
   //
   // Empty the receiving buffer (if not done, the next call to select() will
@@ -1227,10 +1235,10 @@ char *Serial::nchar_read_string(long  nchar)
   {
    TangoSys_MemStream out_stream;
    out_stream << "error reading from devive, errno=" << errno
-              << ends;
+              << std::ends;
 
    ERROR_STREAM << tab;
-   ERROR_STREAM << out_stream.str() << endl;
+   ERROR_STREAM << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_read",
         out_stream.str(),
@@ -1255,9 +1263,9 @@ char *Serial::nchar_read_string(long  nchar)
  {
   TangoSys_MemStream out_stream;
   out_stream << "unable to allocate memory for the return buffer, need "
-             << this->serialdevice.ncharread << " bytes" << ends;
+             << this->serialdevice.ncharread << " bytes" << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_alloc",
         out_stream.str(),
@@ -1302,7 +1310,7 @@ char *Serial::line_read_string(void)
  int		eolfound;	// flag set when end of line found
  char           tab[]="Serial::line_read_string(): ";
 
- INFO_STREAM << tab << "entering... !" << endl;
+ INFO_STREAM << tab << "entering... !" << std::endl;
 
  //
  //first "empty" buffer by null terminating it
@@ -1360,9 +1368,9 @@ char *Serial::line_read_string(void)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (select() < 0)"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -1374,9 +1382,9 @@ char *Serial::line_read_string(void)
   {
    TangoSys_MemStream out_stream;
    out_stream << "timeout waiting for char to be read (>="
-              << to <<" ms)" << ends;
+              << to <<" ms)" << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_select",
         out_stream.str(),
@@ -1389,9 +1397,9 @@ char *Serial::line_read_string(void)
   {
    TangoSys_MemStream out_stream;
    out_stream << "fd_isset() wrong, who whoke me up?"
-              << ends;
+              << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_FD_ISSET",
         out_stream.str(),
@@ -1406,16 +1414,16 @@ char *Serial::line_read_string(void)
   {
    TangoSys_MemStream out_stream;
    out_stream << "ioctl()error reading no. of char., errno="
-              << errno << ends;
+              << errno << std::ends;
 
-   ERROR_STREAM << tab << out_stream.str() << endl;
+   ERROR_STREAM << tab << out_stream.str() << std::endl;
    Tango::Except::throw_exception(
         (const char *)"Serial::error_ioctl",
         out_stream.str(),
         (const char *)tab);
   }
 
-  INFO_STREAM << tab << "ncharin=" << ncharin << endl;
+  INFO_STREAM << tab << "ncharin=" << ncharin << std::endl;
 
   // Read the receiving buffer, character per character, looking for
   // the end of line predefined.
@@ -1432,9 +1440,9 @@ char *Serial::line_read_string(void)
    {
     TangoSys_MemStream out_stream;
     out_stream << "error reading from devive, errno="
-               << errno << ends;
+               << errno << std::ends;
 
-    ERROR_STREAM << tab << out_stream.str() << endl;
+    ERROR_STREAM << tab << out_stream.str() << std::endl;
     Tango::Except::throw_exception(
         (const char *)"Serial::error_read",
         out_stream.str(),
@@ -1464,9 +1472,9 @@ char *Serial::line_read_string(void)
  {
   TangoSys_MemStream out_stream;
   out_stream << "unable to allocate memory for the return buffer, need "
-             << this->serialdevice.ncharread << " bytes" << ends;
+             << this->serialdevice.ncharread << " bytes" << std::ends;
 
-  ERROR_STREAM << tab << out_stream.str() << endl;
+  ERROR_STREAM << tab << out_stream.str() << std::endl;
   Tango::Except::throw_exception(
         (const char *)"Serial::error_alloc",
         out_stream.str(),
@@ -1478,7 +1486,7 @@ char *Serial::line_read_string(void)
  for(i=0 ; i<this->serialdevice.ncharread ; i++)
  {
   	argout[i] = this->serialdevice.buffer[i];
-  	INFO_STREAM << "[" << i << "] " << this->serialdevice.buffer[i] << " hex : " << hex << (unsigned short)this->serialdevice.buffer[i] << endl;
+  	INFO_STREAM << "[" << i << "] " << this->serialdevice.buffer[i] << " hex : " << std::hex << (unsigned short)this->serialdevice.buffer[i] << std::endl;
  }
  // Add string ending char, used only by ser_read_string()
  argout[i]=0;
@@ -1645,9 +1653,9 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
         if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
         {
             TangoSys_MemStream out_stream;
-            out_stream << "error reading number of char in receiving buffer (errno = " << errno << ")" << endl;
+            out_stream << "error reading number of char in receiving buffer (errno = " << errno << ")" << std::endl;
 
-            ERROR_STREAM << tab << out_stream.str() << endl;
+            ERROR_STREAM << tab << out_stream.str() << std::endl;
 
             Tango::Except::throw_exception(
                 (const char *)"Read Error",
@@ -1655,16 +1663,16 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
                 (const char *)tab);
         }
 
-        INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << endl;
+        INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << std::endl;
 
         // Return timeout error if no chars available
 
         if(ncharin <= 0)
         {
             TangoSys_MemStream out_stream;
-            out_stream << "The timeout is 0 and no characters are available!" << endl;
+            out_stream << "The timeout is 0 and no characters are available!" << std::endl;
 
-            ERROR_STREAM << tab << out_stream.str() << endl;
+            ERROR_STREAM << tab << out_stream.str() << std::endl;
 
             Tango::Except::throw_exception(
                 (const char *)"Timeout Error",
@@ -1711,13 +1719,13 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
     if(timeout.tv_sec < 0)
     {
         TangoSys_MemStream out_stream;
-        out_stream << "timeout waiting for char to be read (sched)" << endl;
-        out_stream << "timeout.tv_usec = " << timeout.tv_usec << endl;
-        out_stream << "timeout.tv_sec = " << timeout.tv_sec << endl;
-        out_stream << "timeend.tv_usec = " << timeend.tv_usec << endl;
-        out_stream << "timeend.tv_sec = " << timeend.tv_sec << endl;
+        out_stream << "timeout waiting for char to be read (sched)" << std::endl;
+        out_stream << "timeout.tv_usec = " << timeout.tv_usec << std::endl;
+        out_stream << "timeout.tv_sec = " << timeout.tv_sec << std::endl;
+        out_stream << "timeend.tv_usec = " << timeend.tv_usec << std::endl;
+        out_stream << "timeend.tv_sec = " << timeend.tv_sec << std::endl;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
 
         Tango::Except::throw_exception(
             (const char *)"Timeout Error",
@@ -1754,9 +1762,9 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
     if (readyfd < 0)
     {
         TangoSys_MemStream out_stream;
-        out_stream << "Error when waiting for characters to read. (errno = " << errno << ")" << endl;
+        out_stream << "Error when waiting for characters to read. (errno = " << errno << ")" << std::endl;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
 
         Tango::Except::throw_exception(
             (const char *)"Timeout Error",
@@ -1771,9 +1779,9 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
     if (readyfd == 0)
     {
         TangoSys_MemStream out_stream;
-        out_stream << "Timeout when waiting for characters to read!" << endl;
+        out_stream << "Timeout when waiting for characters to read!" << std::endl;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
 
         Tango::Except::throw_exception(
             (const char *)"Timeout Error",
@@ -1789,9 +1797,9 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
     if (!FD_ISSET(this->serialdevice.serialin, &inset))
     {
         TangoSys_MemStream out_stream;
-        out_stream << "fd_isset() is wrong, who whoke me up?" << endl;
+        out_stream << "fd_isset() is wrong, who whoke me up?" << std::endl;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
 
         Tango::Except::throw_exception(
             (const char *)"Read Error",
@@ -1805,9 +1813,9 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
     if (ioctl(this->serialdevice.serialin, FIONREAD, &ncharin) < 0)
     {
         TangoSys_MemStream out_stream;
-        out_stream << "Error reading the number of characters to be read. (errno = " << errno << ")" << endl;
+        out_stream << "Error reading the number of characters to be read. (errno = " << errno << ")" << std::endl;
 
-        ERROR_STREAM << tab << out_stream.str() << endl;
+        ERROR_STREAM << tab << out_stream.str() << std::endl;
 
         Tango::Except::throw_exception(
             (const char *)"Read Error",
@@ -1815,11 +1823,12 @@ Tango::DevLong Serial::dev_ser_wait_char_linux(void)
             (const char *)tab);
     }
 
-    INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << endl;
+    INFO_STREAM << "Serial::SerWaitChar(): ncharin = " << ncharin << std::endl;
 
     //
     // Normal end
     //
     argout = ncharin;
 	return argout;
+}
 }

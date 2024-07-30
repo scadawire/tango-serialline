@@ -35,7 +35,7 @@
 #define SERIAL_H
 
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 #ifdef __linux

@@ -34,6 +34,8 @@
 #define WIN_SL_DATA6      6
 #define WIN_SL_DATA5      5
 
+namespace Serial_ns
+{
 
 //+------------------------------------------------------------------
 /**
@@ -48,14 +50,14 @@
 //+------------------------------------------------------------------
 void Serial::dev_ser_set_parameter_win32(const Tango::DevVarLongArray *argin)
 {
-	DEBUG_STREAM << "Serial::dev_ser_set_parameter(): entering... !" << endl;
+	DEBUG_STREAM << "Serial::dev_ser_set_parameter(): entering... !" << std::endl;
 
 	//	Add your own code to control device here
 SerialLinePart	oldserialline;
 char			temp[256];
 	
 	
-	INFO_STREAM << "Serial::dev_ser_set_parameter: entering ." << endl;
+	INFO_STREAM << "Serial::dev_ser_set_parameter: entering ." << std::endl;
 	
 	/*
 	* Keep a record of the last valid set of parameters
@@ -97,7 +99,7 @@ char			temp[256];
 			sprintf(temp, "dev_ser_set_parameter: new parity: %d (%d=none %d=odd %d=even)",
 				serialdevice.parity,NOPARITY, ODDPARITY, EVENPARITY);
 
-			DEBUG_STREAM << string(temp) <<  endl;
+			DEBUG_STREAM << string(temp) <<  std::endl;
 			break;
 		case SL_CHARLENGTH:
 			// Minimum check on value passed
@@ -149,7 +151,7 @@ char			temp[256];
 			sprintf(temp, "dev_ser_set_parameter: new stopbits: %d (%d=1bit %d=1.5bit %d=2bits)", 
 				serialdevice.stopbits,
 				ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS);
-			DEBUG_STREAM << string(temp) <<  endl;
+			DEBUG_STREAM << string(temp) <<  std::endl;
 			break;
 		case SL_BAUDRATE:
 			// Minimum check on value passed
@@ -217,7 +219,7 @@ char			temp[256];
 	catch (Tango::DevFailed &  )
 	{
 		// Restore the last valid set of parameters
-		ERROR_STREAM << "Serial::dev_ser_set_parameter_win32 : Error setting new values ==> Restore the last valid set of parameters" << endl;
+		ERROR_STREAM << "Serial::dev_ser_set_parameter_win32 : Error setting new values ==> Restore the last valid set of parameters" << std::endl;
 
 		serialdevice.timeout    = oldserialline.timeout;
 		serialdevice.parity     = oldserialline.parity;
@@ -243,7 +245,7 @@ DCB		comm_prop;
 	*/
 	if(GetCommState(this->serialdevice.hfile, &comm_prop) == false)
 	{
-	  ERROR_STREAM << "serial_setparameter:GetCommState : error getting serialline props" << endl;
+	  ERROR_STREAM << "serial_setparameter:GetCommState : error getting serialline props" << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::GetCommState",
 		  (const char *)"Error getting serialline props",
@@ -265,16 +267,16 @@ DCB		comm_prop;
 	if(SetCommState(this->serialdevice.hfile, &comm_prop) == FALSE)
 	{
 		unsigned long ret = GetLastError();
-	  ERROR_STREAM << "serial_setparameter: SetCommState : error # " << ret << endl;
+	  ERROR_STREAM << "serial_setparameter: SetCommState : error # " << ret << std::endl;
 
-	  ERROR_STREAM << "serial_setparameter: SetCommState : error setting serialline props" << endl;
+	  ERROR_STREAM << "serial_setparameter: SetCommState : error setting serialline props" << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::SetCommState",
 		  (const char*) "Error setting serialline props",
 		  (const char *)"Serial::serial_setparameter");
 	}
 
-	INFO_STREAM << "Serial::serial_setparameter(): parameters well set" << endl;
+	INFO_STREAM << "Serial::serial_setparameter(): parameters well set" << std::endl;
 
 	/*  Old TACO stuff : no more used since we use our own Timeout
 	// ==> TO BE deleted in the future
@@ -291,14 +293,14 @@ COMMTIMEOUTS	comm_timeouts;
 
 	if (SetCommTimeouts(serialdevice.hfile, &comm_timeouts) == FALSE)
 	{
-	  ERROR_STREAM << "serial_open: error setting timeouts" << endl;
+	  ERROR_STREAM << "serial_open: error setting timeouts" << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::SetCommTimeouts",
 		  (const char*) "Error setting timeouts",
 		  (const char *)"Serial::serial_setparameter");
 	}
 
-	DEBUG_STREAM << "Serial::serial_setparameter(): timemouts well set" << endl;
+	DEBUG_STREAM << "Serial::serial_setparameter(): timemouts well set" << std::endl;
   */
   
 	return ;
@@ -361,14 +363,14 @@ void Serial::open_desc()
 	if (serialdevice.hfile == INVALID_HANDLE_VALUE)
 	{
     _success = false;
-	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << " Error =" << GetLastError() << endl ;
+	  FATAL_STREAM << "	Serial::open_desc_win32 . serial line NOT opened = " << serialdevice.serialline << " Error =" << GetLastError() << std::endl ;
 	  Tango::Except::throw_exception(
 		  (const char *) "Serial",
 		  (const char *) "Error opening descriptor file",
 		  (const char *) "Serial::open_desc_win32");
 	}
 
-	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened = " << serialdevice.serialline << endl ;
+	INFO_STREAM << "	Serial::open_desc_win32 . serial line opened = " << serialdevice.serialline << std::endl ;
 
   _success = true;
 }
@@ -383,7 +385,7 @@ void Serial::open_desc()
 //+------------------------------------------------------------------
 void Serial::close_handle_win32()
 {
-	INFO_STREAM << "Serial::close_handle_win32 . serial line closed" << endl ;
+	INFO_STREAM << "Serial::close_handle_win32 . serial line closed" << std::endl ;
 
 	CloseHandle( serialdevice.hfile );
 }
@@ -412,12 +414,12 @@ OVERLAPPED	osWrite = {0};
 	str_len = strlen(str);
 	if (WriteFile(serialdevice.hfile, str, str_len,( DWORD *)&bytes_written, &osWrite) == false)
 	{
-	  ERROR_STREAM << " String NOT written = " << str << endl;
+	  ERROR_STREAM << " String NOT written = " << str << std::endl;
 	  return -1;
 	}
 	else
 	{	
-	  DEBUG_STREAM << " String written on serial port= " << str << endl;
+	  DEBUG_STREAM << " String written on serial port= " << str << std::endl;
 	  return bytes_written;
 	}
 }
@@ -452,7 +454,7 @@ OVERLAPPED	osWrite = {0};
 
 	if (WriteFile(serialdevice.hfile, tmp, str_len,(DWORD *)&bytes_written, &osWrite) == false)
 	{
-	  ERROR_STREAM << " DevVarCharArray NOT written " << endl;
+	  ERROR_STREAM << " DevVarCharArray NOT written " << std::endl;
 	  bytes_written = -1;
 	}
 
@@ -499,7 +501,7 @@ char *Serial::retry_read_string(long nretry)
 /*		// Get the current number of bytes in the receiving buffer
 		if(ClearCommError(serialdevice.hfile, &cur_error, &cur_stat) == FALSE)
 		{
-			ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
+			ERROR_STREAM << "nchar_read_string: error reading serialline stats" << std::endl;
 			
 			Tango::Except::throw_exception(
 				(const char *)"Serial::error_nretry",
@@ -517,7 +519,7 @@ char *Serial::retry_read_string(long nretry)
 			(DWORD *)&bytes_read, 
 			&osRead) == FALSE)
 		{
-			ERROR_STREAM << "retry_read_string: error reading from serialline" << endl;
+			ERROR_STREAM << "retry_read_string: error reading from serialline" << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::ReadFile",
 				(const char*) "Error reading from serialline : retry_read_string",
@@ -532,8 +534,8 @@ char *Serial::retry_read_string(long nretry)
 		{
 			TangoSys_MemStream out_stream;
 			out_stream << "error reading from device, errno=" << errno
-				<< ends;
-			ERROR_STREAM << out_stream.str() << endl;
+				<< std::ends;
+			ERROR_STREAM << out_stream.str() << std::endl;
 			Tango::Except::throw_exception(
 				(const char *)"Serial::error_read",
 				out_stream.str(),
@@ -574,7 +576,7 @@ char *Serial::retry_read_string(long nretry)
 		  (const char *)"Serial::retry_read_string");
 	}
 
-	DEBUG_STREAM << "**** \n\n ARGOUT NRETRY = " << argout << endl;
+	DEBUG_STREAM << "**** \n\n ARGOUT NRETRY = " << argout << std::endl;
 
 	return argout;		
 }
@@ -614,7 +616,7 @@ OVERLAPPED	osRead = {0};
 	  &cur_error,
 	  &cur_stat) == FALSE)
 	{
-	  ERROR_STREAM << "raw_read_string: error reading serialline stats" << endl;
+	  ERROR_STREAM << "raw_read_string: error reading serialline stats" << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::ClearCommError",
 		  (const char*) "Error reading serialline stats : raw_read_string",
@@ -633,7 +635,7 @@ OVERLAPPED	osRead = {0};
 	  (DWORD *)&bytes_read, 
 	  &osRead) == FALSE)
 	{
-	  ERROR_STREAM << "raw_read_string: error reading from serialline" << endl;
+	  ERROR_STREAM << "raw_read_string: error reading from serialline" << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::ReadFile",
 		  (const char*) "Error reading from serialline : raw_read_string",
@@ -651,7 +653,7 @@ OVERLAPPED	osRead = {0};
 	for(i=0; i < bytes_read;i++)
 	{
 	  one_char = this->serialdevice.buffer[i];
-	  DEBUG_STREAM << "raw_read_string: char read: " << one_char << " " << (one_char>32?one_char:' ') << endl;
+	  DEBUG_STREAM << "raw_read_string: char read: " << one_char << " " << (one_char>32?one_char:' ') << std::endl;
 	}
   
 	// Prepare return buffer (can not return "buffer" directly 
@@ -661,10 +663,10 @@ OVERLAPPED	osRead = {0};
 	if(argout == 0)
 	{
 	  TangoSys_MemStream out_stream;
-	  out_stream << "unable to allocate memory for the return buffer, need "<< bytes_read << " bytes" << ends;
+	  out_stream << "unable to allocate memory for the return buffer, need "<< bytes_read << " bytes" << std::ends;
   
 	  FATAL_STREAM << "Serial::raw_read_string(): ";
-	  FATAL_STREAM << out_stream.str() << endl;
+	  FATAL_STREAM << out_stream.str() << std::endl;
 	  Tango::Except::throw_exception(
 		  (const char *)"Serial::error_alloc",
 		  out_stream.str(),
@@ -678,7 +680,7 @@ OVERLAPPED	osRead = {0};
 	// Add string ending char, used only by ser_read_string()
 	argout[i]=0;
 
-	DEBUG_STREAM << "Serial::raw_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << endl;
+	DEBUG_STREAM << "Serial::raw_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << std::endl;
 
 	return argout;
 }
@@ -749,10 +751,10 @@ COMSTAT		cur_stat;
 		{
 			result=ReadFile(serialdevice.hfile,&one_char,bytes_to_read, (DWORD *)&one_byte_read, &osRead) ;
 			
-			DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << endl;
-			DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << endl;
+			DEBUG_STREAM << "serial_linereadstring: ReadFile() returns :" << result << std::endl;
+			DEBUG_STREAM << "serial_linereadstring: char read:" << one_char << " " << (one_char>32?one_char:'*') << std::endl;
 			printable_char = (int) one_char;
-			INFO_STREAM << "serial_linereadstring: printable char: " << std::fixed << one_char << endl;
+			INFO_STREAM << "serial_linereadstring: printable char: " << std::fixed << one_char << std::endl;
 			
 			this->serialdevice.buffer[(this->serialdevice.ncharread)] = one_char;
 			/*
@@ -768,7 +770,7 @@ COMSTAT		cur_stat;
 		
 		if (ellapsed > timeout_ms)  
 		{
-			ERROR_STREAM << "Sortie sur Timeout " << endl;
+			ERROR_STREAM << "Sortie sur Timeout " << std::endl;
 			TIMEOUT = true;
 		}
 		
@@ -794,10 +796,10 @@ COMSTAT		cur_stat;
 	if(argout == 0)
 	{
 		TangoSys_MemStream out_stream;
-		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << ends;
+		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << std::ends;
 		
 		FATAL_STREAM << "Serial::line_read_string(): ";
-		FATAL_STREAM << out_stream.str() << endl;
+		FATAL_STREAM << out_stream.str() << std::endl;
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_alloc",
 			out_stream.str(),
@@ -813,7 +815,7 @@ COMSTAT		cur_stat;
 	argout[i]='\0';
 
 	//A RET !
-	DEBUG_STREAM << "Serial::line_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << endl;
+	DEBUG_STREAM << "Serial::line_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << std::endl;
 
 	return argout;
 }
@@ -855,9 +857,9 @@ OVERLAPPED	osRead = {0};
 	{
 		TangoSys_MemStream out_stream;
 		out_stream << "number of char requested " << nchar << " > " << SL_MAXSTRING
-				  << ends;
+				  << std::ends;
 
-		ERROR_STREAM << tab << out_stream.str() << endl;
+		ERROR_STREAM << tab << out_stream.str() << std::endl;
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_nchar",
 			out_stream.str(),
@@ -881,7 +883,7 @@ OVERLAPPED	osRead = {0};
 			 &cur_error,
 			 &cur_stat) == FALSE)
 		 {
-			 ERROR_STREAM << "nchar_read_string: error reading serialline stats" << endl;
+			 ERROR_STREAM << "nchar_read_string: error reading serialline stats" << std::endl;
 			 
 			 Tango::Except::throw_exception(
 				 (const char *)"Serial::error_nchar",
@@ -901,7 +903,7 @@ OVERLAPPED	osRead = {0};
 		 
 	 }
 	 while((bytes_available < nchar) &&  (ellapsed < timeout_ms));
-	 DEBUG_STREAM << " SerialWin32::nchar_read_string() " << bytes_available << "chars in the buffer " << endl;
+	 DEBUG_STREAM << " SerialWin32::nchar_read_string() " << bytes_available << "chars in the buffer " << std::endl;
 	 
 	 DEBUG_STREAM <<"serial_ncharreadstring: end of waiting loop"<<endl; 
 	 
@@ -949,9 +951,9 @@ OVERLAPPED	osRead = {0};
 	if( !argout )
 	{
 		TangoSys_MemStream out_stream;
-		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << ends;
+		out_stream << "unable to allocate memory for the return buffer, need "<< this->serialdevice.ncharread << " bytes" << std::ends;
 		 
-		FATAL_STREAM << "Serial::nchar_read_string(): " << out_stream.str() << endl;
+		FATAL_STREAM << "Serial::nchar_read_string(): " << out_stream.str() << std::endl;
 		Tango::Except::throw_exception(
 			(const char *)"Serial::error_alloc",
 			out_stream.str(),
@@ -966,7 +968,7 @@ OVERLAPPED	osRead = {0};
 	argout[j]=0;
 	 
 	// A RET !
-	DEBUG_STREAM << "Serial::nchar_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << endl;
+	DEBUG_STREAM << "Serial::nchar_read_string(): nchar=" << this->serialdevice.ncharread << " argout=" << argout << std::endl;
 	 
 	return argout;
 }
@@ -988,7 +990,7 @@ COMMTIMEOUTS	comm_timeouts;
 static char	append[4096];
 static char mess[4096];
   
-	INFO_STREAM << "dev_status: begin" << endl;
+	INFO_STREAM << "dev_status: begin" << std::endl;
   if ( !_success )
   {
     set_state(Tango::FAULT);
@@ -1110,6 +1112,7 @@ static char mess[4096];
 	*/
 	Tango::DevString argout = mess;
 
-	INFO_STREAM << "dev_status: end" << endl;
+	INFO_STREAM << "dev_status: end" << std::endl;
 	return argout;
+}
 }
