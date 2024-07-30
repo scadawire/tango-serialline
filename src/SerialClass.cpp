@@ -11,7 +11,7 @@ static const char *HttpServer = "http://www.esrf.eu/computing/cs/tango/tango_doc
 // description : C++ source for the SerialClass. A singleton
 //               class derived from DeviceClass. It implements the
 //               command list and all properties and methods required
-//               by the «name» once per process.
+//               by the ï¿½nameï¿½ once per process.
 //
 // project :     TANGO Device Server.
 //
@@ -67,17 +67,20 @@ namespace Serial_ns
 //===================================================================
 SerialClass *SerialClass::_instance = NULL;
 
+//===================================================================
+//	Class constants
+//===================================================================
 //--------------------------------------------------------
 /**
- * method : 		SerialClass::SerialClass(string &s)
+ * method : 		SerialClass::SerialClass(std::string &s)
  * description : 	constructor for the SerialClass
  *
  * @param s	The class name
  */
 //--------------------------------------------------------
-SerialClass::SerialClass(string &s):Tango::DeviceClass(s)
+SerialClass::SerialClass(std::string &s):Tango::DeviceClass(s)
 {
-	cout2 << "Entering SerialClass constructor" << endl;
+	TANGO_LOG_INFO << "Entering SerialClass constructor" << std::endl;
 	set_default_property();
 	get_class_property();
 	write_class_property();
@@ -88,7 +91,7 @@ SerialClass::SerialClass(string &s):Tango::DeviceClass(s)
 
 	/*----- PROTECTED REGION END -----*/	//	SerialClass::constructor
 
-	cout2 << "Leaving SerialClass constructor" << endl;
+	TANGO_LOG_INFO << "Leaving SerialClass constructor" << std::endl;
 }
 
 //--------------------------------------------------------
@@ -122,10 +125,10 @@ SerialClass *SerialClass::init(const char *name)
 	{
 		try
 		{
-			string s(name);
+			std::string s(name);
 			_instance = new SerialClass(s);
 		}
-		catch (bad_alloc &)
+		catch (std::bad_alloc &)
 		{
 			throw;
 		}
@@ -144,7 +147,7 @@ SerialClass *SerialClass::instance()
 {
 	if (_instance == NULL)
 	{
-		cerr << "Class is not initialised !!" << endl;
+		std::cerr << "Class is not initialized !!" << std::endl;
 		exit(-1);
 	}
 	return _instance;
@@ -168,7 +171,7 @@ SerialClass *SerialClass::instance()
 //--------------------------------------------------------
 CORBA::Any *DevSerWriteStringClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerWriteStringClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerWriteStringClass::execute(): arrived" << std::endl;
 	Tango::DevString argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_write_string(argin));
@@ -187,7 +190,7 @@ CORBA::Any *DevSerWriteStringClass::execute(Tango::DeviceImpl *device, const COR
 //--------------------------------------------------------
 CORBA::Any *DevSerWriteCharClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerWriteCharClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerWriteCharClass::execute(): arrived" << std::endl;
 	const Tango::DevVarCharArray *argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_write_char(argin));
@@ -206,7 +209,7 @@ CORBA::Any *DevSerWriteCharClass::execute(Tango::DeviceImpl *device, const CORBA
 //--------------------------------------------------------
 CORBA::Any *DevSerReadStringClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerReadStringClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadStringClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_read_string(argin));
@@ -225,7 +228,7 @@ CORBA::Any *DevSerReadStringClass::execute(Tango::DeviceImpl *device, const CORB
 //--------------------------------------------------------
 CORBA::Any *DevSerReadCharClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerReadCharClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadCharClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_read_char(argin));
@@ -244,7 +247,7 @@ CORBA::Any *DevSerReadCharClass::execute(Tango::DeviceImpl *device, const CORBA:
 //--------------------------------------------------------
 CORBA::Any *WriteReadClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "WriteReadClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "WriteReadClass::execute(): arrived" << std::endl;
 	const Tango::DevVarLongStringArray *argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->write_read(argin));
@@ -263,7 +266,7 @@ CORBA::Any *WriteReadClass::execute(Tango::DeviceImpl *device, const CORBA::Any 
 //--------------------------------------------------------
 CORBA::Any *DevSerGetNCharClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	cout2 << "DevSerGetNCharClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerGetNCharClass::execute(): arrived" << std::endl;
 	return insert((static_cast<Serial *>(device))->dev_ser_get_nchar());
 }
 
@@ -280,7 +283,7 @@ CORBA::Any *DevSerGetNCharClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED
 //--------------------------------------------------------
 CORBA::Any *DevSerReadNCharClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerReadNCharClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadNCharClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_read_nchar(argin));
@@ -299,7 +302,7 @@ CORBA::Any *DevSerReadNCharClass::execute(Tango::DeviceImpl *device, const CORBA
 //--------------------------------------------------------
 CORBA::Any *DevSerReadRawClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	cout2 << "DevSerReadRawClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadRawClass::execute(): arrived" << std::endl;
 	return insert((static_cast<Serial *>(device))->dev_ser_read_raw());
 }
 
@@ -316,7 +319,7 @@ CORBA::Any *DevSerReadRawClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(
 //--------------------------------------------------------
 CORBA::Any *DevSerReadLineClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	cout2 << "DevSerReadLineClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadLineClass::execute(): arrived" << std::endl;
 	return insert((static_cast<Serial *>(device))->dev_ser_read_line());
 }
 
@@ -333,7 +336,7 @@ CORBA::Any *DevSerReadLineClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED
 //--------------------------------------------------------
 CORBA::Any *DevSerFlushClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerFlushClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerFlushClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_flush(argin));
@@ -353,7 +356,7 @@ CORBA::Any *DevSerFlushClass::execute(Tango::DeviceImpl *device, const CORBA::An
 //--------------------------------------------------------
 CORBA::Any *DevSerSetParameterClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetParameterClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetParameterClass::execute(): arrived" << std::endl;
 	const Tango::DevVarLongArray *argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_parameter(argin));
@@ -373,7 +376,7 @@ CORBA::Any *DevSerSetParameterClass::execute(Tango::DeviceImpl *device, const CO
 //--------------------------------------------------------
 CORBA::Any *DevSerSetTimeoutClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetTimeoutClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetTimeoutClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_timeout(argin));
@@ -393,7 +396,7 @@ CORBA::Any *DevSerSetTimeoutClass::execute(Tango::DeviceImpl *device, const CORB
 //--------------------------------------------------------
 CORBA::Any *DevSerSetParityClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetParityClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetParityClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_parity(argin));
@@ -413,7 +416,7 @@ CORBA::Any *DevSerSetParityClass::execute(Tango::DeviceImpl *device, const CORBA
 //--------------------------------------------------------
 CORBA::Any *DevSerSetCharLengthClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetCharLengthClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetCharLengthClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_char_length(argin));
@@ -433,7 +436,7 @@ CORBA::Any *DevSerSetCharLengthClass::execute(Tango::DeviceImpl *device, const C
 //--------------------------------------------------------
 CORBA::Any *DevSerSetStopbitClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetStopbitClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetStopbitClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_stopbit(argin));
@@ -453,7 +456,7 @@ CORBA::Any *DevSerSetStopbitClass::execute(Tango::DeviceImpl *device, const CORB
 //--------------------------------------------------------
 CORBA::Any *DevSerSetBaudrateClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetBaudrateClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetBaudrateClass::execute(): arrived" << std::endl;
 	Tango::DevULong argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_baudrate(argin));
@@ -473,7 +476,7 @@ CORBA::Any *DevSerSetBaudrateClass::execute(Tango::DeviceImpl *device, const COR
 //--------------------------------------------------------
 CORBA::Any *DevSerSetNewlineClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetNewlineClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetNewlineClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_newline(argin));
@@ -493,7 +496,7 @@ CORBA::Any *DevSerSetNewlineClass::execute(Tango::DeviceImpl *device, const CORB
 //--------------------------------------------------------
 CORBA::Any *DevSerReadRetryClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerReadRetryClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadRetryClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_read_retry(argin));
@@ -512,7 +515,7 @@ CORBA::Any *DevSerReadRetryClass::execute(Tango::DeviceImpl *device, const CORBA
 //--------------------------------------------------------
 CORBA::Any *DevSerReadNBinDataClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerReadNBinDataClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerReadNBinDataClass::execute(): arrived" << std::endl;
 	Tango::DevLong argin;
 	extract(in_any, argin);
 	return insert((static_cast<Serial *>(device))->dev_ser_read_nbin_data(argin));
@@ -531,7 +534,7 @@ CORBA::Any *DevSerReadNBinDataClass::execute(Tango::DeviceImpl *device, const CO
 //--------------------------------------------------------
 CORBA::Any *DevSerWaitCharClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	cout2 << "DevSerWaitCharClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerWaitCharClass::execute(): arrived" << std::endl;
 	return insert((static_cast<Serial *>(device))->dev_ser_wait_char());
 }
 
@@ -548,7 +551,7 @@ CORBA::Any *DevSerWaitCharClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED
 //--------------------------------------------------------
 CORBA::Any *DevSerSetParameterCompatClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerSetParameterCompatClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerSetParameterCompatClass::execute(): arrived" << std::endl;
 	const Tango::DevVarShortArray *argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_set_parameter_compat(argin));
@@ -568,7 +571,7 @@ CORBA::Any *DevSerSetParameterCompatClass::execute(Tango::DeviceImpl *device, co
 //--------------------------------------------------------
 CORBA::Any *DevSerFlushCompatClass::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	cout2 << "DevSerFlushCompatClass::execute(): arrived" << endl;
+	TANGO_LOG_INFO << "DevSerFlushCompatClass::execute(): arrived" << std::endl;
 	Tango::DevShort argin;
 	extract(in_any, argin);
 	((static_cast<Serial *>(device))->dev_ser_flush_compat(argin));
@@ -581,11 +584,11 @@ CORBA::Any *DevSerFlushCompatClass::execute(Tango::DeviceImpl *device, const COR
 //===================================================================
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::get_class_property()
- *	Description : Get the class property for specified name.
+ *	Method     : SerialClass::get_class_property()
+ *	Description: Get the class property for specified name.
  */
 //--------------------------------------------------------
-Tango::DbDatum SerialClass::get_class_property(string &prop_name)
+Tango::DbDatum SerialClass::get_class_property(std::string &prop_name)
 {
 	for (unsigned int i=0 ; i<cl_prop.size() ; i++)
 		if (cl_prop[i].name == prop_name)
@@ -596,11 +599,11 @@ Tango::DbDatum SerialClass::get_class_property(string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::get_default_device_property()
- *	Description : Return the default value for device property.
+ *	Method     : SerialClass::get_default_device_property()
+ *	Description: Return the default value for device property.
  */
 //--------------------------------------------------------
-Tango::DbDatum SerialClass::get_default_device_property(string &prop_name)
+Tango::DbDatum SerialClass::get_default_device_property(std::string &prop_name)
 {
 	for (unsigned int i=0 ; i<dev_def_prop.size() ; i++)
 		if (dev_def_prop[i].name == prop_name)
@@ -611,11 +614,11 @@ Tango::DbDatum SerialClass::get_default_device_property(string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::get_default_class_property()
- *	Description : Return the default value for class property.
+ *	Method     : SerialClass::get_default_class_property()
+ *	Description: Return the default value for class property.
  */
 //--------------------------------------------------------
-Tango::DbDatum SerialClass::get_default_class_property(string &prop_name)
+Tango::DbDatum SerialClass::get_default_class_property(std::string &prop_name)
 {
 	for (unsigned int i=0 ; i<cl_def_prop.size() ; i++)
 		if (cl_def_prop[i].name == prop_name)
@@ -626,8 +629,8 @@ Tango::DbDatum SerialClass::get_default_class_property(string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::get_class_property()
- *	Description : Read database to initialize class property data members.
+ *	Method     : SerialClass::get_class_property()
+ *	Description: Read database to initialize class property data members.
  */
 //--------------------------------------------------------
 void SerialClass::get_class_property()
@@ -639,7 +642,7 @@ void SerialClass::get_class_property()
 	/*----- PROTECTED REGION END -----*/	//	SerialClass::get_class_property_before
 	//	Read class properties from database.
 	cl_prop.push_back(Tango::DbDatum("Simulated"));
-	
+
 	//	Call database and extract values
 	if (Tango::Util::instance()->_UseDb==true)
 		get_db_class()->get_property(cl_prop);
@@ -668,8 +671,8 @@ void SerialClass::get_class_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::set_default_property()
- *	Description : Set default property (class and device) for wizard.
+ *	Method     : SerialClass::set_default_property()
+ *	Description: Set default property (class and device) for wizard.
  *                For each property, add to wizard property name and description.
  *                If default value has been set, add it to wizard property and
  *                store it in a DbDatum.
@@ -677,10 +680,10 @@ void SerialClass::get_class_property()
 //--------------------------------------------------------
 void SerialClass::set_default_property()
 {
-	string	prop_name;
-	string	prop_desc;
-	string	prop_def;
-	vector<string>	vect_data;
+	std::string	prop_name;
+	std::string	prop_desc;
+	std::string	prop_def;
+	std::vector<std::string>	vect_data;
 
 	//	Set Default Class Properties
 	prop_name = "Simulated";
@@ -815,8 +818,8 @@ void SerialClass::set_default_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::write_class_property()
- *	Description : Set class description fields as property in database
+ *	Method     : SerialClass::write_class_property()
+ *	Description: Set class description fields as property in database
  */
 //--------------------------------------------------------
 void SerialClass::write_class_property()
@@ -826,26 +829,25 @@ void SerialClass::write_class_property()
 		return;
 
 	Tango::DbData	data;
-	string	classname = get_name();
-	string	header;
-	string::size_type	start, end;
+	std::string	classname = get_name();
+	std::string	header;
 
 	//	Put title
 	Tango::DbDatum	title("ProjectTitle");
-	string	str_title("TANGO Device Server");
+	std::string	str_title("TANGO Device Server");
 	title << str_title;
 	data.push_back(title);
 
 	//	Put Description
 	Tango::DbDatum	description("Description");
-	vector<string>	str_desc;
+	std::vector<std::string>	str_desc;
 	str_desc.push_back("C++ source for the SerialClass");
 	description << str_desc;
 	data.push_back(description);
 
 	//  Put inheritance
 	Tango::DbDatum	inher_datum("InheritedFrom");
-	vector<string> inheritance;
+	std::vector<std::string> inheritance;
 	inheritance.push_back("TANGO_BASE_CLASS");
 	inher_datum << inheritance;
 	data.push_back(inher_datum);
@@ -860,8 +862,8 @@ void SerialClass::write_class_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::device_factory()
- *	Description : Create the device object(s)
+ *	Method     : SerialClass::device_factory()
+ *	Description: Create the device object(s)
  *                and store them in the device list
  */
 //--------------------------------------------------------
@@ -876,7 +878,7 @@ void SerialClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 	//	Create devices and add it into the device list
 	for (unsigned long i=0 ; i<devlist_ptr->length() ; i++)
 	{
-		cout4 << "Device name : " << (*devlist_ptr)[i].in() << endl;
+		TANGO_LOG_DEBUG << "Device name : " << (*devlist_ptr)[i].in() << std::endl;
 		device_list.push_back(new Serial(this, (*devlist_ptr)[i]));
 	}
 
@@ -905,12 +907,12 @@ void SerialClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 }
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::attribute_factory()
- *	Description : Create the attribute object(s)
+ *	Method     : SerialClass::attribute_factory()
+ *	Description: Create the attribute object(s)
  *                and store them in the attribute list
  */
 //--------------------------------------------------------
-void SerialClass::attribute_factory(vector<Tango::Attr *> &att_list)
+void SerialClass::attribute_factory(std::vector<Tango::Attr *> &)
 {
 	/*----- PROTECTED REGION ID(SerialClass::attribute_factory_before) ENABLED START -----*/
 
@@ -928,8 +930,8 @@ void SerialClass::attribute_factory(vector<Tango::Attr *> &att_list)
 }
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::pipe_factory()
- *	Description : Create the pipe object(s)
+ *	Method     : SerialClass::pipe_factory()
+ *	Description: Create the pipe object(s)
  *                and store them in the pipe list
  */
 //--------------------------------------------------------
@@ -948,8 +950,8 @@ void SerialClass::pipe_factory()
 }
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::command_factory()
- *	Description : Create the command object(s)
+ *	Method     : SerialClass::command_factory()
+ *	Description: Create the command object(s)
  *                and store them in the command list
  */
 //--------------------------------------------------------
@@ -1172,19 +1174,19 @@ void SerialClass::command_factory()
  * method : 		SerialClass::create_static_attribute_list
  * description : 	Create the a list of static attributes
  *
- * @param	att_list	the ceated attribute list
+ * @param	att_list	the created attribute list
  */
 //--------------------------------------------------------
-void SerialClass::create_static_attribute_list(vector<Tango::Attr *> &att_list)
+void SerialClass::create_static_attribute_list(std::vector<Tango::Attr *> &att_list)
 {
 	for (unsigned long i=0 ; i<att_list.size() ; i++)
 	{
-		string att_name(att_list[i]->get_name());
-		transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
+		std::string att_name(att_list[i]->get_name());
+		std::transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
 		defaultAttList.push_back(att_name);
 	}
 
-	cout2 << defaultAttList.size() << " attributes in default list" << endl;
+	TANGO_LOG_INFO << defaultAttList.size() << " attributes in default list" << std::endl;
 
 	/*----- PROTECTED REGION ID(SerialClass::create_static_att_list) ENABLED START -----*/
 
@@ -1201,26 +1203,26 @@ void SerialClass::create_static_attribute_list(vector<Tango::Attr *> &att_list)
  * @param	list of all attributes
  */
 //--------------------------------------------------------
-void SerialClass::erase_dynamic_attributes(const Tango::DevVarStringArray *devlist_ptr, vector<Tango::Attr *> &att_list)
+void SerialClass::erase_dynamic_attributes(const Tango::DevVarStringArray *devlist_ptr, std::vector<Tango::Attr *> &att_list)
 {
 	Tango::Util *tg = Tango::Util::instance();
 
 	for (unsigned long i=0 ; i<devlist_ptr->length() ; i++)
 	{
-		Tango::DeviceImpl *dev_impl = tg->get_device_by_name(((string)(*devlist_ptr)[i]).c_str());
+		Tango::DeviceImpl *dev_impl = tg->get_device_by_name(((std::string)(*devlist_ptr)[i]).c_str());
 		Serial *dev = static_cast<Serial *> (dev_impl);
 
-		vector<Tango::Attribute *> &dev_att_list = dev->get_device_attr()->get_attribute_list();
-		vector<Tango::Attribute *>::iterator ite_att;
+		std::vector<Tango::Attribute *> &dev_att_list = dev->get_device_attr()->get_attribute_list();
+		std::vector<Tango::Attribute *>::iterator ite_att;
 		for (ite_att=dev_att_list.begin() ; ite_att != dev_att_list.end() ; ++ite_att)
 		{
-			string att_name((*ite_att)->get_name_lower());
+			std::string att_name((*ite_att)->get_name_lower());
 			if ((att_name == "state") || (att_name == "status"))
 				continue;
-			vector<string>::iterator ite_str = find(defaultAttList.begin(), defaultAttList.end(), att_name);
+			std::vector<std::string>::iterator ite_str = find(defaultAttList.begin(), defaultAttList.end(), att_name);
 			if (ite_str == defaultAttList.end())
 			{
-				cout2 << att_name << " is a UNWANTED dynamic attribute for device " << (*devlist_ptr)[i] << endl;
+				TANGO_LOG_INFO << att_name << " is a UNWANTED dynamic attribute for device " << (*devlist_ptr)[i] << std::endl;
 				Tango::Attribute &att = dev->get_device_attr()->get_attr_by_name(att_name.c_str());
 				dev->remove_attribute(att_list[att.get_attr_idx()], true, false);
 				--ite_att;
@@ -1234,13 +1236,13 @@ void SerialClass::erase_dynamic_attributes(const Tango::DevVarStringArray *devli
 
 //--------------------------------------------------------
 /**
- *	Method      : SerialClass::get_attr_by_name()
- *	Description : returns Tango::Attr * object found by name
+ *	Method     : SerialClass::get_attr_object_by_name()
+ *	Description: returns Tango::Attr * object found by name
  */
 //--------------------------------------------------------
-Tango::Attr *SerialClass::get_attr_object_by_name(vector<Tango::Attr *> &att_list, string attname)
+Tango::Attr *SerialClass::get_attr_object_by_name(std::vector<Tango::Attr *> &att_list, std::string attname)
 {
-	vector<Tango::Attr *>::iterator it;
+	std::vector<Tango::Attr *>::iterator it;
 	for (it=att_list.begin() ; it<att_list.end() ; ++it)
 		if ((*it)->get_name()==attname)
 			return (*it);
