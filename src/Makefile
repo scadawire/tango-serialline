@@ -76,9 +76,6 @@ PROCESSOR  = $(shell uname -p)
 #=============================================================================
 # MAKE_ENV is the path to find common environment to buil project
 #
-ifndef TANGO_HOME
-    TANGO_HOME= $(shell pkg-config --variable prefix tango)
-endif
 
 ifndef MAKE_ENV
     MAKE_ENV = $(TANGO_HOME)/share/pogo/preferences/
@@ -210,6 +207,9 @@ include $(MAKE_ENV)/tango.opt
 #-----------------------------------------
 #	Set  dependences
 #-----------------------------------------
+
+TANGO_REQUIRED = TRUE
+include $(MAKE_ENV)/tango.opt
 
 SVC_OBJS = $(OBJS_DIR)/$(CLASS).o \
 		$(OBJS_DIR)/main.o	\
